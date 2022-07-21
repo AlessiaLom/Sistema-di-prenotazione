@@ -9,3 +9,5 @@
 - Come integrare i servizi esterni (Zapier, Google Ads, Google Sheets, Facebook Pixel...)
 
 - Cercare altre soluzioni simili ed esempi pratici
+
+- Modificona
