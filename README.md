@@ -11,3 +11,9 @@
 - Cercare altre soluzioni simili ed esempi pratici
 
 - Modificona
+
+# Domnade a Raffaele e Stefano
+
+- L'update di Google Calendar e Sheet va fatto tramite Zapier o indipendentemente? E Zapier rimane utilizzato per altre automazioni
+
+- 
