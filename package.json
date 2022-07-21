@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/andreafoschi00/Sistema-di-prenotazione#readme",
   "dependencies": {
+    "express": "^4.18.1",
     "tedious": "^15.0.0"
   }
 }
