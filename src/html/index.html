@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <title>Prenotazione</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" href="./../css/index.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="./../js/index.js"></script>
+    </head>
+    <body>
+        <main>
+            <header>
+                <h1>Prenota un tavolo</h1>
+                <nav>
+                    <a href="index.html"><input type="button" id="newBooking" value="Prenotazione"/></a>
+                    <a href="cancel.html"><input type="button" id="newCancelation" value="Cancellazione"/></a>
+                </nav>
+            </header>
+            <form action="#" method="get" id="bookingForm">
+                <div class="firstSection">
+                    <fieldset>
+                        <legend>Dettagli della prenotazione</legend>
+                            <label for="bookingDate">Seleziona una data: <input id="bookingDate" type="date" name="bookingDate" required/></label>
+                            <label for="bookingTime">Seleziona un orario: <input type="time" id="bookingTime" name="bookingTime" required/></label>
+                            <label for="bookingGuests">Seleziona il numero di coperti: <input type="number" min="1" id="bookingGuests" name="bookingGuests" required/></label>
+                    </fieldset>
+                </div>
+                <div class="buttonsContainer1">
+                    <button type="button" id="nextButton1">Avanti</button>
+                </div>
+                <div class="secondSection">
+                    <fieldset>
+                        <legend>Dati personali</legend>
+                        <label for="guestName">Nome*: <input type="text" id="guestName" name="guestName" required/></label>
+                        <label for="guestSurname">Cognome*: <input type="text" id="guestSurname" name="guestSurname" required/></label>
+                        <label for="guestEmail">Email*: <input type="email" id="guestEmail" name="guestEmail" required/></label>
+                        <label for="guestPhone">Cellulare*: <input type="tel" id="guestPhone" name= "guestPhone" required/></label>
+                        <label for="guestInfo">Informazioni aggiuntive:</label>
+                        <textarea name="infoArea" id="guestInfo" cols="25" rows="4" placeholder="Inserisci qui il testo..."></textarea>
+                        <input type="checkbox" id="guestPrivacy" name="privacy" value="consent"/>
+                        <label for="guestPrivacy" id="privacyLabel"> Acconsento al trattamento dei dati personali*</label>
+                    </fieldset>
+                </div>
+                <div class="buttonsContainer2">
+                    <button type="button" id="backButton1">Indietro</button>
+                    <button type="button" id="nextButton2">Avanti</button>
+                </div>
+                <div class="thirdSection">
+                    <fieldset>
+                        <legend>Informazioni riassuntive</legend>
+                        <output name="summaryInfo" for="bookingDate bookingTime bookingGuests guestName guestSurname guestEmail guestPhone guestInfo"></output>
+                    </fieldset>
+                </div>
+                <div class="buttonsContainer3">
+                    <button type="button" id="backButton2">Indietro</button>
+                    <input type="submit" id="submitBooking" value="Invia"/>
+                </div>
+            </form>
+        </main>
+    </body>
+</html>
