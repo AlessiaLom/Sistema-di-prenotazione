@@ -4,10 +4,17 @@ $(document).ready(function(){
     $(".buttonsContainer2").hide();
     $(".buttonsContainer3").hide();
 
+
+    /**
+     * Regex function for validating emails.
+     * @param {*} email 
+     * @returns true is mail is valid, false otherwise 
+     */
     function validateEmail (email) {
         return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
       }
 
+    //Go to second step
     $("#nextButton1").click(function(){ 
         if($("#bookingDate").val() != "" && $("#bookingTime").val() != "" && $("#bookingGuests").val() != ""){
             $(".secondSection").show();
@@ -18,6 +25,7 @@ $(document).ready(function(){
         }
     });
 
+    //Go to third step
     $("#nextButton2").click(function(){
        if(!$("#guestPrivacy").prop("checked") && $("#privacyError").length == 0){
         $("#privacyLabel").after("<p id=\"privacyError\" style=\"color:red; margin-left:1%;\">Devi accettare il consenso per la privacy</p>")
@@ -35,6 +43,7 @@ $(document).ready(function(){
         }
     });
 
+    //Back to first step
     $("#backButton1").click(function(){
         $(".firstSection").show();
         $(".buttonsContainer1").show();
@@ -42,6 +51,7 @@ $(document).ready(function(){
         $(".buttonsContainer2").hide();
     });
 
+    //Back to second step
     $("#backButton2").click(function(){
         $(".secondSection").show();
         $(".buttonsContainer2").show();
