@@ -1,0 +1,108 @@
+*{
+    font-size: 100%;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-decoration: none;
+}
+
+body{
+    background-color: aliceblue;
+}
+
+.firstSection, .secondSection, .thirdSection, nav, .buttonsContainer1, .buttonsContainer2, .buttonsContainer3{
+    display: flex;
+    justify-content: center;
+}
+
+input:not(#newBooking):not(#newCancelation):not(#backButton):not(#submitBooking):not(#guestPrivacy), label:not(#privacyLabel), textarea{
+    display: block;
+}
+
+#guestPrivacy{
+    margin: 1% 0 1% 2%;
+}
+
+fieldset{
+    width: 50%;
+    margin: 1% 2%;
+    padding: 1%;
+    background-image: linear-gradient(lightblue, pink);
+    border-radius: 5px;
+}
+
+legend{
+    font-size: 150%;
+    font-weight: bold;
+    background-color: white;
+    border-radius: 5px;
+    text-align: center;
+}
+
+label{
+    margin: 1%;
+    padding: 1%;
+    font-weight: bold;
+}
+
+textarea{
+    margin: 1% 2%;
+    resize: vertical;
+}
+
+h1{
+    text-align: center;
+    font-size: 250%;
+}
+
+input#newBooking, input#newCancelation{
+    width: 100%;
+    margin: 0% 1%;
+    padding: 1% 5px;
+    font-size: 150%;
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+    align-content: center;
+}
+
+input#newBooking, input#newCancelation, fieldset, button#nextButton1, button#nextButton2, button#backButton1, button#backButton2, input#submitBooking{
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+input#newBooking:hover, input#newCancelation:hover, button#nextButton1:hover, button#nextButton2:hover, button#backButton1:hover, button#backButton2:hover{
+    background-color: white;
+    color: black;
+}
+
+button#nextButton1, button#nextButton2, button#backButton1, button#backButton2{
+    font-size: 125%;
+    background-color: black;
+    color: white;
+    border-style: none;
+    border-radius: 5px;
+    margin: 1% 2%;
+    padding: 2px 1%;
+}
+
+input#submitBooking{
+    font-size: 125%;
+    background-color: green;
+    color: white;
+    border-radius: 5px;
+    border-style: none;
+    margin: 1% 2%;
+    padding: 2px 1%;
+}
+
+input#submitBooking:hover{
+    background-color: white;
+    color:green;
+}
+
+input[type=text], input[type=number], input[type=email], input[type=date], input[type=time], input[type=tel]{
+    border-radius: 1px;
+}
+
+a{
+    margin: 1% 2%;
+    padding: 2px 1%;
+}
