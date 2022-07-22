@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <title>Cancellazione</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" href="./../css/cancel.css">
+    </head>
+    <body>
+        <main>
+            <header>
+                <h1>Cancella una prenotazione</h1>
+                <nav>
+                    <a href="index.html"><input type="button" id="newBooking" value="Prenotazione"/></a>
+                    <a href="cancel.html"><input type="button" id="newCancelation" value="Cancellazione"/></a>
+                </nav>
+            </header>
+            <form action="#" method="get" id="cancelForm">
+                <div class="formSection">
+                    <fieldset>
+                        <legend>Dati della prenotazione</legend>
+                        <label for="bookingID">Numero di prenotazione*: <input type="text" id="bookingID" required/></label>
+                        <label for="guestName">Nome*: <input type="text" id="guestName" name="guestName" required/></label>
+                        <label for="guestSurname">Cognome*: <input type="text" id="guestSurname" name="guestSurname" required/></label>
+                        <label for="guestEmail">Email*: <input type="email" id="guestEmail" name="guestEmail" required/></label>
+                        <label for="guestPhone">Cellulare*: <input type="tel" id="guestPhone" name= "guestPhone" required/></label>
+                        <input type="reset" id="resetFields" value="Cancella"/>
+                        <input type="submit" id="submitCancelation" value="Invia"/>
+                    </fieldset>
+                </div>
+            </form>
+        </main>
+    </body>
+</html>
