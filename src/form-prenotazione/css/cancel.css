@@ -39,7 +39,7 @@ label{
     font-weight: bold;
 }
 
-h1{
+h2{
     text-align: center;
     font-size: 250%;
 }
@@ -54,7 +54,7 @@ input#newBooking, input#newCancelation{
     align-content: center;
 }
 
-input#newBooking, input#newCancelation, fieldset, input#resetFields, input#submitCancelation{
+input#newBooking, input#newCancelation, fieldset, input#resetFields, input#submitCancelation, .title-container, footer{
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 
@@ -102,6 +102,39 @@ a{
     padding: 2px 1%;
 }
 
+.title-container{
+    background-image: linear-gradient(lightblue, white, pink);
+    border-radius: 5px;
+    padding-bottom: 5%;
+}
+
+h1{
+    color: black;
+    font-size: 300%;
+    padding: 2%;
+    margin: 0;
+    text-align: center;
+}
+
+img{
+    float: left;
+    margin: 1% 0 0 2%;
+}
+
+footer{
+    text-align: center;
+    font-size: 150%;
+    background-color: black;
+    color: white;
+    margin-top: 3%;
+    border-radius: 5px;
+}
+
+h3#footerInfo{
+    margin: 0;
+    padding: 2% 0;
+}
+
 @media screen and (max-width: 480px) {
     input:not(#resetFields):not(#submitCancelation), textarea {
       width: 100%;
@@ -113,5 +146,17 @@ a{
 
     input#resetFields, input#submitCancelation{
         align-content: center;
+    }
+
+    #companyName{
+        font-size: 150%;
+    }
+
+    #footerInfo{
+        font-size: 75%;
+    }
+
+    img{
+        max-width: 15%;
     }
 }
