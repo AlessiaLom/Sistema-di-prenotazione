@@ -1,9 +1,24 @@
-$(document).ready(function(){
+jQuery(function(){
     $(".secondSection").hide();
     $(".thirdSection").hide();
     $(".buttonsContainer2").hide();
     $(".buttonsContainer3").hide();
 
+    $('#bookingTime').timepicker({
+        'interval': 15,
+        'timeFormat': 'HH:mm',
+        'show2400': true,
+    });
+    $('#bookingTime').timepicker('option', 'minTime', new Date());
+
+    const today = new Date();
+    let todayAsString;
+    if(today.getMonth() + 1 < 10){
+        todayAsString = today.getFullYear() + "-0" + (today.getMonth() + 1) + "-" + today.getDate();
+    } else {
+        todayAsString = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+    }
+    $("#bookingDate").attr("min", todayAsString);
 
     /**
      * Regex function for validating emails.
