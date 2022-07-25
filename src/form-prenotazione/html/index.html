@@ -22,7 +22,7 @@
                 <div class="firstSection">
                     <fieldset>
                         <legend>Dettagli della prenotazione</legend>
-                            <label id="labelDate" for="bookingDate">Seleziona una data: <input id="bookingDate" type="date" name="bookingDate" required/></label>
+                            <label id="labelDate" for="bookingDate">Seleziona una data: <input id="bookingDate" onkeydown="return false" type="date" name="bookingDate" required/></label>
                             <label id="labelTime" for="bookingTime">Seleziona un orario: <input type="text" onkeydown="return false" id="bookingTime" name="bookingTime" placeholder="Clicca qui" required/></label>
                             <label id="labelGuests" for="bookingGuests">Seleziona il numero di coperti: <input type="number" min="1" id="bookingGuests" name="bookingGuests" placeholder="Inserisci un numero" required/></label>
                     </fieldset>
