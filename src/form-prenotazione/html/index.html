@@ -20,9 +20,9 @@
                 <div class="firstSection">
                     <fieldset>
                         <legend>Dettagli della prenotazione</legend>
-                            <label for="bookingDate">Seleziona una data: <input id="bookingDate" type="date" name="bookingDate" required/></label>
-                            <label for="bookingTime">Seleziona un orario: <input type="time" id="bookingTime" name="bookingTime" required/></label>
-                            <label for="bookingGuests">Seleziona il numero di coperti: <input type="number" min="1" id="bookingGuests" name="bookingGuests" required/></label>
+                            <label id="labelDate" for="bookingDate">Seleziona una data: <input id="bookingDate" type="date" name="bookingDate" required/></label>
+                            <label id="labelTime" for="bookingTime">Seleziona un orario: <input type="time" id="bookingTime" name="bookingTime" required/></label>
+                            <label id="labelGuests" for="bookingGuests">Seleziona il numero di coperti: <input type="number" min="1" id="bookingGuests" name="bookingGuests" placeholder="Inserisci un numero" required/></label>
                     </fieldset>
                 </div>
                 <div class="buttonsContainer1">
@@ -31,11 +31,11 @@
                 <div class="secondSection">
                     <fieldset>
                         <legend>Dati personali</legend>
-                        <label for="guestName">Nome*: <input type="text" id="guestName" name="guestName" required/></label>
-                        <label for="guestSurname">Cognome*: <input type="text" id="guestSurname" name="guestSurname" required/></label>
-                        <label for="guestEmail">Email*: <input type="email" id="guestEmail" name="guestEmail" required/></label>
-                        <label for="guestPhone">Cellulare*: <input type="tel" id="guestPhone" name= "guestPhone" required/></label>
-                        <label for="guestInfo">Informazioni aggiuntive:</label>
+                        <label id="labelName" for="guestName">Nome*: <input type="text" id="guestName" name="guestName" placeholder="Inserisci il nome" required/></label>
+                        <label id="labelSurname" for="guestSurname">Cognome*: <input type="text" id="guestSurname" name="guestSurname" placeholder="Inserisci il cognome" required/></label>
+                        <label id="labelEmail" for="guestEmail">Email*: <input type="email" id="guestEmail" name="guestEmail" placeholder="Inserisci la mail" required/></label>
+                        <label id="labelPhone" for="guestPhone">Cellulare*: <input type="tel" id="guestPhone" name= "guestPhone" placeholder="Inserisci il numero" required/></label>
+                        <label id="labelInfo" for="guestInfo">Informazioni aggiuntive:</label>
                         <textarea name="infoArea" id="guestInfo" cols="25" rows="4" placeholder="Inserisci qui il testo..."></textarea>
                         <input type="checkbox" id="guestPrivacy" name="privacy" value="consent"/>
                         <label for="guestPrivacy" id="privacyLabel"> Acconsento al trattamento dei dati personali*</label>

@@ -77,7 +77,8 @@ button#nextButton1, button#nextButton2, button#backButton1, button#backButton2{
     font-size: 125%;
     background-color: black;
     color: white;
-    border-style: none;
+    border-style: solid;
+    border-color: black;
     border-radius: 5px;
     margin: 1% 2%;
     padding: 2px 1%;
@@ -86,9 +87,10 @@ button#nextButton1, button#nextButton2, button#backButton1, button#backButton2{
 input#submitBooking{
     font-size: 125%;
     background-color: green;
+    border-style: solid;
+    border-color: green;
     color: white;
     border-radius: 5px;
-    border-style: none;
     margin: 1% 2%;
     padding: 2px 1%;
 }
