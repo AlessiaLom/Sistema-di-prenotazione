@@ -108,3 +108,13 @@ a{
     margin: 1% 2%;
     padding: 2px 1%;
 }
+
+@media screen and (max-width: 480px) {
+    input:not(#submitBooking), textarea {
+      width: 100%;
+    }
+
+    fieldset{
+        padding: 6%;
+    }
+}
