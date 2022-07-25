@@ -1,0 +1,13 @@
+#activitiesTable {
+    margin: 1%;
+    padding: 1%;
+}
+
+#buttonsDiv{
+    margin-right: 2%;
+}
+
+#buttonsDiv button {
+    margin-left: 10px;
+    float: right;
+}

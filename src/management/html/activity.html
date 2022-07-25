@@ -20,11 +20,17 @@
         crossorigin="anonymous"></script>
     <!-- JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Scripts -->
+    <script src="./../js/activity.js"></script>
+    <!-- CSS -->
+    <link href="./../css/activity.css" rel="stylesheet" type="text/css">
+    </link>
 </head>
 
 <body>
-    <div style="margin:1%; padding:1%;" id="activitiesTable">
-        <table class="table">
+    <div>
+        <table id="activitiesTable" class="table">
             <thead>
                 <tr>
                     <th scope="col">Nome attività</th>
@@ -35,6 +41,7 @@
                 </tr>
             </thead>
             <tbody>
+                <tr></tr>
                 <tr>
                     <th scope="row">
                         <div class="input-group">
@@ -44,8 +51,16 @@
                     </th>
                     <td>
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="es. Apertivo"
-                                aria-describedby="basic-addon1">
+                            Dalle:
+                            <div class='timepicker input-group date'>
+                                <input type='text' class="form-control" />
+                                </span>
+                            </div>
+                            Alle:
+                            <div class='timepicker input-group date' id='endTimepicker'>
+                                <input type='text' class="form-control" />
+                                </span>
+                            </div>
                         </div>
                     </td>
                     <td>
@@ -58,48 +73,44 @@
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" id="LCheckbox" value="option1">
                             <label class="form-check-label" for="inlineCheckbox1">L</label>
-                          </div>
-                          <div class="form-check form-check-inline">
+                        </div>
+                        <div class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" id="MaCheckbox" value="option2">
                             <label class="form-check-label" for="inlineCheckbox2">Ma</label>
-                          </div>
-                          <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="MeCheckbox" value="option3" >
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="MeCheckbox" value="option3">
                             <label class="form-check-label" for="inlineCheckbox3">Me</label>
-                          </div>
-                          <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="GCheckbox" value="option3" >
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="GCheckbox" value="option3">
                             <label class="form-check-label" for="inlineCheckbox3">G</label>
-                          </div>
-                          <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="VCheckbox" value="option3" >
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="VCheckbox" value="option3">
                             <label class="form-check-label" for="inlineCheckbox3">V</label>
-                          </div>
-                          <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="SCheckbox" value="option3" >
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="SCheckbox" value="option3">
                             <label class="form-check-label" for="inlineCheckbox3">S</label>
-                          </div>
-                          <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="DCheckbox" value="option3" >
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="DCheckbox" value="option3">
                             <label class="form-check-label" for="inlineCheckbox3">D</label>
-                          </div>
+                        </div>
                     </td>
                     <td>
-                        <button type="button" class="btn btn-outline-danger">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
-                                <path
-                                    d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z">
-                                </path>
-                            </svg>
+                        <button type="button" class="deleteActivityButton btn btn-outline-danger">
+                            <i class="bi bi-trash"></i>
                         </button>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <div id="addActivityButton" style="margin-right: 2%;">
-        <button style="float: right;" type="button" class="btn btn-outline-primary">Aggiungi attività</button>
+    <div id="buttonsDiv">
+        <button id="saveChangesButton" type="button" class="btn btn-primary">Salva modifiche</button>
+        <button id="addActivityButton" type="button" class="btn btn-outline-primary">Aggiungi attività</button>
     </div>
 </body>
 
