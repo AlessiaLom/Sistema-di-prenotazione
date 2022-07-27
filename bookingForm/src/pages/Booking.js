@@ -1,4 +1,4 @@
-import { Form } from "../Form"
+import Form from "../Form";
 
 export default function Booking() {
     return (

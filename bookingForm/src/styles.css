@@ -18,8 +18,7 @@ body {
 }
 
 form{
-  width: 50%;
-  margin-left: 25%;
+  width: 100%;
 }
 
 .App{
@@ -31,8 +30,14 @@ form{
   width: 100%;
 }
 
-.container {
-  display: flex;
+.bookingControls{
+  float: left;
+  margin-bottom: 2%;
+}
+
+.personControls{
+  float: right;
+  margin-bottom: 2%;
 }
 
 .h1 {
@@ -47,13 +52,13 @@ form{
   margin-bottom: 5%;
 }
 
-textarea, input:not(#guestPrivacy){
+textarea, input:not(#guestPrivacy), .button{
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   display: block;
   box-sizing: border-box;
-  width: 50%;
+  width: 100%;
   border-radius: 4px;
   padding: 10px 15px;
   margin-bottom: 15px;
@@ -62,9 +67,11 @@ textarea, input:not(#guestPrivacy){
 }
 
 .css-b62m3t-container{
-  width: 50%;
+  width: 100%;
   margin-left: 25%;
-  margin-bottom: 1%;
+  margin-bottom: 15px;
+  margin-top: 15px;
+  font-size: 14px;
 }
 
 #guestPrivacy{
@@ -82,12 +89,21 @@ textarea, input:not(#guestPrivacy){
   font-weight: 200;
 }
 
-label:not(#privacyLabel), input, textarea, .select{
+
+.booking, .select {
   margin-left: 25%;
+  margin-right: 0;
 }
 
+span.error.person{
+  margin-left: 0;
+}
 
-input[type="submit"],
+.personControls{
+  margin-right: 5%;
+  margin-left: 0;
+}
+
 .button {
   position: relative;
   background: #ec5990;
@@ -101,38 +117,37 @@ input[type="submit"],
   display: block;
   appearance: none;
   border-radius: 4px;
-  width: 100%;
+  width: 50%;
+  margin-left: 25%;
   font-weight: 400;
   letter-spacing: 0.5rem;
   transition: 0.3s all;
 }
 
-.buttonBlack {
-  background: black;
-  border: 1px solid white;
+.submit{
+  clear: both;
 }
 
-.container {
-  display: block;
-}
-
-button[type="button"] {
-  padding: 5px;
-  background: #516391;
-  color: white;
-  letter-spacing: 0px;
-  text-transform: none;
-  padding: 10px;
-  letter-spacing: 1px;
-}
-
-input[type="submit"]:hover,
-button[type="button"]:hover {
+.button:hover {
   background: #bf1650;
   color: white;
 }
 
-input[type="submit"]:active {
+.error {
+  color:#db2269;
+  font-size: 0.625em;
+  display: block;
+  margin-left: 25%;
+}
+
+.privacyError{
+  color:#db2269;
+  font-size: 0.625em;
+  display: block;
+  margin-left: 1%;
+}
+
+.button:active {
   transition: 0.3s all;
   top: 2px;
 }
@@ -227,12 +242,25 @@ textarea{
     display: none;
   }
 
+  .bookingControls{
+    float: none;
+  }
+
+  .personControls{
+    float: none;
+    margin-right: 0;
+  }
+
+  .booking, .select{
+    margin-left: 0;
+  }
+
   form{
     margin: 0;
     width: 100%;
   }
 
-  textarea, .select, input:not(#guestPrivacy){
+  textarea, .select, input:not(#guestPrivacy), .button{
     width: 100%;
     margin-left: 0;
   }
@@ -245,15 +273,37 @@ textarea{
     width: 100%;
     margin-left: 0;
   }
+
+  .error{
+    margin-left: 0  
+  }
 }
 
 @media screen and (min-width: 601px) and (max-width: 1000px) {
-  textarea, .select, input:not(#guestPrivacy){
+
+  .bookingControls{
+    float: none;
+  }
+
+  .personControls{
+    float: none;
+    margin-right: 0;
+  }
+
+  .booking, .select{
+    margin-left: 0;
+  }
+
+  textarea, .select, input:not(#guestPrivacy), .button, .booking, .select{
     width: 100%;
   }
 
-  label:not(#privacyLabel), .select, input, textarea{
+  label:not(#privacyLabel), .select, input, textarea, .button{
     margin-left: 0;
+  }
+
+  .error{
+    margin-left: 0  
   }
 
   form{
