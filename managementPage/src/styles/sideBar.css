@@ -1,0 +1,21 @@
+#sidebarDiv {
+    background-color: rgb(246, 246, 246);
+    width: 15%;
+    height: 100%;
+    min-width: 200px;
+    max-width: 350px;
+    min-height: none;
+    padding: 15px;
+    border: 0;
+    margin: 0;
+    position: relative;
+}
+
+i {
+    margin-right: 10px;
+}
+
+#footerDiv{
+    position: absolute;
+    bottom: 15px;
+}

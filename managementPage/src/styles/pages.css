@@ -1,0 +1,25 @@
+#activitiesTable {
+    margin: 1%;
+    padding: 1%;
+}
+
+#buttonsDiv{
+    margin-right: 2%;
+}
+
+#buttonsDiv button {
+    margin-left: 10px;
+    float: right;
+}
+
+.headerRow{
+    width: 15%;
+}
+
+.timepicker{
+    width: 50%;
+}
+
+.tableHeader{
+    width: 100%;
+}
