@@ -12,14 +12,23 @@ body {
   color: white;
   margin: 0;
 }
-
 .css-b62m3t-container{
   color: black;
 }
 
+.bookingControls{
+  float: left;
+  margin-left: 5%;
+  width: 50vw;
+}
+
+.personControls{
+  float: right;
+  margin-right: 5%;
+}
+
 form{
-  width: 50%;
-  margin-left: 25%;
+  width: 100%;
 }
 
 .App{
@@ -31,8 +40,8 @@ form{
   width: 100%;
 }
 
-.container {
-  display: flex;
+.personControls{
+  margin-bottom: 2%;
 }
 
 .h1 {
@@ -47,13 +56,13 @@ form{
   margin-bottom: 5%;
 }
 
-textarea, input:not(#guestPrivacy){
+textarea, input:not(#guestPrivacy), .button{
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   display: block;
   box-sizing: border-box;
-  width: 50%;
+  width: 100%;
   border-radius: 4px;
   padding: 10px 15px;
   margin-bottom: 15px;
@@ -62,9 +71,10 @@ textarea, input:not(#guestPrivacy){
 }
 
 .css-b62m3t-container{
-  width: 50%;
-  margin-left: 25%;
-  margin-bottom: 1%;
+  width: 100%;
+  margin-bottom: 15px;
+  margin-top: 15px;
+  font-size: 14px;
 }
 
 #guestPrivacy{
@@ -82,12 +92,34 @@ textarea, input:not(#guestPrivacy){
   font-weight: 200;
 }
 
-label:not(#privacyLabel), input, textarea, .select{
-  margin-left: 25%;
+
+.bookingDate, .bookingTime, .bookingGuests, .resturantTable {
+  margin-left: 5%;
+  margin-right: 0;
 }
 
+table{
+  width: minmax(50vw, 100%);
+  color: black;
+  margin-bottom: 3%;
+  border-style: dashed;
+  border-color: white;
+  border-radius: 5px;
+  z-index: -1;
+}
 
-input[type="submit"],
+th, td{
+  border-style: solid;
+}
+
+span.error.person{
+  margin-left: 0;
+}
+
+.guestName, .guestSurname, .guestEmail, .guestPhone, .guestAdditionalInfo, .guestPrivacy{
+  margin-left: 0;
+}
+
 .button {
   position: relative;
   background: #ec5990;
@@ -101,38 +133,35 @@ input[type="submit"],
   display: block;
   appearance: none;
   border-radius: 4px;
-  width: 100%;
+  width: 50%;
+  margin-left: 25%;
   font-weight: 400;
   letter-spacing: 0.5rem;
   transition: 0.3s all;
 }
 
-.buttonBlack {
-  background: black;
-  border: 1px solid white;
+.submit{
+  clear: both;
 }
 
-.container {
-  display: block;
-}
-
-button[type="button"] {
-  padding: 5px;
-  background: #516391;
-  color: white;
-  letter-spacing: 0px;
-  text-transform: none;
-  padding: 10px;
-  letter-spacing: 1px;
-}
-
-input[type="submit"]:hover,
-button[type="button"]:hover {
+.button:hover {
   background: #bf1650;
   color: white;
 }
 
-input[type="submit"]:active {
+.error {
+  color:#db2269;
+  font-size: 0.625em;
+  display: block;
+}
+
+.privacyError{
+  color:#db2269;
+  font-size: 0.625em;
+  display: block;
+}
+
+.button:active {
   transition: 0.3s all;
   top: 2px;
 }
@@ -148,6 +177,34 @@ input[type="submit"]:active {
 
 .container {
   margin: 1rem;
+}
+
+.resturantTableLabel{
+  font-weight: bold;
+  font-style: italic;
+  color: #ec5990;
+}
+
+.bookingStatus-yes{
+  color: greenyellow;
+  font-weight: bold;
+  margin-bottom: 5%;
+}
+
+.bookingStatus-no{
+  color: #cf153a;
+  font-weight: bold;
+  margin-bottom: 5%;
+}
+
+.bookingStatus-maybe{
+  color: yellow;
+  font-weight: bold;
+  margin-bottom: 5%;
+}
+
+.bookingStatus-yes, .bookingStatus-no, .bookingStatus-maybe, .resturantTableLabel{
+  display: block;
 }
 
 .nav {
@@ -222,17 +279,39 @@ textarea{
   resize: vertical;
 }
 
+.prenotationID, .prenotationName, .prenotationSurname, .prenotationEmail, .prenotationPhone{
+  margin-left: 25%;
+  margin-right: 25%;
+}
+
 @media screen and (max-width: 600px) {
   img{
     display: none;
   }
 
+  .bookingControls{
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .personControls{
+    margin-right: 0;
+    width: 100%;
+  }
+
+  .bookingDate, .bookingTime, .bookingGuests, .resturantTable{
+    margin-left: 0;
+  }
+
+  .guestName, .guestSurname, .guestEmail, .guestPhone, .guestAdditionalInfo, .guestPrivacy{
+    margin-right: 0;
+  }
   form{
     margin: 0;
     width: 100%;
   }
 
-  textarea, .select, input:not(#guestPrivacy){
+  textarea, .select, input:not(#guestPrivacy), .button{
     width: 100%;
     margin-left: 0;
   }
@@ -245,15 +324,44 @@ textarea{
     width: 100%;
     margin-left: 0;
   }
+
+  .error{
+    margin-left: 0  
+  }
+
+  .prenotationID, .prenotationName, .prenotationSurname, .prenotationEmail, .prenotationPhone{
+    margin: 0;
+  }
 }
 
 @media screen and (min-width: 601px) and (max-width: 1000px) {
-  textarea, .select, input:not(#guestPrivacy){
+  .bookingDate, .bookingTime, .bookingGuests, .resturantTable{
+    margin-left: 0;
+  }
+
+  .bookingControls, .personControls{
+    margin-left: 0;
     width: 100%;
   }
 
-  label:not(#privacyLabel), .select, input, textarea{
+  .bookingControls, .personControls{
+    float: none;
+  }
+
+  .guestName, .guestSurname, .guestEmail, .guestPhone, .guestAdditionalInfo, .guestPrivacy{
+    margin-right: 0;
+  }
+
+  textarea, .select, input:not(#guestPrivacy), .button, .booking, .select{
+    width: 100%;
+  }
+
+  label:not(#privacyLabel), .select, input, textarea, .button{
     margin-left: 0;
+  }
+
+  .error{
+    margin-left: 0  
   }
 
   form{
@@ -264,5 +372,9 @@ textarea{
   .css-b62m3t-container{
     width: 100%;
     margin-left: 0;
+  }
+
+  .prenotationID, .prenotationName, .prenotationSurname, .prenotationEmail, .prenotationPhone{
+    margin: 0;
   }
 }

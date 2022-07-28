@@ -1,9 +1,9 @@
-import { Form } from "../Form"
+import BookingForm from "../BookingForm";
 
 export default function Booking() {
     return (
       <>
-        <Form />
+        <BookingForm />
       </>
     );
   }
