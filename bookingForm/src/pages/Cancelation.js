@@ -1,3 +1,9 @@
+import CancelationForm from "../CancelationForm"
+
 export default function Cancelation() {
-    return <h1>Cancella una prenotazione</h1>
+    return (
+      <>
+        <CancelationForm />
+      </>
+    )
   }

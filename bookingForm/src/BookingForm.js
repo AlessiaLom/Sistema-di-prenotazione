@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Component } from "react";
-import { useForm } from "react-hook-form";
 import Select from "react-select"
-import HeaderForm from "./HeaderForm";
+import HeaderForm from "./BookingHeader";
 import DatePicker from "react-datepicker";
+import CustomTable from "./CustomTable";
+import options from "./Options";
 
 import 'react-datepicker/dist/react-datepicker.css'
 
@@ -17,10 +18,12 @@ const validateForm = errors => {
   return valid;
 };
 
-export default class Form extends Component {
+export default class BookingForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      statusLabel: '',
+      statusProp: '',
       selectedDate: new Date(),
       selectedTime: [],
       bookingGuests: null,
@@ -31,13 +34,13 @@ export default class Form extends Component {
       guestPrivacy: null,
       guestAdditionalInfo: null,
       errors: {
-        bookingGuests: '',
-        guestName: '',
-        guestSurname: '',
-        guestEmail: '',
-        guestPhone: '',
-        guestPrivacy: '',
-        guestAdditionalInfo: ''
+        bookingGuests: ' ',
+        guestName: ' ',
+        guestSurname: ' ',
+        guestEmail: ' ',
+        guestPhone: ' ',
+        guestPrivacy: ' ',
+        guestAdditionalInfo: ' '
       }
     };
     this.handleChange = this.handleChange.bind(this);
@@ -56,6 +59,21 @@ export default class Form extends Component {
           ? ''
           : 'Devi inserire un numero maggiore di 1')
         : 'Questo campo è obbligatorio';
+
+
+        if(Number.isInteger(Number(value)) && Number(value) <= 10 && Number(value) != 0){
+          this.state.statusLabel = `\u2705 Prenotabile automaticamente.`;
+          this.state.statusProp = 'yes';
+        } else if(Number(value) > 10 && Number(value) <= 20) {
+          this.state.statusLabel = `⚠️ Prenotabile accordandosi col ristorante.`;
+          this.state.statusProp = 'maybe';
+        } else if(Number(value) > 20){
+          this.state.statusLabel = `\u26D4 Non prenotabile; la richiesta supera il numero di coperti disponibili.`;
+          this.state.statusProp = 'no';
+        } else{
+          this.state.statusLabel = '';
+          this.state.statusProp = '';
+        }
       break;
       case 'guestName': 
         errors.guestName = 
@@ -86,7 +104,6 @@ export default class Form extends Component {
         : 'Questo campo è obbligatorio';
       break;
       case 'guestPrivacy':
-        console.log(event.target.checked);
         errors.guestPrivacy =
         event.target.checked
           ? ''
@@ -114,7 +131,7 @@ export default class Form extends Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
-    console.log(this.state);
+    console.dir(this.state);
     if(validateForm(this.state.errors)) {
       console.info('Valid Form')
     }else{
@@ -123,28 +140,7 @@ export default class Form extends Component {
   } 
 
   render(){
-    //const [date, handleDateSelect, handleDateChange] = useState(new Date());
-    const options = [
-      { value: '12:00', label: '12:00', disabled: true },
-      { value: '12:15', label: '12:15', disabled: true },
-      { value: '12:30', label: '12:30', disabled: false },
-      { value: '12:45', label: '12:45', disabled: true },
-      { value: '13:00', label: '13:00', disabled: true },
-      { value: '13:15', label: '13:15', disabled: false },
-      { value: '13:30', label: '13:30', disabled: true },
-      { value: '13:45', label: '13:45', disabled: true },
-      { value: '14:00', label: '14:00', disabled: true },
-      { value: '19:00', label: '19:00', disabled: false },
-      { value: '19:15', label: '19:15', disabled: true },
-      { value: '19:30', label: '19:30', disabled: true },
-      { value: '19:45', label: '19:45', disabled: true },
-      { value: '20:00', label: '20:00', disabled: false },
-      { value: '20:15', label: '20:15', disabled: true },
-      { value: '20:30', label: '20:30', disabled: true},
-      { value: '20:45', label: '20:45', disabled: false },
-      { value: '21:00', label: '21:00', disabled: true },
-    ];
-    const {errors} = this.state;
+    const errors = this.state.errors;
     return (
       <div className="wrapper">
         <div className="form-wrapper">
@@ -174,6 +170,11 @@ export default class Form extends Component {
               </div>
               <div className="bookingGuests">
                 <label className="booking">Numero di coperti* {errors.bookingGuests.length > 0 && <span className='error'>{errors.bookingGuests}</span>}<input type="number" className="booking" name="bookingGuests" placeholder="Inserisci i coperti" onChange={this.handleChange} noValidate min={1}/></label>
+              </div>
+              <div className="resturantTable">
+                <label className={`bookingStatus-${this.state.statusProp}`}>{this.state.statusLabel}</label>
+                <label className="resturantTableLabel">Servizi offerti dal ristorante:</label>
+                <CustomTable />
               </div>
             </div>
             <div className="personControls">

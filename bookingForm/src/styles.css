@@ -12,9 +12,19 @@ body {
   color: white;
   margin: 0;
 }
-
 .css-b62m3t-container{
   color: black;
+}
+
+.bookingControls{
+  float: left;
+  margin-left: 5%;
+  width: 50vw;
+}
+
+.personControls{
+  float: right;
+  margin-right: 5%;
 }
 
 form{
@@ -30,13 +40,7 @@ form{
   width: 100%;
 }
 
-.bookingControls{
-  float: left;
-  margin-bottom: 2%;
-}
-
 .personControls{
-  float: right;
   margin-bottom: 2%;
 }
 
@@ -68,7 +72,6 @@ textarea, input:not(#guestPrivacy), .button{
 
 .css-b62m3t-container{
   width: 100%;
-  margin-left: 25%;
   margin-bottom: 15px;
   margin-top: 15px;
   font-size: 14px;
@@ -90,17 +93,30 @@ textarea, input:not(#guestPrivacy), .button{
 }
 
 
-.booking, .select {
-  margin-left: 25%;
+.bookingDate, .bookingTime, .bookingGuests, .resturantTable {
+  margin-left: 5%;
   margin-right: 0;
+}
+
+table{
+  width: minmax(50vw, 100%);
+  color: black;
+  margin-bottom: 3%;
+  border-style: dashed;
+  border-color: white;
+  border-radius: 5px;
+  z-index: -1;
+}
+
+th, td{
+  border-style: solid;
 }
 
 span.error.person{
   margin-left: 0;
 }
 
-.personControls{
-  margin-right: 5%;
+.guestName, .guestSurname, .guestEmail, .guestPhone, .guestAdditionalInfo, .guestPrivacy{
   margin-left: 0;
 }
 
@@ -137,14 +153,12 @@ span.error.person{
   color:#db2269;
   font-size: 0.625em;
   display: block;
-  margin-left: 25%;
 }
 
 .privacyError{
   color:#db2269;
   font-size: 0.625em;
   display: block;
-  margin-left: 1%;
 }
 
 .button:active {
@@ -163,6 +177,34 @@ span.error.person{
 
 .container {
   margin: 1rem;
+}
+
+.resturantTableLabel{
+  font-weight: bold;
+  font-style: italic;
+  color: #ec5990;
+}
+
+.bookingStatus-yes{
+  color: greenyellow;
+  font-weight: bold;
+  margin-bottom: 5%;
+}
+
+.bookingStatus-no{
+  color: #cf153a;
+  font-weight: bold;
+  margin-bottom: 5%;
+}
+
+.bookingStatus-maybe{
+  color: yellow;
+  font-weight: bold;
+  margin-bottom: 5%;
+}
+
+.bookingStatus-yes, .bookingStatus-no, .bookingStatus-maybe, .resturantTableLabel{
+  display: block;
 }
 
 .nav {
@@ -237,24 +279,33 @@ textarea{
   resize: vertical;
 }
 
+.prenotationID, .prenotationName, .prenotationSurname, .prenotationEmail, .prenotationPhone{
+  margin-left: 25%;
+  margin-right: 25%;
+}
+
 @media screen and (max-width: 600px) {
   img{
     display: none;
   }
 
   .bookingControls{
-    float: none;
+    margin-left: 0;
+    width: 100%;
   }
 
   .personControls{
-    float: none;
     margin-right: 0;
+    width: 100%;
   }
 
-  .booking, .select{
+  .bookingDate, .bookingTime, .bookingGuests, .resturantTable{
     margin-left: 0;
   }
 
+  .guestName, .guestSurname, .guestEmail, .guestPhone, .guestAdditionalInfo, .guestPrivacy{
+    margin-right: 0;
+  }
   form{
     margin: 0;
     width: 100%;
@@ -277,21 +328,28 @@ textarea{
   .error{
     margin-left: 0  
   }
+
+  .prenotationID, .prenotationName, .prenotationSurname, .prenotationEmail, .prenotationPhone{
+    margin: 0;
+  }
 }
 
 @media screen and (min-width: 601px) and (max-width: 1000px) {
-
-  .bookingControls{
-    float: none;
-  }
-
-  .personControls{
-    float: none;
-    margin-right: 0;
-  }
-
-  .booking, .select{
+  .bookingDate, .bookingTime, .bookingGuests, .resturantTable{
     margin-left: 0;
+  }
+
+  .bookingControls, .personControls{
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .bookingControls, .personControls{
+    float: none;
+  }
+
+  .guestName, .guestSurname, .guestEmail, .guestPhone, .guestAdditionalInfo, .guestPrivacy{
+    margin-right: 0;
   }
 
   textarea, .select, input:not(#guestPrivacy), .button, .booking, .select{
@@ -314,5 +372,9 @@ textarea{
   .css-b62m3t-container{
     width: 100%;
     margin-left: 0;
+  }
+
+  .prenotationID, .prenotationName, .prenotationSurname, .prenotationEmail, .prenotationPhone{
+    margin: 0;
   }
 }

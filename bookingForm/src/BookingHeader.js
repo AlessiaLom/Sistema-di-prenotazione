@@ -1,9 +1,6 @@
 import React from "react";
-let renderCount = 0;
 
 export default () => {
-  renderCount++;
-
   return (
     <div style={{ marginBottom: 10 }}>
       <h1 className="h1">
