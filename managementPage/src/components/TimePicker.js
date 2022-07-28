@@ -20,8 +20,17 @@ export default class TimePicker extends React.Component {
 
     render() {
         return (
-            <div className="input-group timepicker">
-                <input className="form-control" type="time" id="appt" name="appt" min={this.props.min} max={this.props.max} required></input>
+            <div style={{ width: "30%", float: "left" }} className="input-group timepicker">
+                <input
+                    onChange={this.props.onChange}
+                    id={this.props.id}
+                    className="form-control"
+                    type="time"
+                    name={this.props.name}
+                    min={this.props.min}
+                    max={this.props.max}
+                    required>
+                </input>
             </div>
         )
     }

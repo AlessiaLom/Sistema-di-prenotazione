@@ -11,17 +11,27 @@ export default class TextForm extends React.Component {
     constructor(props) {
         /**
          *  props:
+         *      - id: id of the html input element
          *      - placeholder: the placeholder of the input text area
-         */
+         *      - validationError: contains the error message for wrong input, used to color the border of red
+         */ 
         super(props)
     }
 
     render() {
+        let className = "form-control" + (this.props.validationError ? " border-danger" : "")
         return (
-            <div className="form-group">
-                <input type="text" className="form-control" placeholder={this.props.placeholder}></input>
-                <small className="form-text text-muted"></small>
-            </div>
+            <>
+                <span className="validationError">{this.props.validationError}</span>
+                <input
+                    name={this.props.name}
+                    type="text"
+                    className={className}
+                    placeholder={this.props.placeholder}
+                    onChange={this.props.onChange}
+                    required>
+                </input>
+            </>
         )
     }
 }

@@ -3,6 +3,10 @@
     padding: 1%;
 }
 
+#activitiesTable th, #activitiesTable td {
+    padding: 3px;
+}
+
 #buttonsDiv{
     margin-right: 2%;
 }
@@ -12,7 +16,7 @@
     float: right;
 }
 
-.headerRow{
+.headerCol{
     width: 15%;
 }
 
@@ -22,4 +26,13 @@
 
 .tableHeader{
     width: 100%;
+}
+
+.colElement {
+    width: 15%
+}
+
+.validationError{
+    color: red;
+    font-size: small;
 }

@@ -5,6 +5,7 @@ import "./../styles/management.css"
 import "./../styles/sideBar.css"
 import SideBar from './SideBar';
 import ActivityTable from './ActivityTable';
+import Customize from './Customize';
 
 /**
  * The App component will contain the two main sections: the sidebar and the main content
@@ -43,7 +44,7 @@ export default class App extends React.Component {
         let contentShown
         switch (this.state.activeItemIndex) {
             case 0:
-                contentShown = <>Ciao belli</>
+                contentShown = <><Customize/></>
                 break;
             case 1:
                 contentShown = <><ActivityTable /></>

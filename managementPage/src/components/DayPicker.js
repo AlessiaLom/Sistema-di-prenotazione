@@ -14,33 +14,69 @@ export default class DayPicker extends React.Component {
     render() {
         return (
             <div>
+                <span className="validationError">{this.props.validationError}</span>
                 <div className="form-check form-check-inline">
-                    <input className="form-check-input" type="checkbox" id="LCheckbox" value="optionL"></input>
-                        <label className="form-check-label" >L</label>
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        onChange={this.props.onChange}
+                        name={this.props.name}
+                        value="L"></input>
+                    <label className="form-check-label" >L</label>
                 </div>
                 <div className="form-check form-check-inline">
-                    <input className="form-check-input" type="checkbox" id="MaCheckbox" value="optionMa"></input>
-                        <label className="form-check-label" >Ma</label>
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        onChange={this.props.onChange}
+                        name={this.props.name}
+                        value="Ma"></input>
+                    <label className="form-check-label" >Ma</label>
                 </div>
                 <div className="form-check form-check-inline">
-                    <input className="form-check-input" type="checkbox" id="MeCheckbox" value="optionMe"></input>
-                        <label className="form-check-label" >Me</label>
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        onChange={this.props.onChange}
+                        name={this.props.name}
+                        value="Me"></input>
+                    <label className="form-check-label" >Me</label>
                 </div>
                 <div className="form-check form-check-inline">
-                    <input className="form-check-input" type="checkbox" id="GCheckbox" value="optionG"></input>
-                        <label className="form-check-label" >G</label>
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        onChange={this.props.onChange}
+                        name={this.props.name}
+                        value="G"></input>
+                    <label className="form-check-label" >G</label>
                 </div>
                 <div className="form-check form-check-inline">
-                    <input className="form-check-input" type="checkbox" id="VCheckbox" value="optionV"></input>
-                        <label className="form-check-label" >V</label>
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        onChange={this.props.onChange}
+                        name={this.props.name}
+                        value="V"></input>
+                    <label className="form-check-label" >V</label>
                 </div>
                 <div className="form-check form-check-inline">
-                    <input className="form-check-input" type="checkbox" id="SCheckbox" value="optionS"></input>
-                        <label className="form-check-label" >S</label>
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        onChange={this.props.onChange}
+                        name={this.props.name}
+                        value="S"></input>
+                    <label className="form-check-label" >S</label>
                 </div>
                 <div className="form-check form-check-inline">
-                    <input className="form-check-input" type="checkbox" id="DCheckbox" value="optionD"></input>
-                        <label className="form-check-label" >D</label>
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        onChange={this.props.onChange}
+                        name={this.props.name}
+                        value="D"></input>
+                    <label className="form-check-label" >D</label>
                 </div>
             </div>
         )
