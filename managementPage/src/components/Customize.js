@@ -11,7 +11,7 @@ export default class Customize extends React.Component {
 
     render() {
         return (
-            <div style={{margin: "1%", padding: "1%"}}>
+            <div style={{width: "100%", margin: "1%", padding: "1%"}}>
                 <div className="d-block input-group mb-3">
                     <h4>Info del ristorante</h4>
                     <h6> Nome </h6>

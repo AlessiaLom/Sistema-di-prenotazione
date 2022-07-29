@@ -29,6 +29,7 @@ export default class TimePicker extends React.Component {
                     name={this.props.name}
                     min={this.props.min}
                     max={this.props.max}
+                    step={this.props.step}
                     required>
                 </input>
             </div>
