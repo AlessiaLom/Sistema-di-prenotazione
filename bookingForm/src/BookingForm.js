@@ -57,7 +57,7 @@ export default class BookingForm extends Component {
         value.length > 0
         ? (Number.isInteger(Number(value)) && Number(value) >= 1
           ? ''
-          : 'Devi inserire un numero maggiore di 1')
+          : 'Devi inserire un numero intero maggiore di 1')
         : 'Questo campo è obbligatorio';
 
 
