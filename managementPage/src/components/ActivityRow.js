@@ -1,8 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import ReactDOM from 'react-dom/client';
 import "./../styles/pages.css"
-import $ from 'jquery';
 import TimePicker from './TimePicker';
 import TextForm from './TextForm';
 import DayPicker from './DayPicker';
@@ -71,7 +69,7 @@ export default class ActivityRow extends React.Component {
     checkEmptyFields() {
         let fieldsValues = this.state.fieldsValues
         for (const field in fieldsValues) {
-            if (fieldsValues[field] == '' || fieldsValues[field] == ' ') {
+            if (fieldsValues[field].toString().trim() == '') {
                 return true
             }
         }
