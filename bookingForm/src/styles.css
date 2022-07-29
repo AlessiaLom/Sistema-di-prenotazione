@@ -159,6 +159,18 @@ span.error.person{
   display: block;
 }
 
+.bookingDate{
+  z-index: 2;
+}
+
+.bookingTime{
+  z-index: 1;
+}
+
+table{
+  z-index: 0;
+}
+
 .button:active {
   transition: 0.3s all;
   top: 2px;
@@ -285,6 +297,10 @@ textarea{
 @media screen and (max-width: 600px) {
   img{
     display: none;
+  }
+
+  .nav{
+    padding: 0;
   }
 
   .bookingControls{
