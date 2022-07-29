@@ -27,7 +27,8 @@ export default class App extends React.Component {
     changeContent(i) {
         console.log("" + this.state.activeItemIndex)
         this.setState({
-            activeItemIndex: i
+            activeItemIndex: i,
+            customize: <Customize/>
         })
         console.log("" + this.state.activeItemIndex)
     }

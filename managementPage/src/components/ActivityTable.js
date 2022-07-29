@@ -100,13 +100,6 @@ export default class ActivityTable extends React.Component {
             fieldsValues: newFieldsValues,
             validationErrors: newValidationErrors
         })
-
-        // Check if the row contains errors after the change
-        let hasErrors = this.checkErrors()
-        let hasEmptyFields = this.checkEmptyFields()
-
-        // Call the ActivityTable.manageRowChanges(uniqueId, hasErrors) to update the parent regarding current row's validation errors
-        // Buttons in ActivityTable will be disabled if the row contains errors or if some fields are empty (or if both conditions happen)
     }
 
     /**
