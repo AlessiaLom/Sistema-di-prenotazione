@@ -92,7 +92,6 @@ textarea, input:not(#guestPrivacy), .button{
   font-weight: 200;
 }
 
-
 .bookingDate, .bookingTime, .bookingGuests, .resturantTable {
   margin-left: 5%;
   margin-right: 0;
@@ -105,7 +104,6 @@ table{
   border-style: dashed;
   border-color: white;
   border-radius: 5px;
-  z-index: -1;
 }
 
 th, td{
