@@ -236,18 +236,11 @@ const list = [
 ];
 
 const THEME = {
-  BaseCell: `
-      &:nth-of-type(1) {
-        width: minmax(20vw, 120%);
-      }
-
-      &:nth-of-type(2), &:nth-of-type(3) {
-        width: minmax(10vw, 70%);
-      }
-      
-      &:nth-of-type(4) {
-        width: minmax(15vw, 80%);
-    `,
+  
+  Table:
+    `grid-template-columns: 32% repeat(2, 22%) 24%;
+    `
+  ,
   HeaderRow: `
     font-size: 14px;
 
