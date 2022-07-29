@@ -299,6 +299,10 @@ textarea{
     display: none;
   }
 
+  .nav{
+    padding: 0;
+  }
+
   .bookingControls{
     margin-left: 0;
     width: 100%;
