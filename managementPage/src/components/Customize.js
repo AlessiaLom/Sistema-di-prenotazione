@@ -3,17 +3,19 @@ import React from 'react';
 import "./../styles/pages.css"
 import TextForm from './TextForm';
 import ColorPicker from './ColorPicker';
+import { BsFacebook, BsInstagram, BsMessenger, BsWhatsapp } from 'react-icons/bs';
 
 export default class Customize extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            requiredFields: ["restaurantName"],
             fieldsValues: {
                 restaurantName: '',
                 additionalInfo: 'filling value for testing',
                 restaurantLogo: 'filling value for testing',
                 mainColor: '(191,22,80,1)',
-                secondaryColor: '(14,16,28,1)'
+                secondaryColor: '(14,16,28,1)',
             },
             validationErrors: {
                 restaurantNameError: '',
@@ -31,7 +33,7 @@ export default class Customize extends React.Component {
     checkEmptyFields() {
         let fieldsValues = this.state.fieldsValues
         for (const field in fieldsValues) {
-            if (fieldsValues[field].trim() == '') {
+            if (this.state.requiredFields.includes(field) && fieldsValues[field].trim() == '') {
                 return true
             }
         }
@@ -134,7 +136,7 @@ export default class Customize extends React.Component {
                             b: 28,
                             a: 1
                         }}
-                        name="secondaryColorPicker" 
+                        name="secondaryColorPicker"
                         onChange={this.handleChange}
                     />
                 </div>
@@ -146,6 +148,61 @@ export default class Customize extends React.Component {
                     </div>
                 </div>
                 <hr></hr>
+                <h4>Social Networks</h4>
+                <p>I link ai social verranno associati ai rispettivi pulsanti
+                    presenti nel form di prenotazione visualizzato dai clienti.
+                    Lasciando vuoto il link di un social si farà in modo che il
+                    suo pulsante non compaia nel form di prenotazione</p>
+                <table>
+                    <tr>
+                        <td>
+                            <BsFacebook size={30} />
+
+                        </td>
+                        <td>
+                            <TextForm
+                                name="facebookLink"
+                                placeholder="Inserisci il link"
+                                onChange={this.handleChange} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <BsInstagram size={30} />
+
+                        </td>
+                        <td>
+                            <TextForm
+                                name="instagramLink"
+                                placeholder="Inserisci il link"
+                                onChange={this.handleChange} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <BsMessenger size={30} />
+
+                        </td>
+                        <td>
+                            <TextForm
+                                name="messengerLink"
+                                placeholder="Inserisci il link"
+                                onChange={this.handleChange} />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <BsWhatsapp size={30} />
+
+                        </td>
+                        <td>
+                            <TextForm
+                                name="whatsappLink"
+                                placeholder="Inserisci il link"
+                                onChange={this.handleChange} />
+                        </td>
+                    </tr>
+                </table>
                 <div style={{ margin: "15 %", padding: "1 %", margin: "0", border: "0" }}>
                     <button type="button" className="btn btn-light">Annulla</button>
                     <button
@@ -154,8 +211,10 @@ export default class Customize extends React.Component {
                         className={"btn btn-primary" + (hasErrors || hasEmptyFields ? " disabled" : "")}>
                         {/*Disable the button if there are validation errors*/}
                         Salva impostazioni
+
                     </button>
                 </div>
+
             </div>
         )
     }

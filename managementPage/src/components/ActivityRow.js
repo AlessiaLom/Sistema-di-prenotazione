@@ -4,6 +4,8 @@ import "./../styles/pages.css"
 import TimePicker from './TimePicker';
 import TextForm from './TextForm';
 import DayPicker from './DayPicker';
+import { BsTrash } from 'react-icons/bs'
+
 
 function checkChronologicalOrder(startingTime, endingTime) {
     if (startingTime.hours > endingTime.hours) {
@@ -236,7 +238,7 @@ export default class ActivityRow extends React.Component {
                         onClick={() => this.props.onClick(this.props.uniqueId)}
                         type="button"
                         className="deleteActivityButton btn btn-outline-danger">
-                        <i className="bi bi-trash"></i>
+                    <BsTrash/>
                     </button>
                 </td>
             </tr>

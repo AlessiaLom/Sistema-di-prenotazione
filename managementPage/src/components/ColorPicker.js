@@ -32,7 +32,7 @@ export default class ColorPicker extends React.Component {
 
     handleChange = (color) => {
         this.setState({ color: color.rgb })
-        let data = {
+        let customEvent = {
             target: {
                 name: this.props.name,
                 value: {
@@ -43,7 +43,7 @@ export default class ColorPicker extends React.Component {
                 }
             }
         }
-        this.props.onChange(data)
+        this.props.onChange(customEvent)
     };
 
     render() {

@@ -4,8 +4,8 @@ import "./../styles/pages.css"
 import ActivityRow from './ActivityRow';
 import TimePicker from './TimePicker';
 import Select from './Select';
-import { Textarea } from 'react-bootstrap-icons';
 import TextForm from './TextForm';
+import { AiOutlinePlus } from 'react-icons/ai'
 /**
  * Returns values of the passed dictionary as array
  * @param {*} dictionary 
@@ -236,8 +236,7 @@ export default class ActivityTable extends React.Component {
                         type="button"
                         className={"btn btn-outline-primary" + ((rowsWithErrors) ? " disabled" : "")}>
                         {/** The "aggiungi attività" button is enabled only if every row is correct or if there are no rows (so that it is possible to add the first row) */}
-                        <i class="bi bi-plus"></i>
-                        Aggiungi attività
+                        <AiOutlinePlus />
                     </button>
                 </div></>
         )
