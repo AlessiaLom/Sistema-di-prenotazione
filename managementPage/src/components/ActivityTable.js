@@ -37,7 +37,8 @@ export default class ActivityTable extends React.Component {
             },
             fieldsValues: {
                 minimumNotice: '',
-                autoConfirmThreshold: ''
+                autoConfirmThreshold: '',
+                reservationDuration: '15 min'
             }
         }
         this.areThereValidationErrors = this.areThereValidationErrors.bind(this)
@@ -91,6 +92,10 @@ export default class ActivityTable extends React.Component {
                 // Update field value in state dictionary
                 newFieldsValues.autoConfirmThreshold = value
                 break
+            case "selectReservationDuration":
+                console.log("changed " + name + " has value " + value)
+                newFieldsValues.reservationDuration = value
+                break;
             default:
                 break;
         }
@@ -200,6 +205,17 @@ export default class ActivityTable extends React.Component {
                         validationError={this.state.validationErrors.autoConfirmThresholdError}
                         name="autoConfirmThreshold"
                         placeholder="es. 5"
+                    />
+                    <h6>Duarata prenotazione</h6>
+                    <p>La durata della prenotazione rappresenta la durata della
+                        permanenza del cliente presso il ristorante e, di conseguenza,
+                        definisce anche ad intervalli di quanto tempo è possibile prenotare
+                        (es. è possibile prenotare ad intervalli di 30 min).
+                    </p>
+                    <Select
+                        onChange={this.handleChange}
+                        name="selectReservationDuration"
+                        options={new Array("15 min", "30 min", "45 min", "1 h")}
                     />
                 </div>
                 <hr></hr>

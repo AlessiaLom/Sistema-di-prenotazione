@@ -12,8 +12,8 @@ export default class Customize extends React.Component {
             requiredFields: ["restaurantName"],
             fieldsValues: {
                 restaurantName: '',
-                additionalInfo: 'filling value for testing',
-                restaurantLogo: 'filling value for testing',
+                additionalInfo: '',
+                restaurantLogo: '',
                 mainColor: '(191,22,80,1)',
                 secondaryColor: '(14,16,28,1)',
             },
