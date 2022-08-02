@@ -294,7 +294,65 @@ textarea{
   margin-right: 25%;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 360px) {
+  .site-title, .nav a, .nav{
+    padding: 0;
+  }
+
+  .nav{
+    gap: 0;
+  }
+
+  img{
+    display: none;
+  }
+
+  .bookingControls{
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .personControls{
+    margin-right: 0;
+    width: 100%;
+  }
+
+  .bookingDate, .bookingTime, .bookingGuests, .resturantTable{
+    margin-left: 0;
+  }
+
+  .guestName, .guestSurname, .guestEmail, .guestPhone, .guestAdditionalInfo, .guestPrivacy{
+    margin-right: 0;
+  }
+  form{
+    margin: 0;
+    width: 100%;
+  }
+
+  textarea, .select, input:not(#guestPrivacy), .button{
+    width: 100%;
+    margin-left: 0;
+  }
+
+  label:not(#privacyLabel), #guestPrivacy{
+    margin-left: 0;
+  }
+
+  .css-b62m3t-container{
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .error{
+    margin-left: 0  
+  }
+
+  .prenotationID, .prenotationName, .prenotationSurname, .prenotationEmail, .prenotationPhone{
+    margin: 0;
+  }
+}
+
+@media screen and (min-width: 361px) and (max-width: 600px) {
   img{
     display: none;
   }
