@@ -24,6 +24,7 @@ export default class TextForm extends React.Component {
             <>
                 <span className="validationError">{this.props.validationError}</span>
                 <input
+                    value={this.props.value}
                     name={this.props.name}
                     type="text"
                     className={className}

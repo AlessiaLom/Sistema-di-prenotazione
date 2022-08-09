@@ -21,6 +21,16 @@ export default class ColorPicker extends React.Component {
         this.handleChange = this.handleChange.bind(this)
     }
 
+    componentDidUpdate() {
+        if (this.state.color.r != this.props.color.r
+            || this.state.color.g != this.props.color.g
+            || this.state.color.b != this.props.color.b
+            || this.state.color.a != this.props.color.a) {
+            this.setState({
+                color: this.props.color
+            })
+        }
+    }
 
     handleClick = () => {
         this.setState({ displayColorPicker: !this.state.displayColorPicker })

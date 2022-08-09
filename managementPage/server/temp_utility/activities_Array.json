@@ -1,0 +1,38 @@
+{
+  "_id": { "$oid": "62ee8607bb4c724de86625f2" },
+  "restaurantId": "0001",
+  "activities": [
+    {
+      "_id": { "$oid": "62ebd1462494cfe6fe520c94" },
+      "activityName": "Cena",
+      "startingTime": "20:00",
+      "endingTime": "23:00",
+      "availableSpots": "30",
+      "days": "LMaMeGVSD"
+    },
+    {
+      "_id": { "$oid": "62ebd1a42494cfe6fe520c95" },
+      "activityName": "Aperitivo",
+      "startingTime": "18:30",
+      "endingTime": "20:00",
+      "availableSpots": "30",
+      "days": "MeGVSD"
+    },
+    {
+      "_id": { "$oid": "62ebd1c92494cfe6fe520c96" },
+      "activityName": "Pranzo",
+      "startingTime": "12:00",
+      "endingTime": "14:30",
+      "availableSpots": "30",
+      "days": "LMaMeGVS"
+    },
+    {
+      "_id": { "$oid": "62ebd1e72494cfe6fe520c97" },
+      "activityName": "Colazione",
+      "startingTime": "07:00",
+      "endingTime": "11:00",
+      "availableSpots": "30",
+      "days": "VSD"
+    }
+  ]
+}

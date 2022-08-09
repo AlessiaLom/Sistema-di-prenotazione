@@ -1,11 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import ReactDOM from 'react-dom/client';
 import "./../styles/management.css"
 import "./../styles/sideBar.css"
 import SideBar from './SideBar';
 import ActivityTable from './ActivityTable';
 import Customize from './Customize';
+import TestFetch from "./TestFetch"
 
 /**
  * The App component will contain the two main sections: the sidebar and the main content
@@ -30,7 +30,7 @@ export default class App extends React.Component {
             activeItemIndex: i,
             customize: <Customize/>
         })
-        console.log("" + this.state.activeItemIndex)
+        // console.log("" + this.state.activeItemIndex)
     }
 
     render() {
@@ -50,6 +50,9 @@ export default class App extends React.Component {
             case 1:
                 contentShown = <><ActivityTable /></>
                 break
+            case 2:
+                contentShown = <TestFetch />
+                break;
             default:
                 contentShown = <p>Ciao mondo</p>
                 break;

@@ -22,6 +22,7 @@ export default class TimePicker extends React.Component {
         return (
             <div style={{ width: "30%", float: "left" }} className="input-group timepicker">
                 <input
+                    value={this.props.value}
                     onChange={this.props.onChange}
                     id={this.props.id}
                     className="form-control"

@@ -37,11 +37,11 @@ export default class ActivityRow extends React.Component {
 
         this.state = {
             fieldsValues: {
-                activityName: '',
-                startingTime: '',
-                endingTime: '',
-                availableSpots: '',
-                days: ''
+                activityName: this.props.activityName,
+                startingTime: this.props.startingTime,
+                endingTime: this.props.endingTime,
+                availableSpots: this.props.availableSpots,
+                days: this.props.days
             },
             validationErrors: {
                 activityNameError: '',
@@ -124,7 +124,7 @@ export default class ActivityRow extends React.Component {
                 console.log("changed " + name + " has value " + startingTime.hours + ":" + startingTime.minutes)
 
                 // Update field value in state dictionary
-                newFieldsValues.startingTime = startingTime
+                newFieldsValues.startingTime = value
 
                 // get endingTime value to perform checkings
                 endingTime = newFieldsValues.endingTime
@@ -145,7 +145,7 @@ export default class ActivityRow extends React.Component {
                 console.log("changed " + name + " has value " + endingTime.hours + ":" + endingTime.minutes)
 
                 // Update field value in state dictionary
-                newFieldsValues.endingTime = endingTime
+                newFieldsValues.endingTime = value
 
                 // get endingTime value to perform checkings
                 startingTime = newFieldsValues.startingTime
@@ -188,7 +188,7 @@ export default class ActivityRow extends React.Component {
 
         // Call the ActivityTable.manageRowChanges(uniqueId, hasErrors) to update the parent regarding current row's validation errors
         // Buttons in ActivityTable will be disabled if the row contains errors or if some fields are empty (or if both conditions happen)
-        this.props.onChange(this.props.uniqueId, hasErrors || hasEmptyFields)
+        this.props.onChange(this.props.uniqueId, hasErrors || hasEmptyFields, this.state.fieldsValues)
     }
 
     render() {
@@ -196,6 +196,7 @@ export default class ActivityRow extends React.Component {
             <tr>
                 <td scope="row" style={{ width: "5%" }}>
                     <TextForm
+                        value={this.state.fieldsValues.activityName}
                         name={"activityName" + this.props.uniqueId}
                         placeholder="es. Cena"
                         onChange={this.handleChange}
@@ -207,6 +208,7 @@ export default class ActivityRow extends React.Component {
                         <span className="validationError">{this.state.validationErrors.timesError}</span>
                         <p style={{ float: "left" }}> Dalle: </p>
                         <TimePicker
+                            value={this.state.fieldsValues.startingTime}
                             onChange={this.handleChange}
                             name={"startingTime" + this.props.uniqueId}
                             min="00:00"
@@ -214,6 +216,7 @@ export default class ActivityRow extends React.Component {
                         />
                         <p style={{ float: "left" }}> Alle: </p>
                         <TimePicker
+                            value={this.state.fieldsValues.endingTime}
                             onChange={this.handleChange}
                             name={"endingTime" + this.props.uniqueId}
                             min="00:00"
@@ -222,6 +225,7 @@ export default class ActivityRow extends React.Component {
                 </td>
                 <td style={{ width: "10%" }}>
                     <TextForm
+                        value={this.state.fieldsValues.availableSpots}
                         name={"availableSpots" + this.props.uniqueId}
                         placeholder="es. 5"
                         onChange={this.handleChange}
@@ -229,6 +233,7 @@ export default class ActivityRow extends React.Component {
                 </td>
                 <td style={{ width: "10%" }}>
                     <DayPicker
+                        checkedOnes={this.state.fieldsValues.days}
                         validationError={this.state.validationErrors.daysError}
                         name={"dayPicker" + this.props.uniqueId}
                         onChange={this.handleChange} />
@@ -238,7 +243,7 @@ export default class ActivityRow extends React.Component {
                         onClick={() => this.props.onClick(this.props.uniqueId)}
                         type="button"
                         className="deleteActivityButton btn btn-outline-danger">
-                    <BsTrash/>
+                        <BsTrash />
                     </button>
                 </td>
             </tr>

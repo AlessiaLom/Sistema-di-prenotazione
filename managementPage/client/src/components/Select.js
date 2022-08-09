@@ -1,8 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import ReactDOM from 'react-dom/client';
 import "./../styles/pages.css"
-import $ from 'jquery';
 
 /**
  * Represents an input text area
@@ -20,8 +18,16 @@ export default class Select extends React.Component {
 
     render() {
         let className = "form-control" + (this.props.validationError ? " border-danger" : "")
-        let options = this.props.options.map(option => (<option key={option} value={option}>{option}</option>))
-        console.log(options)
+        let options =
+            this.props.options.map(option =>
+            (<option
+                key={option}
+                value={option}
+                selected={option == this.props.defaultValue}
+            >
+                {option}
+            </option>))
+        // console.log(options)
         return (
             <>
                 {/*<span className="validationError">{this.props.validationError}</span>*/}
