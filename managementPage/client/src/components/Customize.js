@@ -16,10 +16,10 @@ export default class Customize extends React.Component {
                 additionalInfo: '',
                 restaurantLogo: '',
                 socialNetworks: {
-                    facebook: 'cshifb',
-                    instagram: 'fjb s',
-                    messenger: 'vdsj kv',
-                    whatsapp: 'vsrebdf'
+                    facebook: '',
+                    instagram: '',
+                    messenger: '',
+                    whatsapp: ''
                 },
                 primaryColor: {
                     r: 65,
@@ -69,7 +69,7 @@ export default class Customize extends React.Component {
                         socialNetworks: data.socialNetworks
                     }
                 })
-                // console.log(data)
+                console.log(data)
             })
     }
 
@@ -80,7 +80,6 @@ export default class Customize extends React.Component {
                 fetch('/customize/save_changes/62e920b5f5f2167ce9899047', {
                     method: 'POST',
                     headers: {
-                        'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
@@ -92,9 +91,7 @@ export default class Customize extends React.Component {
                         restaurantName: this.state.fieldsValues.restaurantName
                     })
                 });
-
                 break;
-
             default:
                 break;
         }
@@ -138,7 +135,10 @@ export default class Customize extends React.Component {
                 break;
             case "primaryColorPicker":
                 console.log("changed " + name + " has value " + value)
-                newFieldsValues.primaryColor = value
+                newFieldsValues.primaryColor.a = value.a
+                newFieldsValues.primaryColor.r = value.r
+                newFieldsValues.primaryColor.g = value.g
+                newFieldsValues.primaryColor.b = value.b
                 break;
             case "secondaryColorPicker":
                 console.log("changed " + name + " has value " + value)
@@ -205,14 +205,12 @@ export default class Customize extends React.Component {
                     <hr></hr>
                     Colore principale:
                     <ColorPicker
-                        colorString={JSON.stringify(this.state.fieldsValues.primaryColor)}
                         color={this.state.fieldsValues.primaryColor}
                         name="primaryColorPicker"
                         onChange={this.handleChange}
                     />
                     Colore secondario:
                     <ColorPicker
-                        colorString={JSON.stringify(this.state.fieldsValues.secondaryColor)}
                         color={this.state.fieldsValues.secondaryColor}
                         name="secondaryColorPicker"
                         onChange={this.handleChange}

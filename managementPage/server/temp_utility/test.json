@@ -1,0 +1,17 @@
+{
+  "_id": { "$oid": "62e920b5f5f2167ce9899047" },
+  "additionalInfo": "Chi entra qui si trova indietro nel tempo… ma avanti con la mente",
+  "logoPath": null,
+  "socialNetworks": {
+    "facebook": "www.facebook.",
+    "instagram": "www.instagram.it",
+    "messenger": "www.messenger.it",
+    "whatsapp": "www.whatsapp.it"
+  },
+  "bookingForewarning": "",
+  "bookingOffest": "",
+  "bookingTheshold": { "$numberInt": "0" },
+  "restaurantName": "Emporio 1920",
+  "primaryColor": {},
+  "secondaryColor": {}
+}

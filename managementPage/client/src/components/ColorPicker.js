@@ -46,10 +46,10 @@ export default class ColorPicker extends React.Component {
             target: {
                 name: this.props.name,
                 value: {
-                    r: color.r,
-                    g: color.g,
-                    b: color.b,
-                    a: color.a,
+                    r: color.rgb.r,
+                    g: color.rgb.g,
+                    b: color.rgb.b,
+                    a: color.rgb.a,
                 }
             }
         }
