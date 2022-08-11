@@ -1,9 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import "./../styles/pages.css"
-import TimePicker from './TimePicker';
-import TextForm from './TextForm';
-import DayPicker from './DayPicker';
+import "./../../styles/pages.css"
+import TimePicker from '../utility/TimePicker';
+import TextForm from '../utility/TextForm';
+import DayPicker from '../utility/DayPicker';
 import { BsTrash } from 'react-icons/bs'
 
 
@@ -21,10 +21,10 @@ function checkChronologicalOrder(startingTime, endingTime) {
 
 /*
  * This component represents an activity row inside the ActivityTable. 
- * Everytime the "Aggiungi attività" button is pressed a new ActivityRow is created and added to the table.
+ * Everytime the "Aggiungi attività" button is pressed a new Activity is created and added to the table.
  * Everytime the red button is pressed, the row gets deleted and removed from the table.
  */
-export default class ActivityRow extends React.Component {
+export default class Activity extends React.Component {
     constructor(props) {
         /*
             props:

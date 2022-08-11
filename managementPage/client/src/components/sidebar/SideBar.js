@@ -2,8 +2,8 @@ import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import MenuItem from './MenuItem';
-import Footer from './Footer';
-import "./../styles/sideBar.css"
+import Footer from './../Footer';
+import "./../../styles/sideBar.css"
 
 /**
  * The SideBar represents the side navigation bar menu 
@@ -34,7 +34,7 @@ export default class SideBar extends React.Component {
                     itemDisplayName="Attività"
                     onClick={() => this.props.onClick(1)} />
                 <MenuItem
-                    itemName="reservations"
+                    itemName="Bookings"
                     className={this.props.activeItemIndex == 2 ? "nav-link active" : "nav-link link-dark"}
                     itemIcon="bi bi-person-check"
                     itemDisplayName="Prenotazioni"

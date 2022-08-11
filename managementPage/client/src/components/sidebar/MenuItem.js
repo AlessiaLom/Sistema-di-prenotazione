@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import "./../styles/sideBar.css"
+import "./../../styles/sideBar.css"
 
 /**
  * The MenuItem represents one of the options of the menu

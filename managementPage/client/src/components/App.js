@@ -2,11 +2,10 @@ import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
 import "./../styles/management.css"
 import "./../styles/sideBar.css"
-import SideBar from './SideBar';
-import ActivityTable from './ActivityTable';
-import Customize from './Customize';
-import TestFetch from "./TestFetch"
-
+import SideBar from './sidebar/SideBar';
+import Activities from './activities/Activities';
+import Customize from './customize/Customize';
+import Bookings from './bookings/Bookings';
 /**
  * The App component will contain the two main sections: the sidebar and the main content
  * The App component will be the one responible also for the change of the content shown in the page.
@@ -37,7 +36,7 @@ export default class App extends React.Component {
         /**
          * The contentShown will change based on the active menuItem option
          * 0 - Personalizzazione (Customize component)
-         * 1 - Attività (ActivityTable component)
+         * 1 - Attività (Activities component)
          * 2 - Prenotazioni
          * 3 - Servizi
          * 4 - Account
@@ -48,10 +47,10 @@ export default class App extends React.Component {
                 contentShown = <><Customize/></>
                 break;
             case 1:
-                contentShown = <><ActivityTable /></>
+                contentShown = <><Activities /></>
                 break
             case 2:
-                contentShown = <TestFetch />
+                contentShown = <Bookings />
                 break;
             default:
                 contentShown = <p>Ciao mondo</p>

@@ -1,8 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import "./../styles/pages.css"
-import TextForm from './TextForm';
-import ColorPicker from './ColorPicker';
+import "./../../styles/pages.css"
+import TextForm from '../utility/TextForm';
+import ColorPicker from '../utility/ColorPicker';
 import { BsFacebook, BsInstagram, BsMessenger, BsWhatsapp } from 'react-icons/bs';
 
 

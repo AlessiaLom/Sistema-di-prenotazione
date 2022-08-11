@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import "./../styles/pages.css"
+import "./../../styles/pages.css"
 
 /**
  * Represents an input text area
@@ -9,9 +9,10 @@ export default class Select extends React.Component {
     constructor(props) {
         /**
          *  props:
-         *      - id: id of the html input element
-         *      - placeholder: the placeholder of the input text area
          *      - validationError: contains the error message for wrong input, used to color the border of red
+         *      - defaultValue: the value of the item that is selcted by default
+         *      - options: array of strings representing the options
+         *      - onChange: function to be triggered on the option change 
          */
         super(props)
     }

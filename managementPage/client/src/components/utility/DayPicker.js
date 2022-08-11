@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import "./../styles/pages.css"
+import "./../../styles/pages.css"
 
 /**
  * The DayPicker component is used to select the days a certain activiy takes places for a restaurant

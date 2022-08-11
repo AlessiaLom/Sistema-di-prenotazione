@@ -1,9 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import "./../styles/pages.css"
-import ActivityRow from './ActivityRow';
-import Select from './Select';
-import TextForm from './TextForm';
+import "./../../styles/pages.css"
+import Activity from './Activity';
+import Select from '../utility/Select';
+import TextForm from '../utility/TextForm';
 import { AiOutlinePlus } from 'react-icons/ai'
 /**
  * Returns values of the passed dictionary as array
@@ -20,14 +20,14 @@ function getDictionaryValues(dictionary) {
 /**
  * Contains activity rows and manages addition and deletion of rows of the table.
  */
-export default class ActivityTable extends React.Component {
+export default class Activities extends React.Component {
     constructor(props) {
         /**
          *  props: no props
          */
         super(props)
         this.state = {
-            rowsDictionary: {}, // stores rows indexed by their keys as it is a dictionary (key = row's uniqueId, value = ActivityRow)
+            rowsDictionary: {}, // stores rows indexed by their keys as it is a dictionary (key = row's uniqueId, value = Activity)
             rowsFieldsValues: {}, // stores values of rows with key uniqueid, useful when the save changes button is pressed otherwise the table doesn't have the values of the rows to submit (the rowsDictionary doesn't update row's values when they change)
             rowsErrorsDictionary: {}, // stores validation errors indexed by the key of the row that contains validation errors (key = row's uniqueId, value = boolean)
             lastKey: 0, // keeps track of the last key/uniqueId used and gets incremented each time a new one is used
@@ -42,8 +42,8 @@ export default class ActivityTable extends React.Component {
             }
         }
         this.areThereValidationErrors = this.areThereValidationErrors.bind(this)
-        this.addActivityRow = this.addActivityRow.bind(this)
-        this.deleteActivityRow = this.deleteActivityRow.bind(this)
+        this.addActivity = this.addActivity.bind(this)
+        this.deleteActivity = this.deleteActivity.bind(this)
         this.manageRowChanges = this.manageRowChanges.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.checkErrors = this.checkErrors.bind(this)
@@ -75,11 +75,11 @@ export default class ActivityTable extends React.Component {
 
                     // Fill dictionaries with data received from db
                     data.activities.forEach((activity, index) => { // for each activity in the data.activities array
-                        fetchedRowsDictionary[index] = // take the index and save a new ActivityRow component in the object, the key of the component will be the index
-                            <ActivityRow
+                        fetchedRowsDictionary[index] = // take the index and save a new Activity component in the object, the key of the component will be the index
+                            <Activity
                                 key={index}
                                 uniqueId={index}
-                                onClick={this.deleteActivityRow}
+                                onClick={this.deleteActivity}
                                 onChange={this.manageRowChanges}
                                 activityName={activity.activityName}
                                 startingTime={activity.startingTime}
@@ -234,7 +234,7 @@ export default class ActivityTable extends React.Component {
     /**
      * Adds a row to the activity table
      */
-    addActivityRow() {
+    addActivity() {
         // Sets the state with the new rows dictionary, the new errors dictionary and the new key to use for the next row
 
         let newKey = this.state.lastKey + 1 // Compute new key
@@ -245,10 +245,10 @@ export default class ActivityTable extends React.Component {
 
         // Update the rows dictionary
         newRowsDictionary[newKey] =
-            <ActivityRow
+            <Activity
                 key={newKey}
                 uniqueId={newKey}
-                onClick={this.deleteActivityRow}
+                onClick={this.deleteActivity}
                 onChange={this.manageRowChanges}
                 activityName=''
                 startingTime=''
@@ -276,10 +276,10 @@ export default class ActivityTable extends React.Component {
     }
 
     /**
-     * Deletes the ActivityRow with uniqueId from the ActivityTable
-     * @param {int} uniqueId uniqueId of the row that has to be deleted. Is passed by the ActivityRow when the delete button is pressed
+     * Deletes the Activity with uniqueId from the ActivityTable
+     * @param {int} uniqueId uniqueId of the row that has to be deleted. Is passed by the Activity when the delete button is pressed
      */
-    deleteActivityRow(uniqueId) {
+    deleteActivity(uniqueId) {
         let newRowsDictionary = this.state.rowsDictionary // Copy current rows dictionary
         let newRowsErrorsDictionary = this.state.rowsErrorsDictionary // Copy current errors dictionary
         let newRowsFieldsValues = this.state.rowsFieldsValues
@@ -372,7 +372,7 @@ export default class ActivityTable extends React.Component {
                         Salva impostazioni
                     </button>
                     <button
-                        onClick={this.addActivityRow}
+                        onClick={this.addActivity}
                         id="addActivityButton"
                         type="button"
                         className={"btn btn-outline-primary" + ((rowsWithErrors) ? " disabled" : "")}>
