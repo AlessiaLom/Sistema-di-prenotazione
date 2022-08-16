@@ -1,11 +1,11 @@
 $(document).ready(function () {
     $('#addActivityButton').click(function (e) {
-        console.log("You've clicked the: " + $(e.target).attr('id'))
+        // console.log("You've clicked the: " + $(e.target).attr('id'))
         addEmptyActivityRow()
     });
 
     $('.deleteActivityButton').click(function (e) {
-        console.log("You've clicked the: " + $(e.target).attr('name'))
+        // console.log("You've clicked the: " + $(e.target).attr('name'))
         deleteActivityRow(e.target)
     });
 });
@@ -19,7 +19,7 @@ function listenNewElements() {
 
     // Listen delete row buttons
     $('.deleteActivityButton').click(function (e) {
-        console.log("You've clicked the: " + $(e.target).attr('class'))
+        // // console.log("You've clicked the: " + $(e.target).attr('class'))
         deleteActivityRow(e.target)
     });
 }

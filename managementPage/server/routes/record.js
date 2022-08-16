@@ -97,7 +97,7 @@ recordRoutes.route("/customize/save_changes/:id").post(function (req, response) 
         .collection("restaurant_info")
         .updateOne(myquery, newvalues, function (err, res) {
             if (err) throw err;
-            console.log("1 document updated");
+            // console.log("1 document updated");
             response.json(res);
         });
 });
@@ -117,7 +117,7 @@ recordRoutes.route("/activities/save_changes/:id").post(function (req, response)
         .collection("activities")
         .updateOne(myquery, newvalues, function (err, res) {
             if (err) throw err;
-            console.log("1 document updated");
+            // console.log("1 document updated");
             response.json(res);
         });
 });
@@ -137,7 +137,7 @@ recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (req, 
         .collection("booking")
         .updateOne(myquery, newvalues, function (err, res) {
             if (err) throw err;
-            console.log("1 document updated");
+            // console.log("1 document updated");
             response.json(res);
         });
 });
@@ -175,7 +175,7 @@ recordRoutes.route("/update/:id").post(function (req, response) {
         .collection("records")
         .updateOne(myquery, newvalues, function (err, res) {
             if (err) throw err;
-            console.log("1 document updated");
+            // console.log("1 document updated");
             response.json(res);
         });
 });
@@ -186,7 +186,7 @@ recordRoutes.route("/:id").delete((req, response) => {
     let myquery = { _id: ObjectId(req.params.id) };
     db_connect.collection("records").deleteOne(myquery, function (err, obj) {
         if (err) throw err;
-        console.log("1 document deleted");
+        // console.log("1 document deleted");
         response.json(obj);
     });
 });

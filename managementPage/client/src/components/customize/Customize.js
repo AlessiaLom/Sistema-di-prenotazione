@@ -58,7 +58,7 @@ export default class Customize extends React.Component {
      * Performs fetch to retrieve info about form customization based on the restaurant id passe as request param
      */
     componentDidMount() {
-        console.log(JSON.stringify(this.state))
+        // console.log(JSON.stringify(this.state))
         fetch("/customize/0001", {
             method: "GET",
             headers: {

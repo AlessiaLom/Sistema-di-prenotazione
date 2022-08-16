@@ -105,7 +105,7 @@ export default class Activity extends React.Component {
         // Check which input got changed and performs proper validation checks
         switch (name) {
             case "activityName" + this.props.uniqueId: // Activity name accepts whatever name except empy name
-                console.log("changed " + name + " has value " + value)
+                // console.log("changed " + name + " has value " + value)
                 if (value && value.trim() != '') { // If activity name has no value, the row contains errors regarding activity name
                     newValidationErrors.activityNameError = ''
                 } else {
@@ -116,7 +116,7 @@ export default class Activity extends React.Component {
                 newActivityValues.activityName = value
                 break;
             case 'availableSpots' + this.props.uniqueId:
-                console.log("changed " + name + " has value " + value)
+                // console.log("changed " + name + " has value " + value)
                 if (Number.isInteger(Number(value)) && Number(value) > 0) {
                     newValidationErrors.availableSpotsError = ''
                 } else {
@@ -133,7 +133,7 @@ export default class Activity extends React.Component {
                     minutes: parseInt(value.split(":")[1])
                 }
 
-                console.log("changed " + name + " has value " + startingTime.hours + ":" + startingTime.minutes)
+                // console.log("changed " + name + " has value " + startingTime.hours + ":" + startingTime.minutes)
 
                 // Update field value in state dictionary
                 newActivityValues.startingTime = value
@@ -154,7 +154,7 @@ export default class Activity extends React.Component {
                     minutes: parseInt(value.split(":")[1])
                 }
 
-                console.log("changed " + name + " has value " + endingTime.hours + ":" + endingTime.minutes)
+                // console.log("changed " + name + " has value " + endingTime.hours + ":" + endingTime.minutes)
 
                 // Update field value in state dictionary
                 newActivityValues.endingTime = value
@@ -181,7 +181,7 @@ export default class Activity extends React.Component {
                 } else {
                     newValidationErrors.daysError = ''
                 }
-                console.log("changed " + name + " days picked: " + days)
+                // console.log("changed " + name + " days picked: " + days)
                 newActivityValues.days = days
                 break;
             default:

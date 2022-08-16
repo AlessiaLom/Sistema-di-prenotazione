@@ -30,7 +30,7 @@ export default class TestFetch extends React.Component {
                 this.setState({
                     message: JSON.stringify(data)
                 })
-                console.log(data)
+                // console.log(data)
             })
     }
 

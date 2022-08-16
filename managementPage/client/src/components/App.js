@@ -24,7 +24,7 @@ export default class App extends React.Component {
      * @param {int} i index of the selected menuItem (from top to bottom)
      */
     changeContent(i) {
-        console.log("" + this.state.activeItemIndex)
+        // console.log("" + this.state.activeItemIndex)
         this.setState({
             activeItemIndex: i,
             customize: <Customize/>

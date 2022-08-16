@@ -13,10 +13,10 @@ mongoose.connect('mongodb://localhost/nodemongo');
 const db = mongoose.connection;
 
 db.once('open', function(){
-    console.log("Connected to MongoDB successfully!");
+    // console.log("Connected to MongoDB successfully!");
 });
 db.on('error', function(){
-    console.log(err);
+    // // console.log(err);
 });
 
 
@@ -27,7 +27,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 
 app.get('/test', (req, res) => {
-    console.log("Received request" + req)
+    // console.log("Received request" + req)
     res.json({
         message: "Ciao bellissimo",
         info: {
@@ -48,11 +48,11 @@ app.get("/test/dbfetching", (req, res) => {
 app.listen(port, () => {
     client.connect((err) => {
         if (err) {
-            console.log(err)
+            // console.log(err)
         }
         //client.close();
     });
-    console.log(`Example app listening on port ${port}`)
+    // console.log(`Example app listening on port ${port}`)
 })
 */
 
@@ -72,5 +72,5 @@ app.listen(port, () => {
     dbo.connectToServer(function (err) {
         if (err) console.error(err);
     });
-    console.log(`Server is running on port: ${port}`);
+    // console.log(`Server is running on port: ${port}`);
 });

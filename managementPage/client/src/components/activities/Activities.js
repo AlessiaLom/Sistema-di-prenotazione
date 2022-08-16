@@ -168,12 +168,12 @@ export default class Activities extends React.Component {
         // Check which input got changed and performs proper validation checks
         switch (name) {
             case "selectBookingForewarning": // There is no validation error on the minumum notice selection
-                console.log("changed " + name + " has value " + value)
+                // console.log("changed " + name + " has value " + value)
                 // Update field value in state dictionary
                 newFieldsValues.bookingForewarning = value
                 break;
             case "bookingThreshold":
-                console.log("changed " + name + " has value " + value)
+                // console.log("changed " + name + " has value " + value)
                 if (Number.isInteger(Number(value)) && Number(value) > 0) {
                     newValidationErrors.bookingThresholdError = ''
                 } else {
@@ -184,7 +184,7 @@ export default class Activities extends React.Component {
                 newFieldsValues.bookingThreshold = value
                 break
             case "selectBookingOffset":
-                console.log("changed " + name + " has value " + value)
+                // console.log("changed " + name + " has value " + value)
                 newFieldsValues.bookingOffset = value
                 break;
             default:

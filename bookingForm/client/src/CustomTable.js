@@ -274,7 +274,7 @@ const CustomTable = () => {
 );
 
   function onTreeChange(action, state) {
-    console.log(action, state);
+    // console.log(action, state);
   }
 
 

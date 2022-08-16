@@ -5,7 +5,7 @@ $(document).ready(function () {
         previouslyActive = $("a.nav-link.active") // Previously active link that has to be changed to inactive
         clickedOption = $(e.target) // Newly clicked link that will be changed to active
 
-        console.log("You've clicked the link: " + clickedOption.attr("name") + ". Previously active: " + previouslyActive.attr("name"));
+        // console.log("You've clicked the link: " + clickedOption.attr("name") + ". Previously active: " + previouslyActive.attr("name"));
         manageMenuOptionSelection(previouslyActive, clickedOption) // Manages the change of the active link and the content visualized in the main frame 
 
     });
@@ -29,7 +29,7 @@ function changeActiveLink(previouslyActive, clickedOption) {
  */
 function changeMainContent(clickedOption) {
     sourceHtml = "./" + clickedOption.attr("name") + ".html" // Generate the name of the html file to be retrieved based on the name of the clicked link
-    console.log(sourceHtml)
+    // console.log(sourceHtml)
     $("#mainContentFrame").attr("src", sourceHtml) // Substitute iframe source with the new html file
 }
 
