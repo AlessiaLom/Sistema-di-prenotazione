@@ -13,10 +13,18 @@ import { BsTrash } from 'react-icons/bs'
  * @returns true if in chronological order
  */
 function checkChronologicalOrder(startingTime, endingTime) {
-    if (startingTime.hours > endingTime.hours) {
+    let startObj = {
+        hours: parseInt(startingTime.split(":")[0]),
+        minutes: parseInt(startingTime.split(":")[1])
+    }
+    let endObj = {
+        hours: parseInt(endingTime.split(":")[0]),
+        minutes: parseInt(endingTime.split(":")[1])
+    }
+    if (startObj.hours > endObj.hours) {
         return true
-    } else if (startingTime.hours == endingTime.hours) {
-        if (startingTime.minutes > endingTime.minutes) {
+    } else if (startObj.hours == endObj.hours) {
+        if (startObj.minutes > endObj.minutes) {
             return true
         }
     } else {
@@ -128,10 +136,10 @@ export default class Activity extends React.Component {
                 break
             case 'startingTime' + this.props.uniqueId:
                 // Parse starting time
-                startingTime = {
+                /* startingTime = {
                     hours: parseInt(value.split(":")[0]),
                     minutes: parseInt(value.split(":")[1])
-                }
+                } */
 
                 // console.log("changed " + name + " has value " + startingTime.hours + ":" + startingTime.minutes)
 
@@ -141,7 +149,7 @@ export default class Activity extends React.Component {
                 // get endingTime value to perform checkings
                 endingTime = newActivityValues.endingTime
                 if (endingTime) {
-                    if (checkChronologicalOrder(startingTime, endingTime)) {
+                    if (checkChronologicalOrder(value, endingTime)) {
                         newValidationErrors.timesError = "Rispettare ordine cronologico"
                     } else {
                         newValidationErrors.timesError = ''
@@ -149,10 +157,10 @@ export default class Activity extends React.Component {
                 }
                 break;
             case 'endingTime' + this.props.uniqueId:
-                endingTime = {
+                /* endingTime = {
                     hours: parseInt(value.split(":")[0]),
                     minutes: parseInt(value.split(":")[1])
-                }
+                } */
 
                 // console.log("changed " + name + " has value " + endingTime.hours + ":" + endingTime.minutes)
 
@@ -162,7 +170,7 @@ export default class Activity extends React.Component {
                 // get endingTime value to perform checkings
                 startingTime = newActivityValues.startingTime
                 if (startingTime) {
-                    if (checkChronologicalOrder(startingTime, endingTime)) {
+                    if (checkChronologicalOrder(startingTime, value)) {
                         newValidationErrors.timesError = "Rispettare ordine cronologico"
                     } else {
                         newValidationErrors.timesError = ''
