@@ -5,20 +5,9 @@ import Activity from './Activity';
 import Select from '../utility/Select';
 import TextForm from '../utility/TextForm';
 import { AiOutlinePlus } from 'react-icons/ai'
-/**
- * Returns values of the passed dictionary as array
- * @param {*} dictionary 
- * @returns 
- */
-function getDictionaryValues(dictionary) {
-    var values = Object.keys(dictionary).map(function (key) {
-        return dictionary[key];
-    });
-    return values
-}
 
 /**
- * Contains activity rows and manages addition and deletion of rows of the table.
+ * Contains activity activities and manages addition and deletion of activities of the table.
  */
 export default class Activities extends React.Component {
     constructor(props) {
@@ -27,24 +16,26 @@ export default class Activities extends React.Component {
          */
         super(props)
         this.state = {
-            rowsDictionary: {}, // stores rows indexed by their keys as it is a dictionary (key = row's uniqueId, value = Activity)
-            rowsFieldsValues: {}, // stores values of rows with key uniqueid, useful when the save changes button is pressed otherwise the table doesn't have the values of the rows to submit (the rowsDictionary doesn't update row's values when they change)
-            rowsErrorsDictionary: {}, // stores validation errors indexed by the key of the row that contains validation errors (key = row's uniqueId, value = boolean)
+            activitiesDictionary: {}, // stores activities (actual react components) indexed by their keys as in a dictionary (key = activity's uniqueId, value = <Activity />)
+            activitiesValues: {}, // Stores Activity's fields values. Since the Activities component doesn't know the changes made to its Activity children, we need to pass the fields values from the child to the parent and we save them in this structure.
+            activitiesErrorsDictionary: {}, // stores validation errors indexed by the key of the activity that contains validation errors (key = activity's uniqueId, value = boolean)
             lastKey: 0, // keeps track of the last key/uniqueId used and gets incremented each time a new one is used
-            validationErrors: {
+            validationErrors: { // Keeps track of validation errors on fields of the Activities page
                 bookingThresholdError: ''
             },
-            required: [],
-            fieldsValues: {
+            required: [], // Stores the names of the fields that are required
+            fieldsValues: { // Stores the values of the fields of the Activities page
                 bookingForewarning: '',
                 bookingThreshold: '',
-                bookingOffset: '15 min'
+                bookingOffset: ''
             }
         }
+
+        // Function binding
         this.areThereValidationErrors = this.areThereValidationErrors.bind(this)
         this.addActivity = this.addActivity.bind(this)
         this.deleteActivity = this.deleteActivity.bind(this)
-        this.manageRowChanges = this.manageRowChanges.bind(this)
+        this.manageActivityChanges = this.manageActivityChanges.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.checkErrors = this.checkErrors.bind(this)
         this.checkEmptyFields = this.checkEmptyFields.bind(this)
@@ -69,21 +60,21 @@ export default class Activities extends React.Component {
             .then(res => res.json())
             .then(data => {
                 if (data) {
-                    let fetchedRowsDictionary = {} // Instantiate the dictionary of rows
-                    let fetchedRowsErrorsDictionary = {} // Instantiate the dictionary of rows' errors
-                    let fetchedRowsFieldsValues = {} // Will contain the rows values 
+                    let fetchedActivitiesDictionary = {} // Instantiate the dictionary of activities
+                    let fetchedActivitiesErrorsDictionary = {} // Instantiate the dictionary of activities' errors
+                    let fetchedActivitiesValues = {} // Will contain the activities values 
 
                     // Fill dictionaries with data received from db
                     data.activities.forEach((activity, index) => { // for each activity in the data.activities array
-                        fetchedRowsDictionary[index] = // take the index and save a new Activity component in the object, the key of the component will be the index
+                        fetchedActivitiesDictionary[index] = // take the index and save a new Activity component in the object, the key of the component will be the index
                             <Activity
                                 key={index}
                                 uniqueId={index}
                                 onClick={this.deleteActivity}
-                                onChange={this.manageRowChanges}
+                                onChange={this.manageActivityChanges}
                                 activityValues={activity} />
-                        fetchedRowsErrorsDictionary[index] = false // Save that the row han no errors, the key will be the index
-                        fetchedRowsFieldsValues[index] = activity
+                        fetchedActivitiesErrorsDictionary[index] = false // Save that the activity han no errors, the key will be the index
+                        fetchedActivitiesValues[index] = activity // Save activity values in the dictionarys
 
                     })
                     // Take other fields' values
@@ -93,10 +84,10 @@ export default class Activities extends React.Component {
 
                     // Update the state
                     this.setState({
-                        rowsDictionary: fetchedRowsDictionary,
-                        rowsErrorsDictionary: fetchedRowsErrorsDictionary,
-                        rowsFieldsValues: fetchedRowsFieldsValues,
-                        lastKey: data.activities.length - 1, // Set the last key used to the last index used in the rows above
+                        activitiesDictionary: fetchedActivitiesDictionary,
+                        activitiesErrorsDictionary: fetchedActivitiesErrorsDictionary,
+                        activitiesValues: fetchedActivitiesValues,
+                        lastKey: data.activities.length - 1, // Set the last key used to the last index used in the activities above
                         fieldsValues: { // Save fields values
                             bookingForewarning: fetchedBookingForewarning,
                             bookingThreshold: fetchedBookingThreshold,
@@ -104,11 +95,15 @@ export default class Activities extends React.Component {
                         }
                     })
                 }
-                // console.log(data)
             })
     }
 
 
+    /**
+     * Handles click on the "Salva impostazioni" button 
+     * Sends post request to db for saving changes to the page
+     * @param {*} event event triggered by the click on a button 
+     */
     onClick(event) {
         const { name, value } = event.target
         switch (name) {
@@ -123,7 +118,7 @@ export default class Activities extends React.Component {
                         bookingForewarning: this.state.fieldsValues.bookingForewarning,
                         bookingThreshold: this.state.fieldsValues.bookingThreshold,
                         bookingOffset: this.state.fieldsValues.bookingOffset,
-                        activities: Object.values(this.state.rowsFieldsValues),
+                        activities: Object.values(this.state.activitiesValues), // Array containing the values of the activitiesValues
                     })
                 });
                 break;
@@ -133,7 +128,7 @@ export default class Activities extends React.Component {
     }
 
     /**
-     * Checks among the required fields if some of them are empty.
+     * Checks among the required fields if there are empty ones.
      * The required fields are saved in this.state.required as strings representing their names (es. ['bookingForewarning'])
      * @returns true if the page contains empty fields, false otherwise
      */
@@ -147,6 +142,11 @@ export default class Activities extends React.Component {
         return false
     }
 
+
+    /**
+     * Checks whether the fields contain validation errors or not
+     * @returns true if there are validation errors in the page's field
+     */
     checkErrors() {
         let validationErrors = this.state.validationErrors
         for (const error in validationErrors) {
@@ -156,6 +156,10 @@ export default class Activities extends React.Component {
         return false
     }
 
+    /**
+     * Handles changes in the fields by checking for validation errors and storing new values
+     * @param {*} event event triggered by some change in the fields
+     */
     handleChange(event) {
         const { name, value } = event.target
         let newValidationErrors = this.state.validationErrors
@@ -195,42 +199,43 @@ export default class Activities extends React.Component {
     }
 
     /**
-    * Checks if the rowsErrorsDictionary contains at least one true value
+    * Checks if the activitiesErrorsDictionary contains at least one true value
+    * Used to enable/disable the "Salva impostazioni" button
     * @returns true if there is at least one error
     */
     areThereValidationErrors() {
-        let values = getDictionaryValues(this.state.rowsErrorsDictionary)
-        return values.includes(true) // if at least one dictionary element corresponds to true it means that at least one row contains errors
+        let values = Object.values(this.state.activitiesErrorsDictionary)
+        return values.includes(true) // if at least one dictionary element corresponds to true it means that at least one activity contains errors
     }
 
     /**
-     * Updates the rowsErrorsDictionary when a row gets modified (one of its fields changes)
-     * @param {int} uniqueId uniqueId of the row that changed
-     * @param {boolean} hasErrors boolean true if the just modified row contains errors
+     * Updates the activitiesErrorsDictionary when a activity gets modified (one of its fields changes)
+     * @param {int} uniqueId uniqueId of the activity that changed
+     * @param {boolean} hasErrors boolean true if the just modified activity contains errors
      */
-    manageRowChanges(uniqueId, hasErrors, rowFieldsValues) {
-        let newRowsErrorsDictionary = this.state.rowsErrorsDictionary // Copy current errors dictionary
-        newRowsErrorsDictionary[uniqueId] = hasErrors // Save if the row has errors or not
-        let newRowsFieldsValues = this.state.rowsFieldsValues // Put rows values in the dictionary
-        newRowsFieldsValues[uniqueId] = rowFieldsValues
+    manageActivityChanges(uniqueId, hasErrors, activityValues) {
+        let newActivitiesErrorsDictionary = this.state.activitiesErrorsDictionary // Copy current errors dictionary
+        newActivitiesErrorsDictionary[uniqueId] = hasErrors // Save if the activity has errors or not
+        let newActivitiesValues = this.state.activitiesValues // Put activities values in the dictionary
+        newActivitiesValues[uniqueId] = activityValues
 
         this.setState({
-            rowsErrorsDictionary: newRowsErrorsDictionary,
-            rowsFieldsValues: newRowsFieldsValues
+            activitiesErrorsDictionary: newActivitiesErrorsDictionary,
+            activitiesValues: newActivitiesValues
         })
     }
 
     /**
-     * Adds a row to the activity table
+     * Adds a activity to the activities table
      */
     addActivity() {
-        // Sets the state with the new rows dictionary, the new errors dictionary and the new key to use for the next row
+        // Sets the state with the new activities dictionary, the new errors dictionary and the new key to use for the next activity
 
         let newKey = this.state.lastKey + 1 // Compute new key
 
-        let newRowsDictionary = this.state.rowsDictionary // Copy current rows dictionary
-        let newRowsErrorsDictionary = this.state.rowsErrorsDictionary // Copy current errors dictionary
-        let newRowsFieldsValues = this.state.rowsFieldsValues
+        let newActivitiesDictionary = this.state.activitiesDictionary // Copy current activities dictionary
+        let newActivitiesErrorsDictionary = this.state.activitiesErrorsDictionary // Copy current errors dictionary
+        let newActivitiesValues = this.state.activitiesValues
 
         let emptyActivity = {
             activityName: '',
@@ -240,52 +245,52 @@ export default class Activities extends React.Component {
             days: ''
         }
 
-        // Update the rows dictionary
-        newRowsDictionary[newKey] =
+        // Update the activities dictionary
+        newActivitiesDictionary[newKey] =
             <Activity
                 key={newKey}
                 uniqueId={newKey}
                 onClick={this.deleteActivity}
-                onChange={this.manageRowChanges}
+                onChange={this.manageActivityChanges}
                 activityValues={emptyActivity}
             />
 
         // Update the errors dictionary
-        newRowsErrorsDictionary[newKey] = true // The new row is set to contain errors when created because it is empty
-        newRowsFieldsValues[newKey] = emptyActivity
+        newActivitiesErrorsDictionary[newKey] = true // The new activity is set to contain errors when created because it is empty
+        newActivitiesValues[newKey] = emptyActivity
 
         // Update the state
         this.setState({
-            rowsDictionary: newRowsDictionary,
-            rowsErrorsDictionary: newRowsErrorsDictionary,
-            rowsFieldsValues: newRowsFieldsValues,
+            activitiesDictionary: newActivitiesDictionary,
+            activitiesErrorsDictionary: newActivitiesErrorsDictionary,
+            activitiesValues: newActivitiesValues,
             lastKey: newKey
         });
     }
 
     /**
      * Deletes the Activity with uniqueId from the ActivityTable
-     * @param {int} uniqueId uniqueId of the row that has to be deleted. Is passed by the Activity when the delete button is pressed
+     * @param {int} uniqueId uniqueId of the activity that has to be deleted. Is passed by the Activity when the delete button is pressed
      */
     deleteActivity(uniqueId) {
-        let newRowsDictionary = this.state.rowsDictionary // Copy current rows dictionary
-        let newRowsErrorsDictionary = this.state.rowsErrorsDictionary // Copy current errors dictionary
-        let newRowsFieldsValues = this.state.rowsFieldsValues
-        delete newRowsDictionary[uniqueId] // Delete entry from rows dictionary
-        delete newRowsErrorsDictionary[uniqueId] // Delete entry from errors dictionary
-        delete newRowsFieldsValues[uniqueId]
+        let newActivitiesDictionary = this.state.activitiesDictionary // Copy current activities dictionary
+        let newActivitiesErrorsDictionary = this.state.activitiesErrorsDictionary // Copy current errors dictionary
+        let newActivitiesValues = this.state.activitiesValues
+        delete newActivitiesDictionary[uniqueId] // Delete entry from activities dictionary
+        delete newActivitiesErrorsDictionary[uniqueId] // Delete entry from errors dictionary
+        delete newActivitiesValues[uniqueId]
         // Update the state
         this.setState({
-            rowsDictionary: newRowsDictionary,
-            rowsErrorsDictionary: newRowsErrorsDictionary,
-            rowsFieldsValues: newRowsFieldsValues
+            activitiesDictionary: newActivitiesDictionary,
+            activitiesErrorsDictionary: newActivitiesErrorsDictionary,
+            activitiesValues: newActivitiesValues
         })
     }
 
     render() {
-        let rows = getDictionaryValues(this.state.rowsDictionary)
-        let rowsWithErrors = this.areThereValidationErrors() // true or false
-        // Check if are there errors in the fields not included in the rows (eg. bookingThreshold)
+        let activities = Object.values(this.state.activitiesDictionary)
+        let activitiesWithErrors = this.areThereValidationErrors() // true or false
+        // Check if are there errors in the fields not included in the activities (eg. bookingThreshold)
         let hasErrors = this.checkErrors()
         // Check if are there empty fields 
         let hasEmptyFields = this.checkEmptyFields()
@@ -344,9 +349,9 @@ export default class Activities extends React.Component {
                             <th className="headerCol" scope="col">Elimina</th>
                         </tr>
                     </thead>
-                    {/* Renders all the rows */}
+                    {/* Renders all the activities */}
                     <tbody>
-                        {rows}
+                        {activities}
                     </tbody>
                 </table>
             </div>
@@ -355,7 +360,7 @@ export default class Activities extends React.Component {
                         onClick={this.onClick}
                         name="saveChanges"
                         type="button"
-                        className={"btn btn-primary" + (rowsWithErrors || hasErrors || hasEmptyFields ? " disabled" : "")}>
+                        className={"btn btn-primary" + (activitiesWithErrors || hasErrors || hasEmptyFields ? " disabled" : "")}>
                         {/*Disable the button if there are validation errors*/}
                         Salva impostazioni
                     </button>
@@ -363,8 +368,8 @@ export default class Activities extends React.Component {
                         onClick={this.addActivity}
                         id="addActivityButton"
                         type="button"
-                        className={"btn btn-outline-primary" + ((rowsWithErrors) ? " disabled" : "")}>
-                        {/** The "aggiungi attività" button is enabled only if every row is correct or if there are no rows (so that it is possible to add the first row) */}
+                        className={"btn btn-outline-primary" + ((activitiesWithErrors) ? " disabled" : "")}>
+                        {/** The "aggiungi attività" button is enabled only if every activity is correct or if there are no activities (so that it is possible to add the first activity) */}
                         <AiOutlinePlus />
                     </button>
                 </div></>

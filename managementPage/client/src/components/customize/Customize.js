@@ -8,26 +8,30 @@ import { BsFacebook, BsInstagram, BsMessenger, BsWhatsapp } from 'react-icons/bs
 
 export default class Customize extends React.Component {
     constructor(props) {
+        /**
+         *  props:
+         *      - no props
+         */
         super(props)
         this.state = {
-            requiredFields: ["restaurantName"],
-            fieldsValues: {
+            required: ["restaurantName"], // Stores the names of the fields that are required
+            fieldsValues: { // Stores customize page values
                 restaurantName: '',
                 additionalInfo: '',
-                restaurantLogo: '',
-                socialNetworks: {
+                logoPath: '',
+                socialNetworks: { // Links to social networks
                     facebook: '',
                     instagram: '',
                     messenger: '',
                     whatsapp: ''
                 },
-                primaryColor: {
+                primaryColor: { // Primary color in rgba format
                     r: 65,
                     g: 22,
                     b: 80,
                     a: 1
                 },
-                secondaryColor: {
+                secondaryColor: {// Secondary color in rgba format
                     r: 14,
                     g: 16,
                     b: 28,
@@ -39,18 +43,23 @@ export default class Customize extends React.Component {
                 restaurantNameError: '',
                 additionalInfoError: '',
                 colorThemeError: '',
-                restaurantLogoError: ''
+                logoPathError: ''
             }
         }
+
+        //Function binding
         this.handleChange = this.handleChange.bind(this)
         this.checkErrors = this.checkErrors.bind(this)
         this.checkEmptyFields = this.checkEmptyFields.bind(this)
         this.onClick = this.onClick.bind(this)
     }
 
+    /**
+     * Performs fetch to retrieve info about form customization based on the restaurant id passe as request param
+     */
     componentDidMount() {
         console.log(JSON.stringify(this.state))
-        fetch("/customize/62e920b5f5f2167ce9899047", {
+        fetch("/customize/0001", {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -63,21 +72,26 @@ export default class Customize extends React.Component {
                     fieldsValues: {
                         restaurantName: data.restaurantName,
                         additionalInfo: data.additionalInfo,
-                        restaurantLogo: data.logoPath,
+                        logoPath: data.logoPath,
                         primaryColor: data.primaryColor,
                         secondaryColor: data.secondaryColor,
                         socialNetworks: data.socialNetworks
                     }
                 })
-                console.log(data)
             })
     }
 
+    /**
+     * Handles button click (save changes or cancel changes)
+     * "Salva impostazioni" -> Saves new info in db
+     * "Annulla" -> revert back to previous state
+     * @param {*} event button click
+     */
     onClick(event) {
         const { name, value } = event.target
         switch (name) {
             case "saveChanges":
-                fetch('/customize/save_changes/62e920b5f5f2167ce9899047', {
+                fetch('/customize/save_changes/0001', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -86,27 +100,40 @@ export default class Customize extends React.Component {
                         additionalInfo: this.state.fieldsValues.additionalInfo,
                         primaryColor: this.state.fieldsValues.primaryColor,
                         secondaryColor: this.state.fieldsValues.secondaryColor,
-                        logoPath: this.state.fieldsValues.restaurantLogo,
+                        logoPath: this.state.fieldsValues.logoPath,
                         socialNetworks: this.state.fieldsValues.socialNetworks,
                         restaurantName: this.state.fieldsValues.restaurantName
                     })
                 });
+                break;
+            case "cancelChanges":
+                // MISSING 
+                // When the button is pressed it is sufficient to refresh the page/fetch info from db again
                 break;
             default:
                 break;
         }
     }
 
+    /**
+     * Checks among the required fields if there are empty ones.
+     * The required fields are saved in this.state.required as strings representing their names (es. ['bookingForewarning'])
+     * @returns true if the page contains empty fields, false otherwise
+     */
     checkEmptyFields() {
         let fieldsValues = this.state.fieldsValues
         for (const field in fieldsValues) {
-            if (this.state.requiredFields.includes(field) && fieldsValues[field].trim() == '') {
+            if (this.state.required.includes(field) && fieldsValues[field].trim() == '') {
                 return true
             }
         }
         return false
     }
 
+    /**
+     * Checks for validation errors
+     * @returns true if there are validation errors
+     */
     checkErrors() {
         let validationErrors = this.state.validationErrors
         for (const error in validationErrors) {
@@ -116,6 +143,10 @@ export default class Customize extends React.Component {
         return false
     }
 
+    /**
+     * Handles changes in the fields by checking for validation errors and storing new values
+     * @param {*} event event triggered by some change in the fields
+     */
     handleChange(event) {
         const { name, value } = event.target
         let newValidationErrors = this.state.validationErrors
@@ -124,7 +155,7 @@ export default class Customize extends React.Component {
         // Check which input got changed and performs proper validation checks
         switch (name) {
             case "restaurantName": // There is no validation error on the minumum notice selection
-                console.log("changed " + name + " has value " + value)
+                // console.log("changed " + name + " has value " + value)
                 if (value && value.trim() != '') { // If activity name has no value, the row contains errors regarding activity name
                     newValidationErrors.restaurantNameError = ''
                 } else {
@@ -134,30 +165,27 @@ export default class Customize extends React.Component {
                 newFieldsValues.restaurantName = value
                 break;
             case "primaryColorPicker":
-                console.log("changed " + name + " has value " + value)
-                newFieldsValues.primaryColor.a = value.a
-                newFieldsValues.primaryColor.r = value.r
-                newFieldsValues.primaryColor.g = value.g
-                newFieldsValues.primaryColor.b = value.b
+                // console.log("changed " + name + " has value " + value)
+                newFieldsValues.primaryColor = value
                 break;
             case "secondaryColorPicker":
-                console.log("changed " + name + " has value " + value)
+                // console.log("changed " + name + " has value " + value)
                 newFieldsValues.secondaryColor = value
                 break;
             case "facebookLink":
-                console.log("changed " + name + " has value " + value)
+                // console.log("changed " + name + " has value " + value)
                 newFieldsValues.socialNetworks['facebook'] = value
                 break;
             case "instagramLink":
-                console.log("changed " + name + " has value " + value)
+                // console.log("changed " + name + " has value " + value)
                 newFieldsValues.socialNetworks["instagram"] = value
                 break;
             case "messengerLink":
-                console.log("changed " + name + " has value " + value)
+                // console.log("changed " + name + " has value " + value)
                 newFieldsValues.socialNetworks["messenger"] = value
                 break;
             case "whatsappLink":
-                console.log("changed " + name + " has value " + value)
+                //  console.log("changed " + name + " has value " + value)
                 newFieldsValues.socialNetworks["whatsapp"] = value
                 break;
             default:

@@ -6,7 +6,12 @@ import TextForm from '../utility/TextForm';
 import DayPicker from '../utility/DayPicker';
 import { BsTrash } from 'react-icons/bs'
 
-
+/**
+ * Checks if the two times set by the user are in chronological order (starting time < ending time) or not
+ * @param {*} startingTime activity's statrting time
+ * @param {*} endingTime activity's ending time
+ * @returns true if in chronological order
+ */
 function checkChronologicalOrder(startingTime, endingTime) {
     if (startingTime.hours > endingTime.hours) {
         return true
@@ -18,6 +23,7 @@ function checkChronologicalOrder(startingTime, endingTime) {
         return false
     }
 }
+
 
 /*
  * This component represents an activity row inside the ActivityTable. 
@@ -32,6 +38,14 @@ export default class Activity extends React.Component {
                 - uniqueId: same as the key but used by us to delete the right row when the button is pressed
                 - onClick: function that is fired when the delete button is presses. The function belongs to the ActivityTable parent.
                 - onChange: function owned by ActivityTable that is fired when some input in the table change, it is used to enable/disable the button if one or more rows contain error
+                - activityValues: plain object representing the activity's values. Has the following shape:
+                                    activityValues = {
+                                            activityName: String,
+                                            startingTime: String,
+                                            endingTime: String,
+                                            availableSpots: int,
+                                            days: String
+                                        }
         */
         super(props)
 
@@ -50,7 +64,7 @@ export default class Activity extends React.Component {
     }
 
     /**
-     * Checks if the row contains errors by checking each error type in the state of the row
+     * Checks if the row contains errors by checking each error type in the state of the activity
      * @returns true if the rows contains errors
      */
     checkErrors() {
@@ -62,6 +76,10 @@ export default class Activity extends React.Component {
         return false
     }
 
+    /**
+     * Checks if are there empty fields in the activity
+     * @returns true if there are empty fields, false otherwise
+     */
     checkEmptyFields() {
         let activityValues = this.state.activityValues
         for (const field in activityValues) {

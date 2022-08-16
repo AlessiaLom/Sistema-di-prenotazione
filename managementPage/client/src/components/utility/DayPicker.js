@@ -22,7 +22,7 @@ export default class DayPicker extends React.Component {
                         onChange={this.props.onChange}
                         name={this.props.name}
                         value="L"
-                        checked={this.props.checkedOnes.includes("L") ? true : false}></input>
+                        checked={this.props.checkedOnes.includes("L") ? true : false}></input> {/* checks if this checkbox has to be checked or not */}
                     <label className="form-check-label" >L</label>
                 </div>
                 <div className="form-check form-check-inline">

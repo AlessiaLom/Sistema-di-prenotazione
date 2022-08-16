@@ -27,7 +27,7 @@ const ObjectId = require("mongodb").ObjectId;
  */
 recordRoutes.route("/customize/:id").get(function (req, res) {
     let db_connect = dbo.getDb();
-    let myquery = { _id: ObjectId(req.params.id) };
+    let myquery = { restaurantId: req.params.id };
     db_connect
         .collection("restaurant_info")
         .findOne(myquery, function (err, result) {
@@ -77,7 +77,7 @@ recordRoutes.route("/bookings/:id").get(function (req, res) {
 
 recordRoutes.route("/customize/save_changes/:id").post(function (req, response) {
     let db_connect = dbo.getDb("sdp_db");
-    let myquery = { _id: ObjectId(req.params.id) };
+    let myquery = { restaurantId: req.params.id };
     let newvalues = {
         $set: {
             additionalInfo: req.body.additionalInfo,
