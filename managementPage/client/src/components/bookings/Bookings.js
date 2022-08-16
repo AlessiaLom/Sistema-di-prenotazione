@@ -3,6 +3,8 @@ import React from 'react';
 import "./../../styles/pages.css"
 import Booking from './Booking';
 import Filter from './Filter';
+import { CSVLink, CSVDownload } from "react-csv";
+import { BsDownload } from 'react-icons/bs'
 
 
 function isInInterval(date, fromDate, toDate) {
@@ -103,6 +105,7 @@ export default class Bookings extends React.Component {
         }
         this.handleFiltering = this.handleFiltering.bind(this)
         this.getComponents = this.getComponents.bind(this)
+        this.handleStatusChange = this.handleStatusChange.bind(this)
     }
 
     /**
@@ -126,9 +129,10 @@ export default class Bookings extends React.Component {
                     data.bookings.forEach((booking, index) => { // for each activity in the data.activities array
                         fetchedBookings[index] = // take the index and save a new Activity component in the object, the key of the component will be the index
                             <Booking
-                                key={index}
-                                uniqueId={index}
-                                booking={booking} />
+                            key={index}
+                            uniqueId={index}
+                            booking={booking}
+                            onChange={this.handleStatusChange} />
                         fetchedBookingsValues[index] = booking
                     })
 
@@ -173,14 +177,35 @@ export default class Bookings extends React.Component {
         return result
     }
 
+    handleStatusChange(uniqueId, newStatus) {
+        let newBookingsValues = this.state.bookingsValues
+        newBookingsValues[uniqueId].bookingStatus = newStatus
+        this.setState({
+            bookingsValues: newBookingsValues
+        })
+    }
+
 
     render() {
         let bookingsToBeShown = Object.values(this.getComponents())
+        let csvData = Object.values(this.state.filteredBookings)
+        csvData.forEach(d => {
+            delete d.id
+        })
         return (
 
             <><div>
                 <div>
                     <h4>Lista prenotazioni</h4>
+                    <CSVLink
+                        data={csvData}
+                        filename={"prenotazioni.csv"}
+                        className="btn btn-primary"
+                        target="_blank">
+                        Download .CSV
+                        <BsDownload />
+                    </CSVLink>
+
                     <hr></hr>
                 </div>
                 <div>

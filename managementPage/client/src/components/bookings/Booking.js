@@ -29,6 +29,7 @@ export default class Booking extends React.Component {
                         newStatus: value
                     })
                 })
+                this.props.onChange(this.props.uniqueId, value)
                 break;
             default:
                 break;
