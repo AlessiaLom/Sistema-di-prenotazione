@@ -55,7 +55,7 @@ export default class Booking extends React.Component {
                     {this.props.booking.phone}
                 </td>
                 <td>
-                    <Select 
+                    <Select
                         name="selectBookingStatus"
                         options={['confirmed', 'pending', 'canceled']}
                         defaultValue={this.props.booking.bookingStatus}

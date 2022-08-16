@@ -25,10 +25,7 @@ export default class Bookings extends React.Component {
         // Fetch giving the restaurant ID (0001 hardcoded here for tests)
         fetch("/bookings/0001", {
             method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
+            
         })
             .then(res => res.json())
             .then(data => {

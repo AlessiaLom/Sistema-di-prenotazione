@@ -36,13 +36,7 @@ export default class Activity extends React.Component {
         super(props)
 
         this.state = {
-            fieldsValues: {
-                activityName: this.props.activityName,
-                startingTime: this.props.startingTime,
-                endingTime: this.props.endingTime,
-                availableSpots: this.props.availableSpots,
-                days: this.props.days
-            },
+            activityValues: this.props.activityValues,
             validationErrors: {
                 activityNameError: '',
                 timesError: '',
@@ -69,9 +63,9 @@ export default class Activity extends React.Component {
     }
 
     checkEmptyFields() {
-        let fieldsValues = this.state.fieldsValues
-        for (const field in fieldsValues) {
-            if (fieldsValues[field].toString().trim() == '') {
+        let activityValues = this.state.activityValues
+        for (const field in activityValues) {
+            if (activityValues[field].toString().trim() == '') {
                 return true
             }
         }
@@ -86,7 +80,7 @@ export default class Activity extends React.Component {
     handleChange(event) {
         const { name, value } = event.target
         let newValidationErrors = this.state.validationErrors
-        let newFieldsValues = this.state.fieldsValues
+        let newActivityValues = this.state.activityValues
         let startingTime
         let endingTime
 
@@ -101,7 +95,7 @@ export default class Activity extends React.Component {
                 }
 
                 // Update field value in state dictionary
-                newFieldsValues.activityName = value
+                newActivityValues.activityName = value
                 break;
             case 'availableSpots' + this.props.uniqueId:
                 console.log("changed " + name + " has value " + value)
@@ -112,7 +106,7 @@ export default class Activity extends React.Component {
                 }
 
                 // Update field value in state dictionary
-                newFieldsValues.availableSpots = value
+                newActivityValues.availableSpots = value
                 break
             case 'startingTime' + this.props.uniqueId:
                 // Parse starting time
@@ -124,10 +118,10 @@ export default class Activity extends React.Component {
                 console.log("changed " + name + " has value " + startingTime.hours + ":" + startingTime.minutes)
 
                 // Update field value in state dictionary
-                newFieldsValues.startingTime = value
+                newActivityValues.startingTime = value
 
                 // get endingTime value to perform checkings
-                endingTime = newFieldsValues.endingTime
+                endingTime = newActivityValues.endingTime
                 if (endingTime) {
                     if (checkChronologicalOrder(startingTime, endingTime)) {
                         newValidationErrors.timesError = "Rispettare ordine cronologico"
@@ -145,10 +139,10 @@ export default class Activity extends React.Component {
                 console.log("changed " + name + " has value " + endingTime.hours + ":" + endingTime.minutes)
 
                 // Update field value in state dictionary
-                newFieldsValues.endingTime = value
+                newActivityValues.endingTime = value
 
                 // get endingTime value to perform checkings
-                startingTime = newFieldsValues.startingTime
+                startingTime = newActivityValues.startingTime
                 if (startingTime) {
                     if (checkChronologicalOrder(startingTime, endingTime)) {
                         newValidationErrors.timesError = "Rispettare ordine cronologico"
@@ -158,7 +152,7 @@ export default class Activity extends React.Component {
                 }
                 break;
             case 'dayPicker' + this.props.uniqueId:
-                let days = newFieldsValues.days
+                let days = newActivityValues.days
                 if (days.includes(value)) {
                     days = days.replace(value, '')
                 } else {
@@ -170,7 +164,7 @@ export default class Activity extends React.Component {
                     newValidationErrors.daysError = ''
                 }
                 console.log("changed " + name + " days picked: " + days)
-                newFieldsValues.days = days
+                newActivityValues.days = days
                 break;
             default:
                 break;
@@ -178,7 +172,7 @@ export default class Activity extends React.Component {
 
         // Update the state
         this.setState({
-            fieldsValues: newFieldsValues,
+            activityValues: newActivityValues,
             validationErrors: newValidationErrors
         })
 
@@ -188,7 +182,7 @@ export default class Activity extends React.Component {
 
         // Call the ActivityTable.manageRowChanges(uniqueId, hasErrors) to update the parent regarding current row's validation errors
         // Buttons in ActivityTable will be disabled if the row contains errors or if some fields are empty (or if both conditions happen)
-        this.props.onChange(this.props.uniqueId, hasErrors || hasEmptyFields, this.state.fieldsValues)
+        this.props.onChange(this.props.uniqueId, hasErrors || hasEmptyFields, this.state.activityValues)
     }
 
     render() {
@@ -196,7 +190,7 @@ export default class Activity extends React.Component {
             <tr>
                 <td scope="row" style={{ width: "5%" }}>
                     <TextForm
-                        value={this.state.fieldsValues.activityName}
+                        value={this.state.activityValues.activityName}
                         name={"activityName" + this.props.uniqueId}
                         placeholder="es. Cena"
                         onChange={this.handleChange}
@@ -208,7 +202,7 @@ export default class Activity extends React.Component {
                         <span className="validationError">{this.state.validationErrors.timesError}</span>
                         <p style={{ float: "left" }}> Dalle: </p>
                         <TimePicker
-                            value={this.state.fieldsValues.startingTime}
+                            value={this.state.activityValues.startingTime}
                             onChange={this.handleChange}
                             name={"startingTime" + this.props.uniqueId}
                             min="00:00"
@@ -216,7 +210,7 @@ export default class Activity extends React.Component {
                         />
                         <p style={{ float: "left" }}> Alle: </p>
                         <TimePicker
-                            value={this.state.fieldsValues.endingTime}
+                            value={this.state.activityValues.endingTime}
                             onChange={this.handleChange}
                             name={"endingTime" + this.props.uniqueId}
                             min="00:00"
@@ -225,7 +219,7 @@ export default class Activity extends React.Component {
                 </td>
                 <td style={{ width: "10%" }}>
                     <TextForm
-                        value={this.state.fieldsValues.availableSpots}
+                        value={this.state.activityValues.availableSpots}
                         name={"availableSpots" + this.props.uniqueId}
                         placeholder="es. 5"
                         onChange={this.handleChange}
@@ -233,7 +227,7 @@ export default class Activity extends React.Component {
                 </td>
                 <td style={{ width: "10%" }}>
                     <DayPicker
-                        checkedOnes={this.state.fieldsValues.days}
+                        checkedOnes={this.state.activityValues.days}
                         validationError={this.state.validationErrors.daysError}
                         name={"dayPicker" + this.props.uniqueId}
                         onChange={this.handleChange} />

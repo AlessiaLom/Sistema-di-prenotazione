@@ -81,19 +81,9 @@ export default class Activities extends React.Component {
                                 uniqueId={index}
                                 onClick={this.deleteActivity}
                                 onChange={this.manageRowChanges}
-                                activityName={activity.activityName}
-                                startingTime={activity.startingTime}
-                                endingTime={activity.endingTime}
-                                availableSpots={activity.availableSpots}
-                                days={activity.days} />
+                                activityValues={activity} />
                         fetchedRowsErrorsDictionary[index] = false // Save that the row han no errors, the key will be the index
-                        fetchedRowsFieldsValues[index] = {
-                            activityName: activity.activityName,
-                            startingTime: activity.startingTime,
-                            endingTime: activity.endingTime,
-                            availableSpots: activity.availableSpots,
-                            days: activity.days
-                        }
+                        fetchedRowsFieldsValues[index] = activity
 
                     })
                     // Take other fields' values
@@ -224,7 +214,6 @@ export default class Activities extends React.Component {
         let newRowsFieldsValues = this.state.rowsFieldsValues // Put rows values in the dictionary
         newRowsFieldsValues[uniqueId] = rowFieldsValues
 
-
         this.setState({
             rowsErrorsDictionary: newRowsErrorsDictionary,
             rowsFieldsValues: newRowsFieldsValues
@@ -243,6 +232,14 @@ export default class Activities extends React.Component {
         let newRowsErrorsDictionary = this.state.rowsErrorsDictionary // Copy current errors dictionary
         let newRowsFieldsValues = this.state.rowsFieldsValues
 
+        let emptyActivity = {
+            activityName: '',
+            startingTime: '',
+            endingTime: '',
+            availableSpots: '',
+            days: ''
+        }
+
         // Update the rows dictionary
         newRowsDictionary[newKey] =
             <Activity
@@ -250,21 +247,12 @@ export default class Activities extends React.Component {
                 uniqueId={newKey}
                 onClick={this.deleteActivity}
                 onChange={this.manageRowChanges}
-                activityName=''
-                startingTime=''
-                endingTime=''
-                availableSpots=''
-                days='' />
+                activityValues={emptyActivity}
+            />
 
         // Update the errors dictionary
         newRowsErrorsDictionary[newKey] = true // The new row is set to contain errors when created because it is empty
-        newRowsFieldsValues[newKey] = {
-            activityName: '',
-            startingTime: '',
-            endingTime: '',
-            availableSpots: '',
-            days: ''
-        }
+        newRowsFieldsValues[newKey] = emptyActivity
 
         // Update the state
         this.setState({
