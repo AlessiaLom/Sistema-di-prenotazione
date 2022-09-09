@@ -16,6 +16,18 @@ body {
   color: black;
 }
 
+.ButtonUnstyled-root.active{
+  color: white;
+  background-color: #0059B2;
+}
+
+.css-e53awj-MuiStack-root{
+  margin: 2% 0;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .bookingControls{
   float: left;
   margin-left: 5%;
@@ -92,7 +104,7 @@ textarea, input:not(#guestPrivacy), .button{
   font-weight: 200;
 }
 
-.bookingDate, .bookingTime, .bookingGuests, .resturantTable {
+.bookingDate, .bookingTime, .bookingGuests, .bookingActivity, .resturantTable {
   margin-left: 5%;
   margin-right: 0;
 }
@@ -279,7 +291,7 @@ footer{
   border-radius: 5px;
 }
 
-svg{
+svg:first{
   fill: #bf1650;
   vertical-align: top;
   margin: 2px;
@@ -317,7 +329,7 @@ textarea{
     width: 100%;
   }
 
-  .bookingDate, .bookingTime, .bookingGuests, .resturantTable{
+  .bookingDate, .bookingTime, .bookingGuests, .bookingActivity, .resturantTable{
     margin-left: 0;
   }
 
@@ -371,7 +383,7 @@ textarea{
     width: 100%;
   }
 
-  .bookingDate, .bookingTime, .bookingGuests, .resturantTable{
+  .bookingDate, .bookingTime, .bookingGuests, .bookingActivity, .resturantTable{
     margin-left: 0;
   }
 
@@ -407,7 +419,7 @@ textarea{
 }
 
 @media screen and (min-width: 601px) and (max-width: 1000px) {
-  .bookingDate, .bookingTime, .bookingGuests, .resturantTable{
+  .bookingDate, .bookingTime, .bookingGuests, .bookingActivity, .resturantTable{
     margin-left: 0;
   }
 

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Table, Header, HeaderRow, HeaderCell, Body, Row, Cell } from '@table-library/react-table-library/table';
 import { useTree, CellTree, TreeExpandClickTypes } from '@table-library/react-table-library/tree';
 import { useTheme } from '@table-library/react-table-library/theme';
+import { activitiesList } from './BookingForm';
 
 const list = [
   {
@@ -238,7 +239,7 @@ const list = [
 const THEME = {
   
   Table:
-    `grid-template-columns: 32% repeat(2, 22%) 24%;
+    `grid-template-columns: 25% 15% 15% 25% 20%;
     `
   ,
   HeaderRow: `
@@ -260,7 +261,7 @@ const THEME = {
 };
 
 const CustomTable = () => {
-  const data = { nodes: list };
+  const data = { nodes: activitiesList };
 
   const theme = useTheme(THEME);
 
@@ -274,30 +275,31 @@ const CustomTable = () => {
 );
 
   function onTreeChange(action, state) {
-    // console.log(action, state);
+    
   }
-
 
   return <Table data={data} tree={tree} theme={theme} layout={{ horizontalScroll: true }}>
     {(tableList) => (
       <>
         <Header>
           <HeaderRow>
-            <HeaderCell>Giorni</HeaderCell>
+            <HeaderCell>Attività</HeaderCell>
             <HeaderCell>Inizio</HeaderCell>
             <HeaderCell>Fine</HeaderCell>
-            <HeaderCell>Chiuso</HeaderCell>
+            <HeaderCell>Posti disponibili</HeaderCell>
+            <HeaderCell>Giorni</HeaderCell>
           </HeaderRow>
         </Header>
         <Body>
           {tableList.map((item) => (
-            <Row key={item.id} item={item}>
+            <Row key={item.name} item={item}>
             <CellTree item={item} pinLeft>
               {item.name}
             </CellTree>
-            <Cell>{item.startTime}</Cell>
-            <Cell>{item.endTime}</Cell>
-            <Cell className={item.isClosed.toString()}>{item.isClosed.toString() === "true" ? "Sì" : ""}</Cell>
+            <Cell>{item.start}</Cell>
+            <Cell>{item.end}</Cell>
+            <Cell>{item.spots}</Cell>
+            <Cell>{item.days}</Cell>
           </Row>
         ))}
         </Body>
