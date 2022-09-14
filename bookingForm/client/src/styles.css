@@ -1,3 +1,8 @@
+:root{
+  --primary-color : black;
+  --secondary-color: white;
+}
+
 * {
   box-sizing: border-box;
   font-size: 100%;
@@ -5,7 +10,7 @@
 }
 
 body {
-  background: #0e101c;
+  background: var(--primary-color);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
   "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
   sans-serif;
@@ -18,7 +23,7 @@ body {
 
 .ButtonUnstyled-root.active{
   color: white;
-  background-color: #0059B2;
+  background-color: var(--secondary-color);
 }
 
 .css-e53awj-MuiStack-root{
@@ -63,7 +68,7 @@ form{
 }
 
 .fieldInfo{
-  color: #bf1650;
+  color: var(--secondary-color);
   text-align: center;
   margin-bottom: 5%;
 }
@@ -132,7 +137,7 @@ span.error.person{
 
 .button {
   position: relative;
-  background: #ec5990;
+  background: var(--secondary-color);
   color: white;
   text-transform: uppercase;
   font-weight: 600;
@@ -150,23 +155,28 @@ span.error.person{
   transition: 0.3s all;
 }
 
+button:disabled, button[disabled]{
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .submit{
   clear: both;
 }
 
 .button:hover {
-  background: #bf1650;
+  filter: brightness(85%);
   color: white;
 }
 
 .error {
-  color:#db2269;
+  color:red;
   font-size: 0.625em;
   display: block;
 }
 
 .privacyError{
-  color:#db2269;
+  color:red;
   font-size: 0.625em;
   display: block;
 }
@@ -204,7 +214,7 @@ table{
 .resturantTableLabel{
   font-weight: bold;
   font-style: italic;
-  color: #ec5990;
+  color: var(--secondary-color);
 }
 
 .bookingStatus-yes{
@@ -279,10 +289,6 @@ img{
 }
 
 footer{
-  position: relative;
-}
-
-.footerInformation{
   background-color: #333;
   color: white;
   text-align: center;
@@ -291,10 +297,29 @@ footer{
   border-radius: 5px;
 }
 
-svg:first{
-  fill: #bf1650;
+.facebook, .messenger, .instagram, .whatsapp{
+  display: inline;
+  margin-left: 2%;
+}
+
+#facebook-link, #instagram-link, #messenger-link, #whatsapp-link{
+  color: white;
+  text-decoration: none;
+}
+
+#fb-label, #instagram-label, #messenger-label, #whatsapp-label{
+  display: inline;
+  margin: 2px;
+}
+
+svg#logo{
+  fill: var(--secondary-color);
   vertical-align: top;
   margin: 2px;
+}
+
+.additionalInfo{
+  font-size: small;
 }
 
 textarea{
@@ -307,12 +332,22 @@ textarea{
 }
 
 @media screen and (max-width: 360px) {
-  .site-title, .nav a, .nav{
+  .nav a:not(.site-title), .nav{
     padding: 0;
   }
 
+  .site-title{
+    padding: 1%;
+    font-size: medium;
+    height: auto !important;
+  }
+
+  .additionalInfo{
+    font-size: small;
+  }
+
   .nav{
-    gap: 0;
+    gap: 1rem;
   }
 
   img{
@@ -371,6 +406,7 @@ textarea{
 
   .nav{
     padding: 0;
+    gap: 0;
   }
 
   .bookingControls{
@@ -417,6 +453,7 @@ textarea{
     margin: 0;
   }
 }
+
 
 @media screen and (min-width: 601px) and (max-width: 1000px) {
   .bookingDate, .bookingTime, .bookingGuests, .bookingActivity, .resturantTable{

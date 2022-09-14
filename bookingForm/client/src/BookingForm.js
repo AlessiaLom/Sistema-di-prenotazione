@@ -12,9 +12,14 @@ import ButtonUnstyled, { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled'
 import { styled } from '@mui/system';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { buttonBaseClasses } from "@mui/material";
 
 let restaurantName = '';
 let activitiesList = [];
+let socialNetworks = [];
+let primaryColor;
+let secondaryColor = "black";
+export {secondaryColor};
 export {activitiesList};
 
 function compareDates(date1, date2) {
@@ -53,46 +58,29 @@ class Activity{
   }
 }
 
-const blue = {
-  500: '#007FFF',
-  600: '#0072E5',
-  700: '#0059B2',
-};
-
-const grey = {
-  100: '#eaeef2',
-  300: '#afb8c1',
-  900: '#24292f',
-};
-
 const CustomButton = styled(ButtonUnstyled)(
   ({ theme }) => `
   font-family: Arial, Helvetica, sans-serif;
   font-weight: bold;
   font-size: 0.875rem;
-  color: ${blue[500]};
+  color: ${secondaryColor};
   background-color: white;
-  border-color: ${blue[500]};
+  border-color: ${secondaryColor};
   padding: 12px 24px;
   border-radius: 12px;
   cursor: pointer;
 
   &:hover {
-    background-color: lightblue;
+    background-color: grey;
   }
 
   &.${buttonUnstyledClasses.active} {
-    background-color: ${blue[700]};
+    background-color: ${primaryColor};
   }
 
   &.${buttonUnstyledClasses.focusVisible} {
     box-shadow: 0 3px 20px 0 rgba(61, 71, 82, 0.1), 0 0 0 5px rgba(0, 127, 255, 0.5);
     outline: none;
-  }
-
-  &.${buttonUnstyledClasses.disabled} {
-    opacity: 0.5;
-    cursor: not-allowed;
   }
   `,
 );
@@ -103,8 +91,9 @@ export default class BookingForm extends Component {
     this.state = {
       statusLabel: '',
       statusProp: '',
-      selectedDate: new Date(),
+      selectedDate: null,
       selectedTime: null,
+      timeValue: [],
       bookingGuests: null,
       bookingActivity: null,
       activityCapacity: null,
@@ -164,8 +153,18 @@ export default class BookingForm extends Component {
   
 
   handleClick = (event, name) => {
+    this.handleTimeChange(null);
+    this.setState({timeValue: []});
     let today = new Date();
-    let now = today.getHours() + ":" + today.getMinutes();
+    let now;
+    if(today.getHours() < 10)
+      now = "0" + today.getHours() + ":";
+    else
+      now = today.getHours() + ":";
+    if(today.getMinutes() < 10)
+      now += "0" + today.getMinutes();
+    else
+      now += today.getMinutes();
     let isToday = compareDates(this.state.selectedDate, today);
     var allButtons = document.querySelectorAll(".ButtonUnstyled-root");
     allButtons.forEach((button) => { button.classList.remove("active"); })
@@ -173,9 +172,12 @@ export default class BookingForm extends Component {
     button.classList.add("active");
     const options = this.state.options;
     const nowHours = parseInt(now.substring(0,2));
-    const forewarning = parseInt(this.state.fieldValues.bookingForewarning.substring(0,1));
-    const minHours = nowHours + forewarning;
-    const minBookingTime = String(minHours) + ":" + String(today.getMinutes());
+    const nowMins = parseInt(now.substring(3,5));
+    const forewarningHrs = parseInt(this.state.fieldValues.bookingForewarning.substring(0,2));
+    const forewarningMns = parseInt(this.state.fieldValues.bookingForewarning.substring(3,5));
+    const minHours = nowHours + forewarningHrs;
+    const minMns = nowMins + forewarningMns;
+    const minBookingTime = String(minHours) + ":" + String(minMns);
     options.forEach((option) => {
       if(option.name != name || (isToday && option.value <= minBookingTime)) {
         option.disabled = true;
@@ -225,7 +227,8 @@ export default class BookingForm extends Component {
                     bookingOffset: fetchedBookingOffset
                   },
                 });
-                let offset = parseInt(String(this.state.fieldValues.bookingOffset).substring(0,2));
+                let offsetHrs = parseInt(String(this.state.fieldValues.bookingOffset).substring(0,2));
+                let offsetMins = parseInt(String(this.state.fieldValues.bookingOffset).substring(3,5));
 
                 let options = [];
                 this.state.activities.forEach((activity) => {
@@ -238,11 +241,16 @@ export default class BookingForm extends Component {
                   if(actualTime > endTime){
                     endHours += 24;
                   }
-                  while(hours < endHours || (hours == endHours && minutes <= endMinutes)){
+                  while(hours < endHours || (hours == endHours && minutes < endMinutes)){
                     let realMinutes;
                     let realHours;
+                    let dayAfter = false;
                     if(hours == 0)
                       realHours = "00";
+                    else if(hours >= 24){
+                      realHours = (hours - 24); 
+                      dayAfter = true;
+                    }
                     else
                       realHours = hours;
                     if(String(realHours).length == 1)
@@ -258,8 +266,10 @@ export default class BookingForm extends Component {
                       "value": realHours+":"+realMinutes,
                       "name": activity.name,
                       "disabled": true,
+                      "dayAfter": dayAfter
                     });
-                    minutes += offset;
+                    hours += offsetHrs;
+                    minutes += offsetMins;
                     if(minutes >= 60){
                       hours++;
                       minutes -= 60;
@@ -284,7 +294,66 @@ export default class BookingForm extends Component {
                 restaurantName = fetchedRestaurantName;
                 var link = document.querySelector(".site-title");
                 link.text = restaurantName;
-            }
+                let fetchedRestaurantInfo = data.additionalInfo;
+                var paragraph = document.querySelector(".additionalInfo");
+                paragraph.innerHTML = fetchedRestaurantInfo;
+                let fetchedSiteLink = data.siteLink;
+                var siteLink = document.querySelector(".site-title");
+                siteLink.setAttribute("href", fetchedSiteLink);
+                var activitiesBtns = document.querySelectorAll(".ButtonUnstyled-root");
+                activitiesBtns.forEach((button) => button.disabled = true);
+                let fetchedPrimaryColor = data.primaryColor;
+                primaryColor = "rgba(" + fetchedPrimaryColor.r + ", " + fetchedPrimaryColor.g + ", " + fetchedPrimaryColor.b + ", " + fetchedPrimaryColor.a + ")";
+                var body = document.querySelector("body");
+                body.style.setProperty('--primary-color', primaryColor);
+                let fetchedSecondaryColor = data.secondaryColor;
+                secondaryColor = "rgba(" + fetchedSecondaryColor.r + ", " + fetchedSecondaryColor.g + ", " + fetchedSecondaryColor.b + ", " + fetchedSecondaryColor.a + ")";
+                var buttons = document.querySelectorAll(".ButtonUnstyled-root");
+                buttons.forEach((button) => button.style.setProperty('--secondary-color', secondaryColor));
+                var fieldInfo = document.querySelector(".fieldInfo");
+                fieldInfo.style.setProperty('--secondary-color', secondaryColor);
+                var buttons = document.querySelectorAll(".button");
+                var tableLabel = document.querySelector(".resturantTableLabel");
+                tableLabel.style.setProperty('--secondary-color', secondaryColor);
+                buttons.forEach((button) => button.style.setProperty("--secondary-color", secondaryColor));
+                var svg = document.querySelector("svg#logo");
+                svg.style.setProperty('--secondary-color', secondaryColor);
+                var headerRow = document.querySelectorAll("th");
+                headerRow.forEach((th) => th.style.setProperty("background-color", secondaryColor));
+                let evenDataRows = document.querySelectorAll("tr:nth-of-type(even) td");
+                evenDataRows.forEach((row) => row.style.setProperty("background-color", secondaryColor));
+                var fb = document.getElementById("facebook-div");
+                var msg = document.getElementById("messenger-div");
+                var ig = document.getElementById("instagram-div");
+                var wa = document.getElementById("whatsapp-div");
+                if(data.socialNetworks.facebook != null){
+                  var fblink = document.querySelector("#facebook-link");
+                  fblink.setAttribute("href", data.socialNetworks.facebook);
+                } else {
+                  fb.style.display = "none";
+                }
+                if(data.socialNetworks.messenger != null){
+                  var msglink = document.querySelector("#messenger-link");
+                  msglink.setAttribute("href", data.socialNetworks.messenger);
+                } else {
+                  msg.style.display = "none";
+                }
+                if(data.socialNetworks.instagram != null){
+                  var iglink = document.querySelector("#instagram-link");
+                  iglink.setAttribute("href", data.socialNetworks.instagram);
+                } else {
+                  ig.style.display = "none";
+                }
+                if(data.socialNetworks.whatsapp != null){
+                  var walink = document.querySelector("#whatsapp-link");
+                  walink.setAttribute("href", data.socialNetworks.whatsapp);
+                } else {
+                  wa.style.display = "none";
+                }
+                let logoPath = data.logoPath;
+                var img = document.querySelector(".logo-main > img");
+                img.setAttribute("src", logoPath);
+              }
         });
   }
 
@@ -305,13 +374,13 @@ export default class BookingForm extends Component {
 
         if(Number.isInteger(Number(value)) && Number(value) <= parseInt(bookingThreshold) && Number(value) != 0){
           this.state.statusLabel = `\u2705 Prenotabile automaticamente.`;
-          this.state.statusProp = 'yes';
+          this.state.statusProp = 'confirmed';
         } else if(Number(value) > parseInt(bookingThreshold) && Number(value) <= parseInt(bookingCapacity)) {
           this.state.statusLabel = `⚠️ Prenotabile accordandosi col ristorante.`;
-          this.state.statusProp = 'maybe';
+          this.state.statusProp = 'pending';
         } else if(Number(value) > parseInt(bookingCapacity)){
           this.state.statusLabel = `\u26D4 Non prenotabile; la richiesta supera il numero di coperti disponibili.`;
-          this.state.statusProp = 'no';
+          this.state.statusProp = 'canceled';
         } else{
           this.state.statusLabel = '';
           this.state.statusProp = '';
@@ -364,22 +433,107 @@ export default class BookingForm extends Component {
   }
 
   handleTimeChange = (time) => {
+    this.state.timeValue = time;
     this.state.errors.bookingTime = time != null ? '' : 'Questo campo è obbligatorio';
     this.setState({ selectedTime: time });
   }
 
   handleDateChange = (date) => {
+    this.handleTimeChange(null);
+    this.setState({timeValue: []});
+    this.state.options.forEach((option) => option.disabled = true);
     this.state.errors.bookingDate = date != null ? '' : 'Questo campo è obbligatorio';
     this.setState({ selectedDate: date });
+    let weekDay = date.toLocaleString('it-IT', {weekday: 'long'});
+    var activitiesBtns = document.querySelectorAll(".ButtonUnstyled-root");
+    activitiesBtns.forEach((button) => {button.disabled = false; button.classList.remove("active");});
+    activitiesBtns.forEach((button) => {
+      switch(weekDay){
+        case "lunedì":
+          this.state.activities.forEach((activity) => {
+            if(activity.name == button.innerHTML && !activity.days.includes("L")) {
+              button.disabled = true;
+            } 
+          });
+          break;
+        case "martedì":
+          this.state.activities.forEach((activity) => {
+            if(activity.name == button.innerHTML && !activity.days.includes("Ma")) {
+              button.disabled = true;
+            } 
+          });
+          break;
+        case "mercoledì":
+          this.state.activities.forEach((activity) => {
+            if(activity.name == button.innerHTML && !activity.days.includes("Me")) {
+              button.disabled = true;
+            } 
+          });
+          break;
+        case "giovedì":
+          this.state.activities.forEach((activity) => {
+            if(activity.name == button.innerHTML && !activity.days.includes("G")) {
+              button.disabled = true;
+            } 
+          });
+          break;
+        case "venerdì":
+          this.state.activities.forEach((activity) => {
+            if(activity.name == button.innerHTML && !activity.days.includes("V")) {
+              button.disabled = true;
+            } 
+          });
+          break;
+        case "sabato":
+          this.state.activities.forEach((activity) => {
+            if(activity.name == button.innerHTML && !activity.days.includes("S")) {
+              button.disabled = true;
+            } 
+          });
+          break;
+        case "domenica":
+          this.state.activities.forEach((activity) => {
+            if(activity.name == button.innerHTML && !activity.days.includes("D")) {
+              button.disabled = true;
+            } 
+          });
+          break;
+        default:
+          button.disabled = true;
+          break;
+      }
+    });
   }
 
   handleSubmit = (event) => {
     event.preventDefault();
-    console.dir(this.state);
+    console.log(this.state.guestAdditionalInfo)
     if(validateForm(this.state.errors)) {
-      console.info('Valid Form');
-    }else{
-      console.error('Invalid Form');
+      console.log(this.state.guestAdditionalInfo);
+      let databody = {
+        "id": Math.random().toString(36).slice(2),
+        "selectedDate": this.state.selectedDate,
+        "selectedTime": this.state.selectedTime,
+        "bookingGuests": this.state.bookingGuests,
+        "bookingActivity": this.state.bookingActivity,
+        "bookingStatus": this.state.statusProp,
+        "guestName": this.state.guestName,
+        "guestSurname": this.state.guestSurname,
+        "guestEmail": this.state.guestEmail,
+        "guestPhone": this.state.guestPhone,
+        "guestAdditionalInfo": this.state.guestAdditionalInfo
+      }
+
+      return fetch('/booking/add', {
+          method: 'POST',
+          body: JSON.stringify(databody),
+          headers: {
+              'Content-Type': 'application/json'
+          },
+      })
+      .then(res => res.json())
+      .then(data => console.log(data));
+    } else {
       var inputs = document.querySelectorAll(".booking,.person");
       inputs.forEach((input) => {
         if(input.value == "") {
@@ -388,6 +542,10 @@ export default class BookingForm extends Component {
           input.setAttribute("style", "border: none;");
         }
       });
+      var textarea = document.querySelector("textarea");
+      if(textarea.value.length > 1000){
+        textarea.setAttribute("style", "border-color: red; border-width: 2px; border-style: solid; border-radius: 1%; transition-duration: 0.1s;");
+      }
       var checkbox = document.querySelector("#guestPrivacy");
       var divPrivacy = document.querySelector(".guestPrivacy");
       if(!checkbox.checked){
@@ -418,7 +576,7 @@ export default class BookingForm extends Component {
             <div className="bookingControls">
             <div className="bookingDate">
                 <label className="booking">Data di prenotazione* {errors.bookingDate.length > 0 && <span className='error'>{errors.bookingDate}</span>}
-                    <DatePicker className="booking" selected={this.state.selectedDate} 
+                    <DatePicker className="booking" placeholderText="Select..." selected={this.state.selectedDate} 
                     onChange={this.handleDateChange} 
                     dateFormat="dd-MM-yyyy" 
                     minDate={new Date()} noValidate/></label>
@@ -433,7 +591,7 @@ export default class BookingForm extends Component {
               </div>
               <div className="bookingTime">
               <label className="booking">Ora di prenotazione* {errors.bookingTime.length > 0 && <span className='error'>{errors.bookingTime}</span>}
-                <Select id="timeSelectors" className="booking" options={options} theme={(theme) => ({
+                <Select id="timeSelectors" value={this.state.timeValue} className="booking" options={options} theme={(theme) => ({
                   ...theme,
                   borderRadius: 0,
                   colors: {

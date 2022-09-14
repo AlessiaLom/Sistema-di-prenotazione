@@ -157,6 +157,27 @@ recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (req, 
         });
 });
 
+recordRoutes.route("/booking/add").post(function (req, response) {
+    let db_connect = dbo.getDb();
+    let myobj = {
+        id: req.body.id,
+        selectedDate: req.body.selectedDate,
+        selectedTime: req.body.selectedTime,
+        bookingGuests: req.body.bookingGuests,
+        bookingActivity: req.body.bookingActivity,
+        bookingStatus: req.body.bookingStatus,
+        guestName: req.body.guestName,
+        guestSurname: req.body.guestSurname,
+        guestEmail: req.body.guestEmail,
+        guestPhone: req.body.guestPhone,
+        guestAdditionalInfo: req.body.guestAdditionalInfo
+    };
+    db_connect.collection("booking").insertOne(myobj, function (err, res) {
+        if (err) throw err;
+        response.json(res);
+    });
+});
+
 /**
  * AUTO GENERATED METHODS ----------------------------------------
  */
