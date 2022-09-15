@@ -605,8 +605,8 @@ export default class BookingForm extends Component {
                   borderRadius: 0,
                   colors: {
                     ...theme.colors,
-                    primary25: 'hotpink',
-                    primary: 'black',
+                    primary25: secondaryColor,
+                    primary: primaryColor,
                   },})}
                   onChange={this.handleTimeChange}
                   isOptionDisabled={(option) => option.disabled}

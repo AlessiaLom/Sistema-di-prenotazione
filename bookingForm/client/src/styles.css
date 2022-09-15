@@ -254,6 +254,10 @@ table{
   font-size: 2rem;
 }
 
+.site-title:hover, #facebook-link:hover, #messenger-link:hover, #instagram-link:hover, #whatsapp-link:hover {
+  filter: brightness(85%);  
+}
+
 .nav ul {
   padding: 0;
   margin: 0;
