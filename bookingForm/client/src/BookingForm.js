@@ -71,7 +71,7 @@ const CustomButton = styled(ButtonUnstyled)(
   cursor: pointer;
 
   &:hover {
-    background-color: grey;
+    filter: brightness(85%);
   }
 
   &.${buttonUnstyledClasses.active} {
@@ -507,13 +507,13 @@ export default class BookingForm extends Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
-    console.log(this.state.guestAdditionalInfo)
     if(validateForm(this.state.errors)) {
-      console.log(this.state.guestAdditionalInfo);
+      let correctFormatDate = this.state.selectedDate.getFullYear() + '-' + this.state.selectedDate.getMonth() + '-' + this.state.selectedDate.getDate();
+      let correctFormatTime = this.state.selectedTime.value;
       let databody = {
         "id": Math.random().toString(36).slice(2),
-        "selectedDate": this.state.selectedDate,
-        "selectedTime": this.state.selectedTime,
+        "selectedDate": correctFormatDate,
+        "selectedTime": correctFormatTime,
         "bookingGuests": this.state.bookingGuests,
         "bookingActivity": this.state.bookingActivity,
         "bookingStatus": this.state.statusProp,

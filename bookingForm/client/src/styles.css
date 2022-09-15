@@ -217,19 +217,19 @@ table{
   color: var(--secondary-color);
 }
 
-.bookingStatus-yes{
+.bookingStatus-confirmed{
   color: greenyellow;
   font-weight: bold;
   margin-bottom: 5%;
 }
 
-.bookingStatus-no{
+.bookingStatus-canceled{
   color: #cf153a;
   font-weight: bold;
   margin-bottom: 5%;
 }
 
-.bookingStatus-maybe{
+.bookingStatus-pending{
   color: yellow;
   font-weight: bold;
   margin-bottom: 5%;
