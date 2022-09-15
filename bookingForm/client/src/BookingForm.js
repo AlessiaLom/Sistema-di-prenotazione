@@ -7,17 +7,13 @@ import CustomTable from "./CustomTable";
 import Stack from '@mui/material/Stack';
 
 import 'react-datepicker/dist/react-datepicker.css'
-import { Button } from "@material-ui/core";
 import ButtonUnstyled, { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled';
 import { styled } from '@mui/system';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { buttonBaseClasses } from "@mui/material";
 
-let isSubmitCorrect = false;
 let restaurantName = '';
 let activitiesList = [];
-let socialNetworks = [];
 let primaryColor;
 let secondaryColor = "black";
 export {secondaryColor};
@@ -181,7 +177,7 @@ export default class BookingForm extends Component {
     const minMns = nowMins + forewarningMns;
     const minBookingTime = String(minHours) + ":" + String(minMns);
     options.forEach((option) => {
-      if(option.name != name || (isToday && option.value <= minBookingTime)) {
+      if(option.name !== name || (isToday && option.value <= minBookingTime)) {
         option.disabled = true;
       } else {
         option.disabled = false;
@@ -190,7 +186,7 @@ export default class BookingForm extends Component {
     this.state.options = options;
     this.state.bookingActivity = name;
     this.state.activities.forEach((activity) => {
-      if(activity.name == name){
+      if(activity.name === name){
         this.state.activityCapacity = activity.spots;
       }
     })
@@ -243,11 +239,11 @@ export default class BookingForm extends Component {
                   if(actualTime > endTime){
                     endHours += 24;
                   }
-                  while(hours < endHours || (hours == endHours && minutes < endMinutes)){
+                  while(hours < endHours || (hours === endHours && minutes < endMinutes)){
                     let realMinutes;
                     let realHours;
                     let dayAfter = false;
-                    if(hours == 0)
+                    if(hours === 0)
                       realHours = "00";
                     else if(hours >= 24){
                       realHours = (hours - 24); 
@@ -255,13 +251,13 @@ export default class BookingForm extends Component {
                     }
                     else
                       realHours = hours;
-                    if(String(realHours).length == 1)
+                    if(String(realHours).length === 1)
                       realHours = "0" + String(realHours);
-                    if(minutes == 0)
+                    if(minutes === 0)
                       realMinutes = "00";
                     else
                       realMinutes = minutes;
-                      if(String(realMinutes).length == 1)
+                      if(String(realMinutes).length === 1)
                       realMinutes = "0" + String(realMinutes);
                     options.push({
                       "label": realHours+":"+realMinutes,
@@ -314,7 +310,7 @@ export default class BookingForm extends Component {
                 buttons.forEach((button) => button.style.setProperty('--secondary-color', secondaryColor));
                 var fieldInfo = document.querySelector(".fieldInfo");
                 fieldInfo.style.setProperty('--secondary-color', secondaryColor);
-                var buttons = document.querySelectorAll(".button");
+                buttons = document.querySelectorAll(".button");
                 var tableLabel = document.querySelector(".resturantTableLabel");
                 tableLabel.style.setProperty('--secondary-color', secondaryColor);
                 buttons.forEach((button) => button.style.setProperty("--secondary-color", secondaryColor));
@@ -372,6 +368,7 @@ export default class BookingForm extends Component {
 
     switch (name) {
       case 'bookingGuests':
+        var submitButton = document.querySelector(".button");
         errors.bookingGuests =
         value.length > 0
         ? (Number.isInteger(Number(value)) && Number(value) >= 1
@@ -379,15 +376,18 @@ export default class BookingForm extends Component {
           : 'Devi inserire un numero intero maggiore di 1')
         : 'Questo campo è obbligatorio';
 
-        if(Number.isInteger(Number(value)) && Number(value) <= parseInt(bookingThreshold) && Number(value) != 0){
+        if(Number.isInteger(Number(value)) && Number(value) <= parseInt(bookingThreshold) && Number(value) !== 0){
           this.state.statusLabel = `\u2705 Prenotabile automaticamente.`;
           this.state.statusProp = 'confirmed';
+          submitButton.disabled = false;
         } else if(Number(value) > parseInt(bookingThreshold) && Number(value) <= parseInt(bookingCapacity)) {
           this.state.statusLabel = `⚠️ Prenotabile accordandosi col ristorante.`;
           this.state.statusProp = 'pending';
+          submitButton.disabled = false;
         } else if(Number(value) > parseInt(bookingCapacity)){
           this.state.statusLabel = `\u26D4 Non prenotabile; la richiesta supera il numero di coperti disponibili.`;
           this.state.statusProp = 'canceled';
+          submitButton.disabled = true;
         } else{
           this.state.statusLabel = '';
           this.state.statusProp = '';
@@ -458,49 +458,49 @@ export default class BookingForm extends Component {
       switch(weekDay){
         case "lunedì":
           this.state.activities.forEach((activity) => {
-            if(activity.name == button.innerHTML && !activity.days.includes("L")) {
+            if(activity.name === button.innerHTML && !activity.days.includes("L")) {
               button.disabled = true;
             } 
           });
           break;
         case "martedì":
           this.state.activities.forEach((activity) => {
-            if(activity.name == button.innerHTML && !activity.days.includes("Ma")) {
+            if(activity.name === button.innerHTML && !activity.days.includes("Ma")) {
               button.disabled = true;
             } 
           });
           break;
         case "mercoledì":
           this.state.activities.forEach((activity) => {
-            if(activity.name == button.innerHTML && !activity.days.includes("Me")) {
+            if(activity.name === button.innerHTML && !activity.days.includes("Me")) {
               button.disabled = true;
             } 
           });
           break;
         case "giovedì":
           this.state.activities.forEach((activity) => {
-            if(activity.name == button.innerHTML && !activity.days.includes("G")) {
+            if(activity.name === button.innerHTML && !activity.days.includes("G")) {
               button.disabled = true;
             } 
           });
           break;
         case "venerdì":
           this.state.activities.forEach((activity) => {
-            if(activity.name == button.innerHTML && !activity.days.includes("V")) {
+            if(activity.name === button.innerHTML && !activity.days.includes("V")) {
               button.disabled = true;
             } 
           });
           break;
         case "sabato":
           this.state.activities.forEach((activity) => {
-            if(activity.name == button.innerHTML && !activity.days.includes("S")) {
+            if(activity.name === button.innerHTML && !activity.days.includes("S")) {
               button.disabled = true;
             } 
           });
           break;
         case "domenica":
           this.state.activities.forEach((activity) => {
-            if(activity.name == button.innerHTML && !activity.days.includes("D")) {
+            if(activity.name === button.innerHTML && !activity.days.includes("D")) {
               button.disabled = true;
             } 
           });
@@ -545,7 +545,7 @@ export default class BookingForm extends Component {
       this.notifyError();
       var inputs = document.querySelectorAll(".booking,.person");
       inputs.forEach((input) => {
-        if(input.value == "") {
+        if(input.value === "") {
           input.setAttribute("style", "border-color: red; border-style: solid; border-radius: 1%; transition-duration: 0.1s;");
         } else {
           input.setAttribute("style", "border: none;");

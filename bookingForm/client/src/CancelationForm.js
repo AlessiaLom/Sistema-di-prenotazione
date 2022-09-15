@@ -1,10 +1,6 @@
 import React from "react";
 import { Component } from "react";
-import Select from "react-select"
 import { ToastContainer, toast } from "react-toastify";
-import HeaderForm from "./BookingHeader";
-import DatePicker from "react-datepicker";
-import CustomTable from "./CustomTable";
 
 import 'react-datepicker/dist/react-datepicker.css'
 import CancelationHeader from "./CancelationHeader";
@@ -260,9 +256,9 @@ notifyError = (msg) => {
       }
     } else {
       this.notifyError("Riempire tutti i campi...");
-      var inputs = document.querySelectorAll("input");
+      inputs = document.querySelectorAll("input");
       inputs.forEach((input) => {
-        if(input.value == "") {
+        if(input.value === "") {
           input.setAttribute("style", "border-color: red; border-style: solid; border-radius: 1%; transition-duration: 0.1s;");
         } else {
           input.setAttribute("style", "border: none;");
