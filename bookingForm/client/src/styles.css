@@ -9,6 +9,19 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
+html { height: 100%; }
+
+body {
+    min-height:100%; 
+    position:relative; 
+    padding-bottom: 50px;
+}
+
+footer { 
+    position: absolute; 
+    left: 0 ; right: 0; bottom: 0; 
+}
+
 body {
   background: linear-gradient(110.1deg, var(--primary-color) 44.2%, var(--secondary-color) 138.2%);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -296,6 +309,7 @@ img{
 }
 
 footer{
+  height: 50px;
   background-color: #333;
   color: white;
   text-align: center;
