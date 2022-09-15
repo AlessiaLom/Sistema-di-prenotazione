@@ -3,7 +3,7 @@ import { Link, useMatch, useResolvedPath } from "react-router-dom"
 export default function Navbar() {
   return (
     <nav className="nav">
-      <a href="/" className="site-title"></a>
+      <a href="/" target={'_blank'} className="site-title"></a>
       <p className="additionalInfo"></p>
       <ul>
         <CustomLink to="/booking">Prenota</CustomLink>
