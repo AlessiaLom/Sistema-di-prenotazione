@@ -150,7 +150,9 @@ notifyError = (msg) => {
                 }
                 let logoPath = data.logoPath;
                 var img = document.querySelector(".logo-main > img");
+                var favicon = document.querySelector("#favicon");
                 img.setAttribute("src", logoPath);
+                favicon.setAttribute("href", logoPath);
               }
               const { search } = window.location;
               const deleteSuccess = (new URLSearchParams(search)).get('cancelation');
