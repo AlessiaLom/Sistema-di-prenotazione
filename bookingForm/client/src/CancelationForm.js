@@ -1,12 +1,17 @@
 import React from "react";
 import { Component } from "react";
 import Select from "react-select"
+import { ToastContainer, toast } from "react-toastify";
 import HeaderForm from "./BookingHeader";
 import DatePicker from "react-datepicker";
 import CustomTable from "./CustomTable";
 
 import 'react-datepicker/dist/react-datepicker.css'
 import CancelationHeader from "./CancelationHeader";
+
+let bookings = [];
+let bookingFocus;
+let restaurantName, primaryColor, secondaryColor;
 
 const validEmailRegex = RegExp(
   /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
@@ -37,6 +42,123 @@ export default class CancelationForm extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  notifySuccess = () => {
+    toast.success('Cancellazione avvenuta con succcesso!', {
+      toastId: 'success1',
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      });
+}
+
+notifyError = (msg) => {
+  toast.error(msg, {
+    toastId: 'error1',
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    });
+}
+
+  componentDidMount(){
+    fetch("/bookings/0001", {
+      method: "GET",
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+        .then(data => {
+            if (data) {
+                let fetchedBookings = [];
+                data.forEach((d) => {
+                  if(d.restaurantId === '0001'){
+                    fetchedBookings.push(d);
+                  }
+                })
+                bookings = fetchedBookings;
+            }
+        });
+
+    fetch("/restaurant_info/0001", {
+      method: "GET",
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+        .then(data => {
+            if (data) {
+                let fetchedRestaurantName = data.restaurantName;
+                restaurantName = fetchedRestaurantName;
+                var link = document.querySelector(".site-title");
+                link.text = restaurantName;
+                let fetchedRestaurantInfo = data.additionalInfo;
+                var paragraph = document.querySelector(".additionalInfo");
+                paragraph.innerHTML = fetchedRestaurantInfo;
+                let fetchedSiteLink = data.siteLink;
+                var siteLink = document.querySelector(".site-title");
+                siteLink.setAttribute("href", fetchedSiteLink);
+                let fetchedPrimaryColor = data.primaryColor;
+                primaryColor = "rgba(" + fetchedPrimaryColor.r + ", " + fetchedPrimaryColor.g + ", " + fetchedPrimaryColor.b + ", " + fetchedPrimaryColor.a + ")";
+                var body = document.querySelector("body");
+                body.style.setProperty('--primary-color', primaryColor);
+                let fetchedSecondaryColor = data.secondaryColor;
+                secondaryColor = "rgba(" + fetchedSecondaryColor.r + ", " + fetchedSecondaryColor.g + ", " + fetchedSecondaryColor.b + ", " + fetchedSecondaryColor.a + ")";
+                var buttons = document.querySelectorAll(".button");
+                buttons.forEach((button) => button.style.setProperty("--secondary-color", secondaryColor));
+                var svg = document.querySelector("svg#logo");
+                svg.style.setProperty('--secondary-color', secondaryColor);
+                var fb = document.getElementById("facebook-div");
+                var msg = document.getElementById("messenger-div");
+                var ig = document.getElementById("instagram-div");
+                var wa = document.getElementById("whatsapp-div");
+                if(data.socialNetworks.facebook != null){
+                  var fblink = document.querySelector("#facebook-link");
+                  fblink.setAttribute("href", data.socialNetworks.facebook);
+                } else {
+                  fb.style.display = "none";
+                }
+                if(data.socialNetworks.messenger != null){
+                  var msglink = document.querySelector("#messenger-link");
+                  msglink.setAttribute("href", data.socialNetworks.messenger);
+                } else {
+                  msg.style.display = "none";
+                }
+                if(data.socialNetworks.instagram != null){
+                  var iglink = document.querySelector("#instagram-link");
+                  iglink.setAttribute("href", data.socialNetworks.instagram);
+                } else {
+                  ig.style.display = "none";
+                }
+                if(data.socialNetworks.whatsapp != null){
+                  var walink = document.querySelector("#whatsapp-link");
+                  walink.setAttribute("href", data.socialNetworks.whatsapp);
+                } else {
+                  wa.style.display = "none";
+                }
+                let logoPath = data.logoPath;
+                var img = document.querySelector(".logo-main > img");
+                img.setAttribute("src", logoPath);
+              }
+              const { search } = window.location;
+              const deleteSuccess = (new URLSearchParams(search)).get('cancelation');
+              if (deleteSuccess === 'success') {
+                this.notifySuccess();
+              }
+        });
   }
 
   handleChange = (event) => {
@@ -86,11 +208,66 @@ export default class CancelationForm extends Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
-    console.dir(this.state);
     if(validateForm(this.state.errors)) {
-      console.info('Valid Form')
-    }else{
-      console.error('Invalid Form')
+      var inputs = document.querySelectorAll("input");
+      inputs.forEach((input) => {
+        input.setAttribute("style", "border: none;");
+      })
+      let found = false;
+      bookings.forEach((booking) => {
+        if(booking.id === this.state.prenotationID){
+          found = true;
+          bookingFocus = booking;
+        }
+      });
+      if(!found){
+        this.notifyError("Nessuna prenotazione trovata con quell'ID...");
+        var inputID = document.querySelector("input:first-of-type");
+        inputID.setAttribute("style", "border-color: red; border-style: solid; border-radius: 1%; transition-duration: 0.1s;");
+      } else {
+        if(bookingFocus.guestName !== this.state.prenotationName){
+          this.notifyError("Il nome associato alla prenotazione non corrisponde...");
+          var inputName = document.querySelector(".prenotationName input");
+          inputName.setAttribute("style", "border-color: red; border-style: solid; border-radius: 1%; transition-duration: 0.1s;");
+        } else if(bookingFocus.guestSurname !== this.state.prenotationSurname){
+          this.notifyError("Il cognome associato alla prenotazione non corrisponde...");
+          var inputSurname = document.querySelector(".prenotationSurname input");
+          inputSurname.setAttribute("style", "border-color: red; border-style: solid; border-radius: 1%; transition-duration: 0.1s;");
+        } else if(bookingFocus.guestEmail !== this.state.prenotationEmail){
+          this.notifyError("La mail associata alla prenotazione non corrisponde...");
+          var inputEmail = document.querySelector(".prenotationEmail input");
+          inputEmail.setAttribute("style", "border-color: red; border-style: solid; border-radius: 1%; transition-duration: 0.1s;");
+        } else if(bookingFocus.guestPhone !== this.state.prenotationPhone){
+          this.notifyError("Il numero di telefono associato alla prenotazione non corrisponde...");
+          var inputPhone = document.querySelector(".prenotationPhone input");
+          inputPhone.setAttribute("style", "border-color: red; border-style: solid; border-radius: 1%; transition-duration: 0.1s;");
+        } else {
+          let databody = {
+            "id": "0001",
+            "bookingId": this.state.prenotationID,
+            }
+          window.location.href = window.location.pathname + '?cancelation=success';
+          return fetch('/booking/update', {
+              method: 'POST',
+              body: JSON.stringify(databody),
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+          })
+          .then(res => res.json())
+          .then(data => console.log(data));
+        }
+      }
+    } else {
+      this.notifyError("Riempire tutti i campi...");
+      var inputs = document.querySelectorAll("input");
+      inputs.forEach((input) => {
+        if(input.value == "") {
+          input.setAttribute("style", "border-color: red; border-style: solid; border-radius: 1%; transition-duration: 0.1s;");
+        } else {
+          input.setAttribute("style", "border: none;");
+        }
+      });
     }
   } 
 
@@ -126,6 +303,19 @@ export default class CancelationForm extends Component {
             </div>
           </form>
         </div>
+        <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            />
+            {/* Same as */}
+        <ToastContainer />
       </div>
     );
   }

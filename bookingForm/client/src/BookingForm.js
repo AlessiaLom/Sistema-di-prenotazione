@@ -14,6 +14,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { buttonBaseClasses } from "@mui/material";
 
+let isSubmitCorrect = false;
 let restaurantName = '';
 let activitiesList = [];
 let socialNetworks = [];
@@ -127,9 +128,9 @@ export default class BookingForm extends Component {
     this.componentDidMount = this.componentDidMount.bind(this);
   }
 
-  notify = () => {
-    if(validateForm(this.state.errors)) {
+  notifySuccess = () => {
       toast.success('Prenotazione avvenuta con succcesso!', {
+        toastId: 'success1',
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -138,19 +139,20 @@ export default class BookingForm extends Component {
         draggable: true,
         progress: undefined,
         });
-    } else {
-      toast.error('Prenotazione fallita!', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        });
-    }
   }
   
+  notifyError = () => {
+    toast.error('Prenotazione fallita!', {
+      toastId: 'error1',
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      });
+  }
 
   handleClick = (event, name) => {
     this.handleTimeChange(null);
@@ -354,6 +356,11 @@ export default class BookingForm extends Component {
                 var img = document.querySelector(".logo-main > img");
                 img.setAttribute("src", logoPath);
               }
+              const { search } = window.location;
+              const deleteSuccess = (new URLSearchParams(search)).get('submitting');
+              if (deleteSuccess === 'success') {
+                this.notifySuccess();
+              }
         });
   }
 
@@ -512,6 +519,7 @@ export default class BookingForm extends Component {
       let correctFormatTime = this.state.selectedTime.value;
       let databody = {
         "id": Math.random().toString(36).slice(2),
+        "restaurantId": "0001",
         "selectedDate": correctFormatDate,
         "selectedTime": correctFormatTime,
         "bookingGuests": this.state.bookingGuests,
@@ -523,7 +531,7 @@ export default class BookingForm extends Component {
         "guestPhone": this.state.guestPhone,
         "guestAdditionalInfo": this.state.guestAdditionalInfo
       }
-
+      window.location.href = window.location.pathname + '?submitting=success';
       return fetch('/booking/add', {
           method: 'POST',
           body: JSON.stringify(databody),
@@ -534,6 +542,7 @@ export default class BookingForm extends Component {
       .then(res => res.json())
       .then(data => console.log(data));
     } else {
+      this.notifyError();
       var inputs = document.querySelectorAll(".booking,.person");
       inputs.forEach((input) => {
         if(input.value == "") {
@@ -642,7 +651,7 @@ export default class BookingForm extends Component {
                 </div>
             </div>
             <div className="submit">
-              <button className="button" onClick={this.notify}>Invia</button>
+              <button className="button">Invia</button>
             </div>
           </form>
         </div>

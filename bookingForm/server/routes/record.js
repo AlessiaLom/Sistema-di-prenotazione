@@ -59,8 +59,9 @@ recordRoutes.route("/bookings/:id").get(function (req, res) {
     let db_connect = dbo.getDb();
     let myquery = { restaurantId: req.params.id };
     db_connect
-        .collection("booking") // <------------- rename collection to bookingS
-        .findOne(myquery, function (err, result) {
+        .collection("booking")
+        .find({})
+        .toArray(function (err, result) {
             if (err) throw err;
             res.json(result);
         });
@@ -157,10 +158,12 @@ recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (req, 
         });
 });
 
+//Add a prenotation
 recordRoutes.route("/booking/add").post(function (req, response) {
     let db_connect = dbo.getDb();
     let myobj = {
         id: req.body.id,
+        restaurantId: req.body.restaurantId,
         selectedDate: req.body.selectedDate,
         selectedTime: req.body.selectedTime,
         bookingGuests: req.body.bookingGuests,
@@ -176,6 +179,27 @@ recordRoutes.route("/booking/add").post(function (req, response) {
         if (err) throw err;
         response.json(res);
     });
+});
+
+// Cancel a prenotation
+recordRoutes.route("/booking/update").post(function (req, response) {
+    let db_connect = dbo.getDb();
+    let myquery = {
+        restaurantId: req.body.id,
+        id: req.body.bookingId
+    };
+    let newvalues = {
+        $set: {
+            bookingStatus: 'canceled'
+        },
+    };
+    db_connect
+        .collection("booking")
+        .updateOne(myquery, newvalues, function (err, res) {
+            if (err) throw err;
+            // console.log("1 document updated");
+            response.json(res);
+        });
 });
 
 /**
