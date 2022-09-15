@@ -111,10 +111,13 @@ notifyError = (msg) => {
                 primaryColor = "rgba(" + fetchedPrimaryColor.r + ", " + fetchedPrimaryColor.g + ", " + fetchedPrimaryColor.b + ", " + fetchedPrimaryColor.a + ")";
                 var body = document.querySelector("body");
                 body.style.setProperty('--primary-color', primaryColor);
+                body.style.setProperty('--secondary-color', secondaryColor);
                 let fetchedSecondaryColor = data.secondaryColor;
                 secondaryColor = "rgba(" + fetchedSecondaryColor.r + ", " + fetchedSecondaryColor.g + ", " + fetchedSecondaryColor.b + ", " + fetchedSecondaryColor.a + ")";
                 var buttons = document.querySelectorAll(".button");
                 buttons.forEach((button) => button.style.setProperty("--secondary-color", secondaryColor));
+                var fieldInfo = document.querySelector(".fieldInfo");
+                fieldInfo.style.setProperty('--secondary-color', secondaryColor);
                 var svg = document.querySelector("svg#logo");
                 svg.style.setProperty('--secondary-color', secondaryColor);
                 var fb = document.getElementById("facebook-div");
