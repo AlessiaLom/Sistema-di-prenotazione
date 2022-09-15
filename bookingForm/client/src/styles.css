@@ -165,6 +165,7 @@ button:disabled, button[disabled]{
 }
 
 .button:hover {
+  cursor: pointer;
   filter: brightness(85%);
   color: white;
 }
@@ -255,6 +256,7 @@ table{
 }
 
 .site-title:hover, #facebook-link:hover, #messenger-link:hover, #instagram-link:hover, #whatsapp-link:hover {
+  cursor: pointer;
   filter: brightness(85%);  
 }
 
@@ -324,6 +326,7 @@ svg#logo{
 
 .additionalInfo{
   font-size: small;
+  font-style: italic;
 }
 
 textarea{
