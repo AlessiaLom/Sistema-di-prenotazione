@@ -305,9 +305,10 @@ export default class BookingForm extends Component {
                 let fetchedPrimaryColor = data.primaryColor;
                 primaryColor = "rgba(" + fetchedPrimaryColor.r + ", " + fetchedPrimaryColor.g + ", " + fetchedPrimaryColor.b + ", " + fetchedPrimaryColor.a + ")";
                 var body = document.querySelector("body");
-                body.style.setProperty('--primary-color', primaryColor);
                 let fetchedSecondaryColor = data.secondaryColor;
                 secondaryColor = "rgba(" + fetchedSecondaryColor.r + ", " + fetchedSecondaryColor.g + ", " + fetchedSecondaryColor.b + ", " + fetchedSecondaryColor.a + ")";
+                body.style.setProperty('--primary-color', primaryColor);
+                body.style.setProperty('--secondary-color', secondaryColor);
                 var buttons = document.querySelectorAll(".ButtonUnstyled-root");
                 buttons.forEach((button) => button.style.setProperty('--secondary-color', secondaryColor));
                 var fieldInfo = document.querySelector(".fieldInfo");
@@ -376,7 +377,6 @@ export default class BookingForm extends Component {
                     if(data.restaurantId === "0001" && data.bookings != null){
                       bookings = data.bookings;
                     }
-                    console.dir(bookings);
                 }
             });
   }
