@@ -14,6 +14,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 let restaurantName = '';
 let activitiesList = [];
+let bookings = [];
+const restaurantId = "0001";
 let primaryColor;
 let secondaryColor = "black";
 export {secondaryColor};
@@ -303,9 +305,10 @@ export default class BookingForm extends Component {
                 let fetchedPrimaryColor = data.primaryColor;
                 primaryColor = "rgba(" + fetchedPrimaryColor.r + ", " + fetchedPrimaryColor.g + ", " + fetchedPrimaryColor.b + ", " + fetchedPrimaryColor.a + ")";
                 var body = document.querySelector("body");
-                body.style.setProperty('--primary-color', primaryColor);
                 let fetchedSecondaryColor = data.secondaryColor;
                 secondaryColor = "rgba(" + fetchedSecondaryColor.r + ", " + fetchedSecondaryColor.g + ", " + fetchedSecondaryColor.b + ", " + fetchedSecondaryColor.a + ")";
+                body.style.setProperty('--primary-color', primaryColor);
+                body.style.setProperty('--secondary-color', secondaryColor);
                 var buttons = document.querySelectorAll(".ButtonUnstyled-root");
                 buttons.forEach((button) => button.style.setProperty('--secondary-color', secondaryColor));
                 var fieldInfo = document.querySelector(".fieldInfo");
@@ -360,6 +363,22 @@ export default class BookingForm extends Component {
                 this.notifySuccess();
               }
         });
+
+        fetch("/bookings/0001", {
+          method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+            .then(data => {
+                if (data) {
+                    if(data.restaurantId === "0001" && data.bookings != null){
+                      bookings = data.bookings;
+                    }
+                }
+            });
   }
 
   handleChange = (event) => {
@@ -519,11 +538,10 @@ export default class BookingForm extends Component {
     if(validateForm(this.state.errors)) {
       let correctFormatDate = this.state.selectedDate.getFullYear() + '-' + this.state.selectedDate.getMonth() + '-' + this.state.selectedDate.getDate();
       let correctFormatTime = this.state.selectedTime.value;
-      let databody = {
+      let newBooking = {
         "id": Math.random().toString(36).slice(2),
-        "restaurantId": "0001",
-        "selectedDate": correctFormatDate,
-        "selectedTime": correctFormatTime,
+        "bookingDate": correctFormatDate,
+        "bookingTime": correctFormatTime,
         "bookingGuests": this.state.bookingGuests,
         "bookingActivity": this.state.bookingActivity,
         "bookingStatus": this.state.statusProp,
@@ -534,9 +552,9 @@ export default class BookingForm extends Component {
         "guestAdditionalInfo": this.state.guestAdditionalInfo
       }
       window.location.href = window.location.pathname + '?submitting=success';
-      return fetch('/booking/add', {
+      return fetch('/booking/add/' + restaurantId, {
           method: 'POST',
-          body: JSON.stringify(databody),
+          body: JSON.stringify(newBooking),
           headers: {
               'Content-Type': 'application/json'
           },

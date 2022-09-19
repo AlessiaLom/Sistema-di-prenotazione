@@ -78,10 +78,8 @@ notifyError = (msg) => {
         .then(data => {
             if (data) {
                 let fetchedBookings = [];
-                data.forEach((d) => {
-                  if(d.restaurantId === '0001'){
+                data.bookings.forEach((d) => {
                     fetchedBookings.push(d);
-                  }
                 })
                 bookings = fetchedBookings;
             }
@@ -110,10 +108,10 @@ notifyError = (msg) => {
                 let fetchedPrimaryColor = data.primaryColor;
                 primaryColor = "rgba(" + fetchedPrimaryColor.r + ", " + fetchedPrimaryColor.g + ", " + fetchedPrimaryColor.b + ", " + fetchedPrimaryColor.a + ")";
                 var body = document.querySelector("body");
-                body.style.setProperty('--primary-color', primaryColor);
-                body.style.setProperty('--secondary-color', secondaryColor);
                 let fetchedSecondaryColor = data.secondaryColor;
                 secondaryColor = "rgba(" + fetchedSecondaryColor.r + ", " + fetchedSecondaryColor.g + ", " + fetchedSecondaryColor.b + ", " + fetchedSecondaryColor.a + ")";
+                body.style.setProperty('--primary-color', primaryColor);
+                body.style.setProperty('--secondary-color', secondaryColor);
                 var buttons = document.querySelectorAll(".button");
                 buttons.forEach((button) => button.style.setProperty("--secondary-color", secondaryColor));
                 var fieldInfo = document.querySelector(".fieldInfo");
