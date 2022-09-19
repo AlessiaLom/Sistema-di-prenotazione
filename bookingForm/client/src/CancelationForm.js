@@ -78,10 +78,8 @@ notifyError = (msg) => {
         .then(data => {
             if (data) {
                 let fetchedBookings = [];
-                data.forEach((d) => {
-                  if(d.restaurantId === '0001'){
+                data.bookings.forEach((d) => {
                     fetchedBookings.push(d);
-                  }
                 })
                 bookings = fetchedBookings;
             }

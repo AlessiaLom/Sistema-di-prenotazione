@@ -28,6 +28,7 @@ const dbo = require("./../db/conn.js");// This will help us connect to the datab
 // const { OAuth2Client } = require('google-auth-library')
 // const client = new OAuth2Client(process.env.CLIENT_ID)
 const {google} = require('googleapis');
+const { request } = require("express");
 var oauth2Client = new google.auth.OAuth2(
     '504181834497-omrl5mnes3qmvvu39hu5v404lemlfq1c.apps.googleusercontent.com',
     "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",
@@ -201,23 +202,30 @@ recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (reque
 
 //CLIENT-SIDE QUERIES
 //Add a prenotation
-recordRoutes.route("/booking/add").post(function (req, response) {
+recordRoutes.route("/booking/add/:id").post(function (request, response) {
     let db_connect = dbo.getDb();
-    let myobj = {
-        id: req.body.id,
-        restaurantId: req.body.restaurantId,
-        selectedDate: req.body.selectedDate,
-        selectedTime: req.body.selectedTime,
-        bookingGuests: req.body.bookingGuests,
-        bookingActivity: req.body.bookingActivity,
-        bookingStatus: req.body.bookingStatus,
-        guestName: req.body.guestName,
-        guestSurname: req.body.guestSurname,
-        guestEmail: req.body.guestEmail,
-        guestPhone: req.body.guestPhone,
-        guestAdditionalInfo: req.body.guestAdditionalInfo
+    let myQuery = {
+        "restaurantId": request.params.id
     };
-    db_connect.collection("booking").insertOne(myobj, function (err, res) {
+    let newValues = {
+        $push: { bookings: {
+            id: request.body.id,
+            bookingDate: request.body.bookingDate,
+            bookingTime: request.body.bookingTime,
+            bookingGuests: request.body.bookingGuests,
+            bookingActivity: request.body.bookingActivity,
+            bookingStatus: request.body.bookingStatus,
+            guestName: request.body.guestName,
+            guestSurname: request.body.guestSurname,
+            guestEmail: request.body.guestEmail,
+            guestPhone: request.body.guestPhone,
+            guestAdditionalInfo: request.body.guestAdditionalInfo,
+            }
+        }
+    };
+    db_connect
+    .collection("booking")
+    .updateOne(myQuery, newValues, function (err, res) {
         if (err) throw err;
         response.json(res);
     });
@@ -228,11 +236,11 @@ recordRoutes.route("/booking/update").post(function (req, response) {
     let db_connect = dbo.getDb();
     let myquery = {
         restaurantId: req.body.id,
-        id: req.body.bookingId
+        'bookings.id': req.body.bookingId
     };
     let newvalues = {
         $set: {
-            bookingStatus: 'canceled'
+            'bookings.$.bookingStatus': 'canceled'
         },
     };
     db_connect
