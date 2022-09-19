@@ -3,6 +3,21 @@ import React from 'react';
 import "./../../styles/pages.css"
 import Select from '../utility/Select';
 
+// Booking structure:
+/**
+ * id: "f2d6glgryi"
+ * bookingDate: "2022-8-24"
+ * bookingTime: "20:30"
+ * bookingGuests: "3"
+ * bookingActivity: "Aperitivo"
+ * bookingStatus: "canceled"
+ * guestName: "Andrea"
+ * guestSurname: "Foschi"
+ * guestEmail: "andrea.foschi756@gmail.com"
+ * guestPhone: "3312696285"
+ * guestAdditionalInfo: "iufhdgapugdfas"
+ */
+
 export default class Booking extends React.Component {
     constructor(props) {
         /*
@@ -49,10 +64,10 @@ export default class Booking extends React.Component {
         return (
             <tr>
                 <td scope="row">
-                    {this.state.booking.bookingName}
+                    {this.state.booking.guestName}
                 </td>
                 <td>
-                    {this.state.booking.bookingSeats}
+                    {this.state.booking.bookingGuests}
                 </td>
                 <td>
                     {this.state.booking.bookingDate}
@@ -61,8 +76,8 @@ export default class Booking extends React.Component {
                     {this.state.booking.bookingTime}
                 </td>
                 <td>
-                    {this.state.booking.email}<br></br>
-                    {this.state.booking.phone}
+                    {this.state.booking.guestEmail}<br></br>
+                    {this.state.booking.guestPhone}
                 </td>
                 <td>
                     <Select

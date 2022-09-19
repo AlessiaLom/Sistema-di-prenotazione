@@ -109,11 +109,11 @@ recordRoutes.route("/bookings/:id").get(function (request, response) {
 
 /**
  * FETCH RESTAURANT INFO
-* Fetches infos about restaurant
-*/
+ * Fetches infos about restaurant
+ */
 recordRoutes.route("/restaurant_info/:id").get(function (req, res) {
     let db_connect = dbo.getDb();
-    let myquery = { restaurantId: req.params.id };
+    let myquery = {restaurantId: req.params.id};
     db_connect
         .collection("restaurant_info") //
         .findOne(myquery, function (err, result) {
@@ -121,7 +121,6 @@ recordRoutes.route("/restaurant_info/:id").get(function (req, res) {
             res.json(result);
         });
 });
-
 
 
 /**

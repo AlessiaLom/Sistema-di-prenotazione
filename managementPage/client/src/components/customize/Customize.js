@@ -3,7 +3,7 @@ import React from 'react';
 import "./../../styles/pages.css"
 import TextForm from '../utility/TextForm';
 import ColorPicker from '../utility/ColorPicker';
-import { BsFacebook, BsInstagram, BsMessenger, BsWhatsapp } from 'react-icons/bs';
+import {BsFacebook, BsInstagram, BsMessenger, BsWhatsapp} from 'react-icons/bs';
 
 
 export default class Customize extends React.Component {
@@ -88,7 +88,7 @@ export default class Customize extends React.Component {
      * @param {*} event button click
      */
     onClick(event) {
-        const { name, value } = event.target
+        const {name, value} = event.target
         switch (name) {
             case "saveChanges":
                 fetch('/customize/save_changes/0001', {
@@ -123,7 +123,7 @@ export default class Customize extends React.Component {
     checkEmptyFields() {
         let fieldsValues = this.state.fieldsValues
         for (const field in fieldsValues) {
-            if (this.state.required.includes(field) && fieldsValues[field].trim() == '') {
+            if (this.state.required.includes(field) && fieldsValues[field].trim() === '') {
                 return true
             }
         }
@@ -137,7 +137,7 @@ export default class Customize extends React.Component {
     checkErrors() {
         let validationErrors = this.state.validationErrors
         for (const error in validationErrors) {
-            if (validationErrors[error] != '')
+            if (validationErrors[error] !== '')
                 return true
         }
         return false
@@ -148,7 +148,7 @@ export default class Customize extends React.Component {
      * @param {*} event event triggered by some change in the fields
      */
     handleChange(event) {
-        const { name, value } = event.target
+        const {name, value} = event.target
         let newValidationErrors = this.state.validationErrors
         let newFieldsValues = this.state.fieldsValues
 
@@ -156,7 +156,7 @@ export default class Customize extends React.Component {
         switch (name) {
             case "restaurantName": // There is no validation error on the minumum notice selection
                 // console.log("changed " + name + " has value " + value)
-                if (value && value.trim() != '') { // If activity name has no value, the row contains errors regarding activity name
+                if (value && value.trim() !== '') { // If activity name has no value, the row contains errors regarding activity name
                     newValidationErrors.restaurantNameError = ''
                 } else {
                     newValidationErrors.restaurantNameError = 'Campo obbligatorio'
@@ -171,6 +171,9 @@ export default class Customize extends React.Component {
             case "secondaryColorPicker":
                 // console.log("changed " + name + " has value " + value)
                 newFieldsValues.secondaryColor = value
+                break
+            case "logoPath":
+                newFieldsValues.logoPath = value
                 break;
             case "facebookLink":
                 // console.log("changed " + name + " has value " + value)
@@ -204,7 +207,7 @@ export default class Customize extends React.Component {
         // Check if are there empty fields 
         let hasEmptyFields = this.checkEmptyFields()
         return (
-            <div style={{ width: "100%", margin: "1%", padding: "1%" }}>
+            <div style={{width: "100%", margin: "1%", padding: "1%"}}>
                 <div className="d-block mb-3">
                     <h4>Info del ristorante</h4>
                     <hr></hr>
@@ -215,17 +218,18 @@ export default class Customize extends React.Component {
                         onChange={this.handleChange}
                         validationError={this.state.validationErrors.restaurantNameError}
                         name="restaurantName"
-                        placeholder="Inserisci il nome del ristorante" />
+                        placeholder="Inserisci il nome del ristorante"/>
                 </div>
                 <div className="d-block mb-3">
                     <h6> Info aggiuntive</h6>
-                    In questa sezione potrai personalizzare il messaggio visualizzato sotto il nome del ristorante ed il logo, per esempio con una frase di benvenuto.
+                    In questa sezione potrai personalizzare il messaggio visualizzato sotto il nome del ristorante ed il
+                    logo, per esempio con una frase di benvenuto.
                     <TextForm
                         value={this.state.fieldsValues.additionalInfo}
                         onChange={this.handleChange}
                         validationError={this.state.validationErrors.additionalInfoError}
                         name="additionalInfo"
-                        placeholder="Inserisci informazioni aggiuntive" />
+                        placeholder="Inserisci informazioni aggiuntive"/>
                 </div>
                 <br></br>
                 <div className="d-block mb-3">
@@ -249,7 +253,12 @@ export default class Customize extends React.Component {
                     <h4>Logo del ristorante</h4>
                     <hr></hr>
                     <div className="input-group mb-3">
-                        <input type="file" className="form-control" id="inputGroupFile02"></input>
+                        <TextForm
+                            value={this.state.fieldsValues.logoPath}
+                            name="logoPath"
+                            placeholder="Inserisci il link all'immagine del logo"
+                            onChange={this.handleChange}
+                        />
                     </div>
                 </div>
                 <br></br>
@@ -261,60 +270,60 @@ export default class Customize extends React.Component {
                     suo pulsante non compaia nel form di prenotazione</p>
                 <table>
                     <tbody>
-                        <tr>
-                            <td>
-                                <BsFacebook size={30} />
-                            </td>
-                            <td>
-                                <TextForm
-                                    value={this.state.fieldsValues.socialNetworks.facebook}
-                                    name="facebookLink"
-                                    placeholder="Inserisci il link"
-                                    onChange={this.handleChange} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <BsInstagram size={30} />
-                            </td>
-                            <td>
-                                <TextForm
-                                    value={this.state.fieldsValues.socialNetworks.instagram}
-                                    name="instagramLink"
-                                    placeholder="Inserisci il link"
-                                    onChange={this.handleChange} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <BsMessenger size={30} />
+                    <tr>
+                        <td>
+                            <BsFacebook size={30}/>
+                        </td>
+                        <td>
+                            <TextForm
+                                value={this.state.fieldsValues.socialNetworks.facebook}
+                                name="facebookLink"
+                                placeholder="Inserisci il link"
+                                onChange={this.handleChange}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <BsInstagram size={30}/>
+                        </td>
+                        <td>
+                            <TextForm
+                                value={this.state.fieldsValues.socialNetworks.instagram}
+                                name="instagramLink"
+                                placeholder="Inserisci il link"
+                                onChange={this.handleChange}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <BsMessenger size={30}/>
 
-                            </td>
-                            <td>
-                                <TextForm
-                                    value={this.state.fieldsValues.socialNetworks.messenger}
-                                    name="messengerLink"
-                                    placeholder="Inserisci il link"
-                                    onChange={this.handleChange} />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <BsWhatsapp size={30} />
+                        </td>
+                        <td>
+                            <TextForm
+                                value={this.state.fieldsValues.socialNetworks.messenger}
+                                name="messengerLink"
+                                placeholder="Inserisci il link"
+                                onChange={this.handleChange}/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <BsWhatsapp size={30}/>
 
-                            </td>
-                            <td>
-                                <TextForm
-                                    value={this.state.fieldsValues.socialNetworks.whatsapp}
-                                    name="whatsappLink"
-                                    placeholder="Inserisci il link"
-                                    onChange={this.handleChange} />
-                            </td>
-                        </tr>
+                        </td>
+                        <td>
+                            <TextForm
+                                value={this.state.fieldsValues.socialNetworks.whatsapp}
+                                name="whatsappLink"
+                                placeholder="Inserisci il link"
+                                onChange={this.handleChange}/>
+                        </td>
+                    </tr>
                     </tbody>
 
                 </table>
-                <div style={{ margin: "15 %", padding: "1 %", margin: "0", border: "0" }}>
+                <div style={{margin: "15 %", padding: "1 %"}}>
                     <button name="cancelChanges" type="button" className="btn btn-light">Annulla</button>
                     <button
                         name="saveChanges"

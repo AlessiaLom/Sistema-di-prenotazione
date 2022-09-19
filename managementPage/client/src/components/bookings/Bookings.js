@@ -6,11 +6,17 @@ import Filter from './Filter';
 import { CSVLink, CSVDownload } from "react-csv";
 import { BsDownload } from 'react-icons/bs'
 
-
+/**
+ * Checks if a date is withina date range
+ * @param date date to be checked
+ * @param fromDate lower date bound
+ * @param toDate upper date bound
+ * @returns {boolean} true if the date is within the bounds
+ */
 function isInInterval(date, fromDate, toDate) {
-    if (fromDate != '') {
+    if (fromDate !== '') {
         if (date.year >= fromDate.year) {
-            if (toDate != '') {
+            if (toDate !== '') {
                 if (date.year <= toDate.year) {
                     if (date.month >= fromDate.month
                         && date.day >= fromDate.day
@@ -29,7 +35,7 @@ function isInInterval(date, fromDate, toDate) {
         } else {
             return false
         }
-    } else if (toDate != '') {
+    } else if (toDate !== '') {
         if (date.year <= toDate.year
             && date.month <= toDate.month
             && date.day <= toDate.day) {
@@ -43,13 +49,13 @@ function isInInterval(date, fromDate, toDate) {
 }
 
 function filterByStatus(collection, status) {
-    if (status == '' || status == 'Seleziona') {
+    if (status === '' || status === 'Seleziona') {
         return collection
     }
     let filtered = {}
     Object.keys(collection).forEach((key) => {
         let booking = collection[key]
-        if (booking.bookingStatus == status) {
+        if (booking.bookingStatus === status) {
             filtered[key] = booking
         }
     })
@@ -57,13 +63,13 @@ function filterByStatus(collection, status) {
 }
 
 function filterByDate(collection, from, to) {
-    if (from == ''
-        && to == '') {
+    if (from === ''
+        && to === '') {
         return collection
     }
     let filtered = {}
     let fromDate = ''
-    if (from != '') {
+    if (from !== '') {
         fromDate = {
             year: parseInt(from.split("-")[0]),
             month: parseInt(from.split("-")[1]),
@@ -71,7 +77,7 @@ function filterByDate(collection, from, to) {
         }
     }
     let toDate = ''
-    if (to != '') {
+    if (to !== '') {
         toDate = {
             year: parseInt(to.split("-")[0]),
             month: parseInt(to.split("-")[1]),
@@ -190,6 +196,9 @@ export default class Bookings extends React.Component {
         let bookingsToBeShown = Object.values(this.getComponents())
         let csvData = Object.values(this.state.filteredBookings).map(booking => {
             return structuredClone(booking)
+        })
+        csvData.forEach((booking) => {
+            delete booking.id
         })
         return (
 
