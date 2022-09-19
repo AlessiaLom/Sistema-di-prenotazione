@@ -129,10 +129,10 @@ export default class Bookings extends React.Component {
                     data.bookings.forEach((booking, index) => { // for each activity in the data.activities array
                         fetchedBookings[index] = // take the index and save a new Activity component in the object, the key of the component will be the index
                             <Booking
-                            key={index}
-                            uniqueId={index}
-                            booking={booking}
-                            onChange={this.handleStatusChange} />
+                                key={index}
+                                uniqueId={index}
+                                booking={booking}
+                                onChange={this.handleStatusChange} />
                         fetchedBookingsValues[index] = booking
                     })
 
@@ -188,9 +188,8 @@ export default class Bookings extends React.Component {
 
     render() {
         let bookingsToBeShown = Object.values(this.getComponents())
-        let csvData = Object.values(this.state.filteredBookings)
-        csvData.forEach(d => {
-            delete d.id
+        let csvData = Object.values(this.state.filteredBookings).map(booking => {
+            return structuredClone(booking)
         })
         return (
 
@@ -222,7 +221,6 @@ export default class Bookings extends React.Component {
                             <th className="headerCol" scope="col">Ora</th>
                             <th className="headerCol" scope="col">Contatti</th>
                             <th className="headerCol" scope="col">Stato</th>
-
                         </tr>
                     </thead>
                     {/* Renders all the bookings */}

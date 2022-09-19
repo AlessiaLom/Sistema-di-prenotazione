@@ -6,6 +6,7 @@ import SideBar from './sidebar/SideBar';
 import Activities from './activities/Activities';
 import Customize from './customize/Customize';
 import Bookings from './bookings/Bookings';
+import Services from './services/Services';
 /**
  * The App component will contain the two main sections: the sidebar and the main content
  * The App component will be the one responible also for the change of the content shown in the page.
@@ -14,9 +15,11 @@ export default class App extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            activeItemIndex: 0
+            activeItemIndex: 0,
+            profile: null
         }
         this.changeContent = this.changeContent.bind(this)
+        this.handleAuthentication = this.handleAuthentication.bind(this)
     }
 
     /**
@@ -27,9 +30,15 @@ export default class App extends React.Component {
         // console.log("" + this.state.activeItemIndex)
         this.setState({
             activeItemIndex: i,
-            customize: <Customize/>
+            customize: <Customize />
         })
         // console.log("" + this.state.activeItemIndex)
+    }
+
+    handleAuthentication(profile) {
+        this.setState({
+            profile: profile
+        })
     }
 
     render() {
@@ -44,13 +53,19 @@ export default class App extends React.Component {
         let contentShown
         switch (this.state.activeItemIndex) {
             case 0:
-                contentShown = <><Customize/></>
+                contentShown = <><Customize /></>
                 break;
             case 1:
                 contentShown = <><Activities /></>
                 break
             case 2:
                 contentShown = <Bookings />
+                break;
+            case 3: 
+                contentShown =
+                    <Services
+                        onLog={this.handleAuthentication}
+                        profile={this.state.profile} />
                 break;
             default:
                 contentShown = <p>Ciao mondo</p>

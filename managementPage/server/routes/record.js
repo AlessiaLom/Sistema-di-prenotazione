@@ -1,17 +1,58 @@
-const express = require("express");
+/**
+ * MODULES IMPORT
+ */
 
-// recordRoutes is an instance of the express router.
-// We use it to define our routes.
-// The router will be added as a middleware and will take control of requests starting with path /record.
+const express = require("express");
+const {encrypt, decrypt} = require('./../encryption/encryption');
+/*const http = require('http');
+const https = require('https');
+const url = require('url');*/
+
+/**
+ * ROUTES
+ */
+
 const recordRoutes = express.Router();
 
-// This will help us connect to the database
-const dbo = require("../db/conn");
+/**
+ * DB
+ */
 
-// This help convert the id from string to ObjectId for the _id.
-const ObjectId = require("mongodb").ObjectId;
+const dbo = require("./../db/conn.js");// This will help us connect to the database
+// const ObjectId = require("mongodb").ObjectId;// This help convert the id from string to ObjectId for the _id.
 
-/** 
+/**
+ * GOOGLE
+ */
+
+// const { OAuth2Client } = require('google-auth-library')
+// const client = new OAuth2Client(process.env.CLIENT_ID)
+const {google} = require('googleapis');
+var oauth2Client = new google.auth.OAuth2(
+    '504181834497-omrl5mnes3qmvvu39hu5v404lemlfq1c.apps.googleusercontent.com',
+    "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",
+    "postmessage" // you use 'postmessage' when the code is retrieved from a frontend (couldn't find why online)
+);
+/*var scopes = [
+    "https://www.googleapis.com/auth/drive.metadata.readonly"
+]*/
+
+/* const authorizationUrl = oauth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: scopes,
+    include_granted_scopes: true
+}); */
+
+oauth2Client.on('tokens', (tokens) => {
+    if (tokens.refresh_token) {
+        // store the refresh_token in my database!
+        // console.log(tokens.refresh_token);
+
+    }
+    console.log(tokens.access_token);
+});
+
+/**
  * -----------------------------------------
  * -------------- MY METHODS ---------------
  * -----------------------------------------
@@ -25,44 +66,44 @@ const ObjectId = require("mongodb").ObjectId;
  * FETCH ACTIVITIES
  * Fetches data for customize page based on the id
  */
-recordRoutes.route("/customize/:id").get(function (req, res) {
+recordRoutes.route("/customize/:id").get(function (request, response) {
     let db_connect = dbo.getDb();
-    let myquery = { restaurantId: req.params.id };
+    let myquery = {restaurantId: request.params.id};
     db_connect
         .collection("restaurant_info")
         .findOne(myquery, function (err, result) {
             if (err) throw err;
-            res.json(result);
+            response.json(result);
         });
 });
 
 /**
  * FETCH CUSTOMIZATION SETTINGS
-* Fetches data for customize page based on the id
-*/
-recordRoutes.route("/activities/:id").get(function (req, res) {
+ * Fetches data for customize page based on the id
+ */
+recordRoutes.route("/activities/:id").get(function (request, response) {
     let db_connect = dbo.getDb();
-    let myquery = { restaurantId: req.params.id };
+    let myquery = {restaurantId: request.params.id};
     db_connect
         .collection("activities")
         .findOne(myquery, function (err, result) {
             if (err) throw err;
-            res.json(result);
+            response.json(result);
         });
 });
 
 /**
  * FETCH BOOKINGS
-* Fetches bookings regarding restaurant with id passed as parameter
-*/
-recordRoutes.route("/bookings/:id").get(function (req, res) {
+ * Fetches bookings regarding restaurant with id passed as parameter
+ */
+recordRoutes.route("/bookings/:id").get(function (request, response) {
     let db_connect = dbo.getDb();
-    let myquery = { restaurantId: req.params.id };
+    let myquery = {restaurantId: request.params.id};
     db_connect
         .collection("booking") // <------------- rename collection to bookingS
         .findOne(myquery, function (err, result) {
             if (err) throw err;
-            res.json(result);
+            response.json(result);
         });
 });
 
@@ -75,145 +116,197 @@ recordRoutes.route("/bookings/:id").get(function (req, res) {
  * Updates restaurant_info by id if the id already exixsts in the db, creates a new record if the id doesn't exist
  */
 
-recordRoutes.route("/customize/save_changes/:id").post(function (req, response) {
+recordRoutes.route("/customize/save_changes/:id").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
-    let myquery = { restaurantId: req.params.id };
+    let myquery = {restaurantId: request.params.id};
     let newvalues = {
         $set: {
-            additionalInfo: req.body.additionalInfo,
-            primaryColor: req.body.primaryColor,
-            secondaryColor: req.body.secondaryColor,
-            logoPath: req.body.restaurantLogo,
-            socialNetworks: req.body.socialNetworks,
+            additionalInfo: request.body.additionalInfo,
+            primaryColor: request.body.primaryColor,
+            secondaryColor: request.body.secondaryColor,
+            logoPath: request.body.restaurantLogo,
+            socialNetworks: request.body.socialNetworks,
             bookingForewarning: "",
             bookingOffest: "",
             bookingTheshold: {
                 $numberInt: ""
             },
-            restaurantName: req.body.restaurantName
+            restaurantName: request.body.restaurantName
         },
     };
     db_connect
         .collection("restaurant_info")
-        .updateOne(myquery, newvalues, function (err, res) {
+        .updateOne(myquery, newvalues, function (err, result) {
             if (err) throw err;
-            // console.log("1 document updated");
-            response.json(res);
+            console.log("1 document updated");
+            response.json(result);
         });
 });
 
-recordRoutes.route("/activities/save_changes/:id").post(function (req, response) {
+recordRoutes.route("/activities/save_changes/:id").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
-    let myquery = { restaurantId: req.params.id };
+    let myquery = {restaurantId: request.params.id};
     let newvalues = {
         $set: {
-            bookingForewarning: req.body.bookingForewarning,
-            bookingThreshold: req.body.bookingThreshold,
-            bookingOffset: req.body.bookingOffset,
-            activities: req.body.activities
+            bookingForewarning: request.body.bookingForewarning,
+            bookingThreshold: request.body.bookingThreshold,
+            bookingOffset: request.body.bookingOffset,
+            activities: request.body.activities
         },
     };
     db_connect
         .collection("activities")
-        .updateOne(myquery, newvalues, function (err, res) {
+        .updateOne(myquery, newvalues, function (err, result) {
             if (err) throw err;
-            // console.log("1 document updated");
-            response.json(res);
+            console.log("1 document updated");
+            response.json(result);
         });
 });
 
-recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (req, response) {
+recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
     let myquery = {
-        restaurantId: req.params.id,
-        'bookings.id': req.params.bookingId
+        restaurantId: request.params.id,
+        'bookings.id': request.params.bookingId
     };
     let newvalues = {
         $set: {
-            'bookings.$.bookingStatus': req.body.newStatus
+            'bookings.$.bookingStatus': request.body.newStatus
         },
     };
     db_connect
         .collection("booking")
-        .updateOne(myquery, newvalues, function (err, res) {
+        .updateOne(myquery, newvalues, function (err, result) {
             if (err) throw err;
-            // console.log("1 document updated");
-            response.json(res);
+            console.log("1 document updated");
+            response.json(result);
         });
 });
 
 /**
- * AUTO GENERATED METHODS ----------------------------------------
+ * GOOGLE AUTHENTICATION
  */
 
-// This section will help you create a new record.
-recordRoutes.route("/record/add").post(function (req, response) {
-    let db_connect = dbo.getDb();
-    let myobj = {
-        name: req.body.name,
-        position: req.body.position,
-        level: req.body.level,
-    };
-    db_connect.collection("records").insertOne(myobj, function (err, res) {
-        if (err) throw err;
-        response.json(res);
-    });
-});
+recordRoutes.route("/auth/google/").post(async (request, response) => {
+    let {tokens} = await oauth2Client.getToken(request.body.code) //await oauth2Client.getToken(request.body.googleData);
+    if (tokens.refresh_token) {
+        storeTokens(tokens, "0001")
+        // save it with the restaurant id
+        /**
+         * RESUME FROM HERE
+         * DO NOT JUST SAVE REFRESH TOKEN BUT ALSO THE ACCESS TOKEN
+         *
+         * Revoke access here https://myaccount.google.com/u/1/permissions?pageId=none to test the receiving of refresh token
+         */
+        // upsert(tokens, request.body.id)
 
-// This section will help you update a record by id.
-recordRoutes.route("/update/:id").post(function (req, response) {
-    let db_connect = dbo.getDb();
-    let myquery = { _id: ObjectId(req.params.id) };
-    let newvalues = {
+    }
+    // console.log(tokens);
+    testRefreshToken();
+    // oauth2Client.setCredentials(tokens);
+
+    // /* 
+    // * Save credential to the global variable in case access token was refreshed.
+    // * ACTION ITEM: In a production app, you likely want to save the refresh token
+    // *              in a secure persistent database instead.
+    // */
+    // userCredential = tokens;
+
+    // const drive = google.drive('v3');
+    // drive.files.list({
+    //     auth: oauth2Client,
+    //     pageSize: 10,
+    //     fields: 'nextPageToken, files(id, name)',
+    // }, (err1, res1) => {
+    //     if (err1) return console.log('The API returned an error: ' + err1);
+    //     const files = res1.data.files;
+    //     if (files.length) {
+    //         console.log('Files:');
+    //         files.map((file) => {
+    //             console.log(`${file.name} (${file.id})`);
+    //         });
+    //         response.json(files)
+    //     } else {
+    //         console.log('No files found.');
+    //     }
+    // });
+})
+
+/**
+ * UTILITY LIB
+ */
+
+/**
+ * Stores the refresh token in the db in an encrypted format
+ * @param {string} tokens google oAuth2 tokens taken from login
+ * @param {string} restaurantIdent restaurant identifier
+ */
+function storeTokens(tokens, restaurantId) {
+    let db_connect = dbo.getDb("sdp_db");
+    let myQuery = {restaurantId: restaurantId};
+    // ENCRYPTION
+    let encrypted = encrypt(JSON.stringify(tokens))
+    let newValues = {
         $set: {
-            re: req.body.name,
-            position: req.body.position,
-            level: req.body.level,
+            tokens: encrypted
         },
     };
     db_connect
-        .collection("records")
-        .updateOne(myquery, newvalues, function (err, res) {
+        .collection("tokens")
+        .updateOne(myQuery, newValues, function (err, result) {
             if (err) throw err;
-            // console.log("1 document updated");
-            response.json(res);
+            console.log("1 document updated");
         });
-});
 
-// This section will help you delete a record
-recordRoutes.route("/:id").delete((req, response) => {
+}
+
+/**
+ * Gets tokens from db corresponding to the restaurantId passed as argument
+ * @param restaurantId
+ */
+async function getTokens(restaurantId) {
     let db_connect = dbo.getDb();
-    let myquery = { _id: ObjectId(req.params.id) };
-    db_connect.collection("records").deleteOne(myquery, function (err, obj) {
-        if (err) throw err;
-        // console.log("1 document deleted");
-        response.json(obj);
-    });
-});
+    let myQuery = {restaurantId: restaurantId};
+    return db_connect
+        .collection("tokens")
+        .findOne(myQuery)
+        .then((result) =>
+            JSON.parse(decrypt(result.tokens))
+        )
 
-// This section will help you get a list of all the records.
-recordRoutes.route("/record").get(function (req, res) {
-    let db_connect = dbo.getDb("sdp_db");
-    db_connect
-        .collection("booking")
-        .find({})
-        .toArray(function (err, result) {
-            if (err) throw err;
-            res.json(result);
-        });
-});
+}
 
-// This section will help you get a single record by id
-recordRoutes.route("/record/:id").get(function (req, res) {
-    let db_connect = dbo.getDb();
-    let myquery = { _id: ObjectId(req.params.id) };
-    db_connect
-        .collection("booking")
-        .findOne(myquery, function (err, result) {
-            if (err) throw err;
-            res.json(result);
+function testRefreshToken() {
+    setTimeout(async () => {
+        let tokens = await getTokens("0001")
+        oauth2Client.setCredentials(tokens);
+
+        /* 
+        * Save credential to the global variable in case access token was refreshed.
+        * ACTION ITEM: In a production app, you likely want to save the refresh token
+        *              in a secure persistent database instead.
+        */
+        // userCredential = tokens;
+
+        const drive = google.drive('v3');
+        await drive.files.list({
+            auth: oauth2Client,
+            pageSize: 10,
+            fields: 'nextPageToken, files(id, name)',
+        }, (err1, res1) => {
+            if (err1) return console.log('The API returned an error: ' + err1);
+            const files = res1.data.files;
+            if (files.length) {
+                console.log('Files:');
+                files.map((file) => {
+                    console.log(`${file.name} (${file.id})`);
+                });
+                response.json(files)
+            } else {
+                console.log('No files found.');
+            }
         });
-});
+    }, 20000)
+}
 
 module.exports = recordRoutes;
-

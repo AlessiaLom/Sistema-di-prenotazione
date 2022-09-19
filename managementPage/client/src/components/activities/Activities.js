@@ -331,7 +331,7 @@ export default class Activities extends React.Component {
                         defaultValue={this.state.fieldsValues.bookingOffset}
                         onChange={this.handleChange}
                         name="selectBookingOffset"
-                        options={new Array("15 min", "30 min", "45 min", "1 h")}
+                        options={new Array("00:15h", "00:30h", "00:45h", "01:00h")}
                     />
                 </div>
                 <br></br>

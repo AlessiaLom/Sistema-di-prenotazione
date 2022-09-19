@@ -24,7 +24,7 @@ export default class Select extends React.Component {
             (<option
                 key={option}
                 value={option}
-                selected={option == this.props.defaultValue}
+                // selected={option == this.props.defaultValue}
             >
                 {option}
             </option>))
@@ -34,6 +34,7 @@ export default class Select extends React.Component {
                 {/*<span className="validationError">{this.props.validationError}</span>*/}
                 <select
                     name={this.props.name}
+                    value={this.props.defaultValue}
                     className="form-select"
                     aria-label="Default select example"
                     onChange={this.props.onChange}

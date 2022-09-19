@@ -107,8 +107,8 @@ export default class Activity extends React.Component {
         const { name, value } = event.target
         let newValidationErrors = this.state.validationErrors
         let newActivityValues = this.state.activityValues
-        let startingTime
-        let endingTime
+        let startingTime = undefined
+        let endingTime = undefined
 
         // Check which input got changed and performs proper validation checks
         switch (name) {
@@ -148,8 +148,8 @@ export default class Activity extends React.Component {
 
                 // get endingTime value to perform checkings
                 endingTime = newActivityValues.endingTime
-                if (endingTime) {
-                    if (checkChronologicalOrder(value, endingTime)) {
+                if (endingTime != undefined) {
+                    if (checkChronologicalOrder(newActivityValues.startingTime, endingTime)) {
                         newValidationErrors.timesError = "Rispettare ordine cronologico"
                     } else {
                         newValidationErrors.timesError = ''
@@ -169,8 +169,8 @@ export default class Activity extends React.Component {
 
                 // get endingTime value to perform checkings
                 startingTime = newActivityValues.startingTime
-                if (startingTime) {
-                    if (checkChronologicalOrder(startingTime, value)) {
+                if (startingTime != undefined) {
+                    if (checkChronologicalOrder(startingTime, newActivityValues.endingTime)) {
                         newValidationErrors.timesError = "Rispettare ordine cronologico"
                     } else {
                         newValidationErrors.timesError = ''

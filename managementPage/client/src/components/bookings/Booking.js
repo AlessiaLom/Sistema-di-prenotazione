@@ -10,8 +10,24 @@ export default class Booking extends React.Component {
                 
         */
         super(props)
-
+        this.state = {
+            booking: this.props.booking
+        }
         this.handleChange = this.handleChange.bind(this)
+        this.saveNewStatus = this.saveNewStatus.bind(this)
+    }
+
+    saveNewStatus(newStatus) {
+        fetch("/bookings/save_changes/0001/" + this.state.booking.id, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                newStatus: newStatus
+            })
+        })
     }
 
     handleChange(event) {
@@ -19,16 +35,9 @@ export default class Booking extends React.Component {
 
         switch (name) {
             case "selectBookingStatus":
-                fetch("/bookings/save_changes/0001/" + this.props.booking.id, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        newStatus: value
-                    })
-                })
+                let newBooking = this.state.booking
+                newBooking.bookingStatus = value
+                this.setState({ booking: newBooking }, () => this.saveNewStatus(value))
                 this.props.onChange(this.props.uniqueId, value)
                 break;
             default:
@@ -40,26 +49,26 @@ export default class Booking extends React.Component {
         return (
             <tr>
                 <td scope="row">
-                    {this.props.booking.bookingName}
+                    {this.state.booking.bookingName}
                 </td>
                 <td>
-                    {this.props.booking.bookingSeats}
+                    {this.state.booking.bookingSeats}
                 </td>
                 <td>
-                    {this.props.booking.bookingDate}
+                    {this.state.booking.bookingDate}
                 </td>
                 <td>
-                    {this.props.booking.bookingTime}
+                    {this.state.booking.bookingTime}
                 </td>
                 <td>
-                    {this.props.booking.email}<br></br>
-                    {this.props.booking.phone}
+                    {this.state.booking.email}<br></br>
+                    {this.state.booking.phone}
                 </td>
                 <td>
                     <Select
                         name="selectBookingStatus"
                         options={['confirmed', 'pending', 'canceled']}
-                        defaultValue={this.props.booking.bookingStatus}
+                        defaultValue={this.state.booking.bookingStatus}
                         onChange={this.handleChange}
                     />
                 </td>
