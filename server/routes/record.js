@@ -26,7 +26,6 @@ const dbo = require("./../db/conn.js");// This will help us connect to the datab
 // const { OAuth2Client } = require('google-auth-library')
 // const client = new OAuth2Client(process.env.CLIENT_ID)
 const {google} = require('googleapis');
-const {request} = require("express");
 var oauth2Client = new google.auth.OAuth2(
     '504181834497-omrl5mnes3qmvvu39hu5v404lemlfq1c.apps.googleusercontent.com',
     "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",
@@ -34,13 +33,7 @@ var oauth2Client = new google.auth.OAuth2(
 );
 
 /**
- * -----------------------------------------
  * -------------- MY METHODS ---------------
- * -----------------------------------------
- */
-
-/**
- * ----------- FETCHING FROM DB ------------
  */
 
 /**
@@ -49,10 +42,10 @@ var oauth2Client = new google.auth.OAuth2(
  */
 recordRoutes.route("/customize/:id").get(function (request, response) {
     let db_connect = dbo.getDb();
-    let myquery = {restaurantId: request.params.id};
+    let myQuery = {restaurantId: request.params.id};
     db_connect
         .collection("restaurant_info")
-        .findOne(myquery, function (err, result) {
+        .findOne(myQuery, function (err, result) {
             if (err) throw err;
             response.json(result);
         });
@@ -64,10 +57,10 @@ recordRoutes.route("/customize/:id").get(function (request, response) {
  */
 recordRoutes.route("/activities/:id").get(function (request, response) {
     let db_connect = dbo.getDb();
-    let myquery = {restaurantId: request.params.id};
+    let myQuery = {restaurantId: request.params.id};
     db_connect
         .collection("activities")
-        .findOne(myquery, function (err, result) {
+        .findOne(myQuery, function (err, result) {
             if (err) throw err;
             response.json(result);
         });
@@ -79,10 +72,10 @@ recordRoutes.route("/activities/:id").get(function (request, response) {
  */
 recordRoutes.route("/bookings/:id").get(function (request, response) {
     let db_connect = dbo.getDb();
-    let myquery = {restaurantId: request.params.id};
+    let myQuery = {restaurantId: request.params.id};
     db_connect
         .collection("booking") // <------------- rename collection to bookingS
-        .findOne(myquery, function (err, result) {
+        .findOne(myQuery, function (err, result) {
             if (err) throw err;
             response.json(result);
         });
@@ -94,15 +87,14 @@ recordRoutes.route("/bookings/:id").get(function (request, response) {
  */
 recordRoutes.route("/restaurant_info/:id").get(function (req, res) {
     let db_connect = dbo.getDb();
-    let myquery = {restaurantId: req.params.id};
+    let myQuery = {restaurantId: req.params.id};
     db_connect
         .collection("restaurant_info") //
-        .findOne(myquery, function (err, result) {
+        .findOne(myQuery, function (err, result) {
             if (err) throw err;
             res.json(result);
         });
 });
-
 
 /**
  * ----------- SAVE CHANGES TO DB ----------------
@@ -114,13 +106,13 @@ recordRoutes.route("/restaurant_info/:id").get(function (req, res) {
 
 recordRoutes.route("/customize/save_changes/:id").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
-    let myquery = {restaurantId: request.params.id};
-    let newvalues = {
+    let myQuery = {restaurantId: request.params.id};
+    let newValues = {
         $set: {
             additionalInfo: request.body.additionalInfo,
             primaryColor: request.body.primaryColor,
             secondaryColor: request.body.secondaryColor,
-            logoPath: request.body.restaurantLogo,
+            logoPath: request.body.logoPath,
             socialNetworks: request.body.socialNetworks,
             bookingForewarning: "",
             bookingOffest: "",
@@ -132,7 +124,7 @@ recordRoutes.route("/customize/save_changes/:id").post(function (request, respon
     };
     db_connect
         .collection("restaurant_info")
-        .updateOne(myquery, newvalues, function (err, result) {
+        .updateOne(myQuery, newValues, function (err, result) {
             if (err) throw err;
             console.log("1 document updated");
             response.json(result);
@@ -141,8 +133,8 @@ recordRoutes.route("/customize/save_changes/:id").post(function (request, respon
 
 recordRoutes.route("/activities/save_changes/:id").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
-    let myquery = {restaurantId: request.params.id};
-    let newvalues = {
+    let myQuery = {restaurantId: request.params.id};
+    let newValues = {
         $set: {
             bookingForewarning: request.body.bookingForewarning,
             bookingThreshold: request.body.bookingThreshold,
@@ -152,7 +144,7 @@ recordRoutes.route("/activities/save_changes/:id").post(function (request, respo
     };
     db_connect
         .collection("activities")
-        .updateOne(myquery, newvalues, function (err, result) {
+        .updateOne(myQuery, newValues, function (err, result) {
             if (err) throw err;
             console.log("1 document updated");
             response.json(result);
@@ -161,18 +153,18 @@ recordRoutes.route("/activities/save_changes/:id").post(function (request, respo
 
 recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
-    let myquery = {
+    let myQuery = {
         restaurantId: request.params.id,
         'bookings.id': request.params.bookingId
     };
-    let newvalues = {
+    let newValues = {
         $set: {
             'bookings.$.bookingStatus': request.body.newStatus
         },
     };
     db_connect
         .collection("booking")
-        .updateOne(myquery, newvalues, function (err, result) {
+        .updateOne(myQuery, newValues, function (err, result) {
             if (err) throw err;
             console.log("1 document updated");
             response.json(result);
@@ -217,18 +209,18 @@ recordRoutes.route("/booking/add/:id").post(function (request, response) {
  */
 recordRoutes.route("/booking/update").post(function (req, response) {
     let db_connect = dbo.getDb();
-    let myquery = {
+    let myQuery = {
         restaurantId: req.body.id,
         'bookings.id': req.body.bookingId
     };
-    let newvalues = {
+    let newValues = {
         $set: {
             'bookings.$.bookingStatus': 'canceled'
         },
     };
     db_connect
         .collection("booking")
-        .updateOne(myquery, newvalues, function (err, res) {
+        .updateOne(myQuery, newValues, function (err, res) {
             if (err) throw err;
             // console.log("1 document updated");
             response.json(res);
@@ -236,9 +228,7 @@ recordRoutes.route("/booking/update").post(function (req, response) {
 });
 
 /**
- * -----------------------------------------
  * -------------- GOOGLE -------------------
- * -----------------------------------------
  */
 
 recordRoutes.route("/auth/google/").post(async (request, response) => {
@@ -270,13 +260,14 @@ recordRoutes.route("/auth/google/").post(async (request, response) => {
 })
 
 /**
- * UTILITY LIB
+ * --------------- UTILITY LIB --------------
  */
 
 function bookingToGoogleEvent(booking){
+
     // parametrize the returned object with fields in booking
     return {
-        'summary': 'Aperitivo per 5',
+        'summary': 'Aperitivo per ' + booking.bookingGuests,
         'description': 'Tizio ha prenotato per 5 alle XX:XX del XX-XX ad un Aperitivo. I contatti di Tizio sono: 423893248932, tizio@gmail.com',
         'start': {
             'dateTime': '2022-09-23T09:00:00-00:00',
@@ -303,7 +294,7 @@ async function addBookingToCalendar(restaurantId, booking){
             console.log('There was an error contacting the Calendar service: ' + err);
             return;
         }
-        console.log('Event created');
+        console.log('Event created ' + event.summary);
     });
 }
 
@@ -326,7 +317,7 @@ function storeTokens(tokens, restaurantId) {
         .collection("tokens")
         .updateOne(myQuery, newValues, function (err, result) {
             if (err) throw err;
-            console.log("1 document updated");
+            console.log("1 document updated " + result);
         });
 
 }

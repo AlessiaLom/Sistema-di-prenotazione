@@ -1,9 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from "react";
 import "./../../styles/pages.css"
-import {useGoogleLogin, GoogleLogin, GoogleOAuthProvider} from '@react-oauth/google';
+import {useGoogleLogin} from '@react-oauth/google';
 
-function MyGoogleLogin(props) {
+function MyGoogleLogin() {
     const login = useGoogleLogin({
         onSuccess: codeResponse => sendCode(codeResponse),
         flow: 'auth-code',
@@ -14,7 +14,7 @@ function MyGoogleLogin(props) {
     const sendCode = async (codeResponse) => {
         if (Object.keys(codeResponse).includes("code")) {
             console.log('success:', codeResponse);
-            const result = await fetch("/auth/google", {
+            await fetch("/auth/google", {
                 method: "POST",
                 body: JSON.stringify({
                     code: codeResponse,
