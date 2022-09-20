@@ -1,6 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
 import "./../../styles/pages.css"
+import "./../../styles/bookings.css"
 import Booking from './Booking';
 import Filter from './Filter';
 import { CSVLink, CSVDownload } from "react-csv";
@@ -241,7 +242,7 @@ export default class Bookings extends React.Component {
                     <Filter
                         onClick={this.handleFiltering} />
                 </div>
-                <table id="activitiesTable">
+                <table id="bookingsTable">
                     <thead>
                         <tr>
                             <th className="headerCol" scope="col">Nome</th>

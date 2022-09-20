@@ -77,7 +77,7 @@ export default class Filter extends React.Component {
         return (
             <>
                 <div>
-                    <table>
+                    <table id ="filters">
                         <thead>
                             <tr>
                                 <td>Dal:</td>
