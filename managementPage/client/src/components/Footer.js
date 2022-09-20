@@ -14,7 +14,7 @@ export default class Footer extends React.Component {
     render() {
         return (
             <div className="mx-auto align-items-center justify-content-center" id="footerDiv">
-                <button type="button" className="btn btn-outline-secondary">Logout</button>
+                <button type="button" className="btn btn-outline-secondary logout">Logout</button>
             </div>
         )
     }

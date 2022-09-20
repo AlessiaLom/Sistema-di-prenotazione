@@ -1,0 +1,62 @@
+table{
+    text-align: left;
+    border-collapse: separate;
+    border-spacing: 0.5rem;
+}
+
+table input.form-control{
+    margin: 0;
+}
+
+#activitiesTable td{
+    min-width: 100px;
+}
+
+table p{
+    margin-left: 0.5rem;
+}
+
+td input.form-control{
+    width: 8rem;
+}
+
+td#time input.form-control{
+    width: 20rem;
+}
+
+td#time p{
+    margin-right: 0.5rem;
+}
+
+@media screen and (min-width: 715px) and (max-width: 1024px){
+    #activitiesTable{
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+@media screen and (max-width: 714px) {
+
+    #activitiesTable{
+        margin: 0 !important;
+        padding: 0 !important;
+        border-collapse: collapse;
+        border-spacing: 0;
+        display: block;
+        overflow-x: auto;
+    }
+
+    #activitiesTable td, #activitiesTable tr{
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    button#addActivityButton, button[name='saveChanges']{
+        margin-top: 1rem;
+    } 
+
+    #activitiesTable input{
+        display: inline-block;
+    }
+}

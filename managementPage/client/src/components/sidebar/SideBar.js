@@ -20,7 +20,8 @@ export default class SideBar extends React.Component {
 
     render() {
         return (
-            <><ul className="nav nav-pills flex-column mb-auto">
+            <>
+            <ul className="nav nav-pills flex-column mb-auto">
                 <MenuItem
                     itemName="customization"
                     className={this.props.activeItemIndex == 0 ? "nav-link active" : "nav-link link-dark"}

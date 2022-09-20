@@ -1,11 +1,12 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import "./../../styles/pages.css"
+import "./../../styles/activities.css"
 import Activity from './Activity';
 import Select from '../utility/Select';
 import TextForm from '../utility/TextForm';
 import { AiOutlinePlus } from 'react-icons/ai'
 
+let isSideOpen = true;
 /**
  * Contains activity activities and manages addition and deletion of activities of the table.
  */
@@ -225,6 +226,22 @@ export default class Activities extends React.Component {
         })
     }
 
+    handleSideBarChange(){
+        if(isSideOpen){
+            var sideBar = document.querySelector("#sidebarDiv");
+            sideBar.removeAttribute("style");
+            var main = document.querySelector("#mainContentContainer");
+            main.setAttribute("style", "marginLeft: 0");
+            isSideOpen = false;
+        } else {
+            var sideBar = document.querySelector("#sidebarDiv");
+            sideBar.setAttribute("style", "display: block;");
+            var main = document.querySelector("#mainContentContainer");
+            main.setAttribute("style", "marginLeft: 250px");
+            isSideOpen = true;
+        }
+    }
+
     /**
      * Adds a activity to the activities table
      */
@@ -295,7 +312,8 @@ export default class Activities extends React.Component {
         // Check if are there empty fields 
         let hasEmptyFields = this.checkEmptyFields()
         return (
-            <><div>
+            <><button className='openbtn' onClick={this.handleSideBarChange}>&#9776;</button>
+            <div>
                 <div>
                     <h4>Informazioni generali</h4>
                     <hr></hr>
