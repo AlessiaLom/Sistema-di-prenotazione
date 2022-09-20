@@ -50,8 +50,8 @@ export default class Activities extends React.Component {
      */
 
     componentDidMount() {
-        // Fetch giving the restaurant ID (0001 hardcoded here for tests)
-        fetch("/activities/0001", {
+        // Fetch giving the restaurant ID
+        fetch("/activities/" + this.props.restaurantId, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -106,10 +106,10 @@ export default class Activities extends React.Component {
      * @param {*} event event triggered by the click on a button 
      */
     onClick(event) {
-        const { name, value } = event.target
+        const name = event.target.name
         switch (name) {
             case "saveChanges":
-                fetch('/activities/save_changes/0001', {
+                fetch('/activities/save_changes/' + this.props.restaurantId, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -136,7 +136,7 @@ export default class Activities extends React.Component {
     checkEmptyFields() {
         let fieldsValues = this.state.fieldsValues
         for (const field in fieldsValues) {
-            if (this.state.required.includes(field) && fieldsValues[field].trim() == '') {
+            if (this.state.required.includes(field) && fieldsValues[field].trim() === '') {
                 return true
             }
         }
@@ -151,7 +151,7 @@ export default class Activities extends React.Component {
     checkErrors() {
         let validationErrors = this.state.validationErrors
         for (const error in validationErrors) {
-            if (validationErrors[error] != '')
+            if (validationErrors[error] !== '')
                 return true
         }
         return false
@@ -213,6 +213,7 @@ export default class Activities extends React.Component {
      * Updates the activitiesErrorsDictionary when a activity gets modified (one of its fields changes)
      * @param {int} uniqueId uniqueId of the activity that changed
      * @param {boolean} hasErrors boolean true if the just modified activity contains errors
+     * @param activityValues
      */
     manageActivityChanges(uniqueId, hasErrors, activityValues) {
         let newActivitiesErrorsDictionary = this.state.activitiesErrorsDictionary // Copy current errors dictionary
@@ -227,16 +228,15 @@ export default class Activities extends React.Component {
     }
 
     handleSideBarChange(){
+        let sideBar = document.querySelector("#sidebarDiv");
+        let main = document.querySelector("#mainContentContainer");
+
         if(isSideOpen){
-            var sideBar = document.querySelector("#sidebarDiv");
             sideBar.removeAttribute("style");
-            var main = document.querySelector("#mainContentContainer");
             main.setAttribute("style", "marginLeft: 0");
             isSideOpen = false;
         } else {
-            var sideBar = document.querySelector("#sidebarDiv");
             sideBar.setAttribute("style", "display: block;");
-            var main = document.querySelector("#mainContentContainer");
             main.setAttribute("style", "marginLeft: 250px");
             isSideOpen = true;
         }
@@ -322,7 +322,7 @@ export default class Activities extends React.Component {
                     <Select
                         onChange={this.handleChange}
                         name="selectBookingForewarning"
-                        options={new Array("Nessun preavviso", "1:00h", "1:30h", "2:00h", "2:30h", "3:00h", "3:30h")}
+                        options={["Nessun preavviso", "1:00h", "1:30h", "2:00h", "2:30h", "3:00h", "3:30h"]}
                         defaultValue={this.state.fieldsValues.bookingForewarning}
                     />
                     <br></br>
@@ -349,7 +349,7 @@ export default class Activities extends React.Component {
                         defaultValue={this.state.fieldsValues.bookingOffset}
                         onChange={this.handleChange}
                         name="selectBookingOffset"
-                        options={new Array("00:15h", "00:30h", "00:45h", "01:00h")}
+                        options={["00:15h", "00:30h", "00:45h", "01:00h"]}
                     />
                 </div>
                 <br></br>

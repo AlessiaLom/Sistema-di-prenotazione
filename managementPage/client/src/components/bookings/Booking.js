@@ -33,7 +33,7 @@ export default class Booking extends React.Component {
     }
 
     saveNewStatus(newStatus) {
-        fetch("/bookings/save_changes/0001/" + this.state.booking.id, {
+        fetch("/bookings/save_changes/" + this.props.restaurantId + "/" + this.state.booking.id, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

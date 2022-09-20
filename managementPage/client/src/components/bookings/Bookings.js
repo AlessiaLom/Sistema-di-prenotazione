@@ -3,7 +3,7 @@ import React from 'react';
 import "./../../styles/pages.css"
 import Booking from './Booking';
 import Filter from './Filter';
-import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink} from "react-csv";
 import { BsDownload } from 'react-icons/bs'
 
 let isSideOpen = true;
@@ -20,14 +20,10 @@ function isInInterval(date, fromDate, toDate) {
         if (date.year >= fromDate.year) {
             if (toDate !== '') {
                 if (date.year <= toDate.year) {
-                    if (date.month >= fromDate.month
+                    return date.month >= fromDate.month
                         && date.day >= fromDate.day
                         && date.month <= toDate.month
-                        && date.day <= toDate.day) {
-                        return true
-                    } else {
-                        return false
-                    }
+                        && date.day <= toDate.day;
                 } else {
                     return false
                 }
@@ -38,13 +34,9 @@ function isInInterval(date, fromDate, toDate) {
             return false
         }
     } else if (toDate !== '') {
-        if (date.year <= toDate.year
+        return date.year <= toDate.year
             && date.month <= toDate.month
-            && date.day <= toDate.day) {
-            return true
-        } else {
-            return false
-        }
+            && date.day <= toDate.day;
     } else {
         return true
     }
@@ -122,8 +114,8 @@ export default class Bookings extends React.Component {
      */
 
     componentDidMount() {
-        // Fetch giving the restaurant ID (0001 hardcoded here for tests)
-        fetch("/bookings/0001", {
+        // Fetch giving the restaurant ID
+        fetch("/bookings/" + this.props.restaurantId, {
             method: "GET",
 
         })
@@ -137,6 +129,7 @@ export default class Bookings extends React.Component {
                     data.bookings.forEach((booking, index) => { // for each activity in the data.activities array
                         fetchedBookings[index] = // take the index and save a new Activity component in the object, the key of the component will be the index
                             <Booking
+                                restaurantId={this.props.restaurantId}
                                 key={index}
                                 uniqueId={index}
                                 booking={booking}
@@ -160,7 +153,7 @@ export default class Bookings extends React.Component {
      */
     handleFiltering(filters) {
         let filteredBookings = {}
-        if (!Object.values(filters).find(v => { return v != '' })) { // if all the filters fields are empty -> return all the bookings (happens when filters are cleared)
+        if (!Object.values(filters).find(v => { return v !== '' })) { // if all the filters fields are empty -> return all the bookings (happens when filters are cleared)
             filteredBookings = this.state.bookingsValues
         } else {
             filteredBookings = filterByDate(this.state.bookingsValues, filters.fromDate, filters.toDate)
@@ -195,16 +188,15 @@ export default class Bookings extends React.Component {
 
 
     handleSideBarChange(){
+        let sideBar = document.querySelector("#sidebarDiv");
+        let main = document.querySelector("#mainContentContainer");
+
         if(isSideOpen){
-            var sideBar = document.querySelector("#sidebarDiv");
             sideBar.removeAttribute("style");
-            var main = document.querySelector("#mainContentContainer");
             main.setAttribute("style", "marginLeft: 0");
             isSideOpen = false;
         } else {
-            var sideBar = document.querySelector("#sidebarDiv");
             sideBar.setAttribute("style", "display: block;");
-            var main = document.querySelector("#mainContentContainer");
             main.setAttribute("style", "marginLeft: 250px");
             isSideOpen = true;
         }

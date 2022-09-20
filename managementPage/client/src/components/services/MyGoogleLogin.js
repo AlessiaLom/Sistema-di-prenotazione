@@ -3,7 +3,7 @@ import React from "react";
 import "./../../styles/pages.css"
 import {useGoogleLogin} from '@react-oauth/google';
 
-function MyGoogleLogin() {
+function MyGoogleLogin(props) {
     const login = useGoogleLogin({
         onSuccess: codeResponse => sendCode(codeResponse),
         flow: 'auth-code',
@@ -18,7 +18,7 @@ function MyGoogleLogin() {
                 method: "POST",
                 body: JSON.stringify({
                     code: codeResponse,
-                    id: '0001' // restaurant id used to store and retrieve access and refresh token in users_tokens.json
+                    restaurantId: props.restaurantId // restaurant id used to store and retrieve access and refresh token in users_tokens.json
                 }),
                 headers: {
                     "Content-Type": "application/json"

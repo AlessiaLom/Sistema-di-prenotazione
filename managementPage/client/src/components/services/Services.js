@@ -20,7 +20,7 @@ export default class Services extends React.Component {
                 <br/>
                 <br/>
                 <GoogleOAuthProvider clientId={this.clientId}>
-                    <MyGoogleLogin/>
+                    <MyGoogleLogin restaurantId={this.props.restaurantId}/>
                 </GoogleOAuthProvider>
             </div>
         );

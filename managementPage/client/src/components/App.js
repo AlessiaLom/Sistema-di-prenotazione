@@ -15,6 +15,7 @@ export default class App extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            restaurantId: '0001',
             activeItemIndex: 0,
             profile: null
         }
@@ -53,17 +54,18 @@ export default class App extends React.Component {
         let contentShown
         switch (this.state.activeItemIndex) {
             case 0:
-                contentShown = <><Customize /></>
+                contentShown = <><Customize restaurantId={this.state.restaurantId}/></>
                 break;
             case 1:
-                contentShown = <><Activities /></>
+                contentShown = <><Activities restaurantId={this.state.restaurantId}/></>
                 break
             case 2:
-                contentShown = <Bookings />
+                contentShown = <Bookings restaurantId={this.state.restaurantId}/>
                 break;
             case 3: 
                 contentShown =
                     <Services
+                        restaurantId={this.state.restaurantId}
                         onLog={this.handleAuthentication}
                         profile={this.state.profile} />
                 break;

@@ -101,9 +101,8 @@ recordRoutes.route("/restaurant_info/:id").get(function (req, res) {
  */
 
 /**
- * Updates restaurant_info by id if the id already exixsts in the db, creates a new record if the id doesn't exist
+ * UPDATE RESTAURANT INFO
  */
-
 recordRoutes.route("/customize/save_changes/:id").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
     let myQuery = {restaurantId: request.params.id};
@@ -131,6 +130,9 @@ recordRoutes.route("/customize/save_changes/:id").post(function (request, respon
         });
 });
 
+/**
+ * UPDATE ACTIVITIES
+ */
 recordRoutes.route("/activities/save_changes/:id").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
     let myQuery = {restaurantId: request.params.id};
@@ -151,6 +153,10 @@ recordRoutes.route("/activities/save_changes/:id").post(function (request, respo
         });
 });
 
+/**
+ * UPDATE BOOKINGS
+ * Sets booking's new status when it gets changed by the user in the management page
+ */
 recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
     let myQuery = {
@@ -172,7 +178,8 @@ recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (reque
 });
 
 /**
- * BOOKING FORM QUERIES - ADD NEW BOOKING
+ * ADD NEW BOOKING
+ * Booking form query that adds a new booking in the db
  */
 recordRoutes.route("/booking/add/:id").post(function (request, response) {
     let db_connect = dbo.getDb();
@@ -205,7 +212,8 @@ recordRoutes.route("/booking/add/:id").post(function (request, response) {
 });
 
 /**
- * BOOKING FORM QUERIES - DELETE EXISTING BOOKING
+ * DELETE EXISTING BOOKING
+ * Booking form query that deletes a booking from the db
  */
 recordRoutes.route("/booking/update").post(function (req, response) {
     let db_connect = dbo.getDb();
@@ -233,8 +241,9 @@ recordRoutes.route("/booking/update").post(function (req, response) {
 
 recordRoutes.route("/auth/google/").post(async (request, response) => {
     let {tokens} = await oauth2Client.getToken(request.body.code) //await oauth2Client.getToken(request.body.googleData);
+    let restaurantId = request.body.restaurantId
     if (tokens.refresh_token) {
-        storeTokens(tokens, "0001")
+        storeTokens(tokens, restaurantId)
         // save it with the restaurant id
         /**
          * RESUME FROM HERE
@@ -247,7 +256,7 @@ recordRoutes.route("/auth/google/").post(async (request, response) => {
     }
     // console.log(tokens);
     testRefreshToken();
-    await addBookingToCalendar('0001', {})
+    await addBookingToCalendar(restaurantId, {})
     // Get user info and return them to the client so that they can be printed
     if (tokens.access_token) {
         const userInfo = await axios
@@ -263,7 +272,7 @@ recordRoutes.route("/auth/google/").post(async (request, response) => {
  * --------------- UTILITY LIB --------------
  */
 
-function bookingToGoogleEvent(booking){
+function bookingToGoogleEvent(booking) {
 
     // parametrize the returned object with fields in booking
     return {
@@ -280,7 +289,7 @@ function bookingToGoogleEvent(booking){
     }
 }
 
-async function addBookingToCalendar(restaurantId, booking){
+async function addBookingToCalendar(restaurantId, booking) {
     let tokens = await getTokens(restaurantId)
     oauth2Client.setCredentials(tokens);
     let bookingEvent = bookingToGoogleEvent(booking)

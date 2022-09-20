@@ -60,7 +60,7 @@ export default class Customize extends React.Component {
      */
     componentDidMount() {
         // console.log(JSON.stringify(this.state))
-        fetch("/customize/0001", {
+        fetch("/customize/" + this.props.restaurantId, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export default class Customize extends React.Component {
         const {name, value} = event.target
         switch (name) {
             case "saveChanges":
-                fetch('/customize/save_changes/0001', {
+                fetch('/customize/save_changes/' + this.props.restaurantId, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -132,16 +132,14 @@ export default class Customize extends React.Component {
     }
 
     handleSideBarChange(){
+        let sideBar = document.querySelector("#sidebarDiv");
+        let main = document.querySelector("#mainContentContainer");
         if(isSideOpen){
-            var sideBar = document.querySelector("#sidebarDiv");
             sideBar.removeAttribute("style");
-            var main = document.querySelector("#mainContentContainer");
             main.setAttribute("style", "marginLeft: 0");
             isSideOpen = false;
         } else {
-            var sideBar = document.querySelector("#sidebarDiv");
             sideBar.setAttribute("style", "display: block;");
-            var main = document.querySelector("#mainContentContainer");
             main.setAttribute("style", "marginLeft: 250px");
             isSideOpen = true;
         }
