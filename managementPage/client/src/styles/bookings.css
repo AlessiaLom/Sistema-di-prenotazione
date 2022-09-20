@@ -1,0 +1,59 @@
+button[name='applyFilter']{
+    margin-right: 1rem;
+}
+
+input#fromDateFilter[type='date'], input#toDateFilter{
+    min-width: 150px
+}
+
+table{
+    text-align: left;
+    border-collapse: separate;
+    border-spacing: 0.5rem;
+}
+
+table input.form-control{
+    margin: 0;
+}
+
+#bookingsTable td, #filters td{
+    min-width: 100px;
+}
+
+table p{
+    margin-left: 0.5rem;
+}
+
+td#time p{
+    margin-right: 0.5rem;
+}
+
+@media screen and (min-width: 715px) and (max-width: 1024px){
+    #bookingsTable, #filters{
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+@media screen and (max-width: 714px) {
+
+    button[name='applyFilter'], button[name='clearFilter']{
+        margin: 0;
+    }
+
+    #bookingsTable, #filters{
+        margin: 0 !important;
+        padding: 0 !important;
+        border-collapse: collapse;
+        border-spacing: 0;
+        display: block;
+        overflow-x: auto;
+    }
+
+    #bookingsTable td, #bookingsTable tr, #filters td, #filters tr{
+        text-align: left;
+        white-space: nowrap;
+        padding: 2px;
+    }
+}
