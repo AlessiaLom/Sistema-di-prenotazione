@@ -6,6 +6,8 @@ import Filter from './Filter';
 import { CSVLink, CSVDownload } from "react-csv";
 import { BsDownload } from 'react-icons/bs'
 
+let isSideOpen = true;
+
 /**
  * Checks if a date is withina date range
  * @param date date to be checked
@@ -192,6 +194,23 @@ export default class Bookings extends React.Component {
     }
 
 
+    handleSideBarChange(){
+        if(isSideOpen){
+            var sideBar = document.querySelector("#sidebarDiv");
+            sideBar.removeAttribute("style");
+            var main = document.querySelector("#mainContentContainer");
+            main.setAttribute("style", "marginLeft: 0");
+            isSideOpen = false;
+        } else {
+            var sideBar = document.querySelector("#sidebarDiv");
+            sideBar.setAttribute("style", "display: block;");
+            var main = document.querySelector("#mainContentContainer");
+            main.setAttribute("style", "marginLeft: 250px");
+            isSideOpen = true;
+        }
+    }
+
+
     render() {
         let bookingsToBeShown = Object.values(this.getComponents())
         let csvData = Object.values(this.state.filteredBookings).map(booking => {
@@ -202,7 +221,8 @@ export default class Bookings extends React.Component {
         })
         return (
 
-            <><div>
+            <><button className='openbtn' onClick={this.handleSideBarChange}>&#9776;</button>   
+            <div>
                 <div>
                     <h4>Lista prenotazioni</h4>
                     <CSVLink

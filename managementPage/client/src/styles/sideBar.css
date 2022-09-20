@@ -1,14 +1,15 @@
 #sidebarDiv {
     background-color: rgb(246, 246, 246);
     width: 15%;
-    height: 100%;
+    display: block;
+    overflow: auto;
     min-width: 200px;
     max-width: 350px;
-    min-height: none;
     padding: 15px;
     border: 0;
     margin: 0;
     position: relative;
+    display: block;
 }
 
 i {
@@ -16,6 +17,23 @@ i {
 }
 
 #footerDiv{
-    position: absolute;
-    bottom: 15px;
+    margin-top: 3rem;
+    text-align: center;
 }
+
+.openbtn {
+    font-size: 20px;
+    cursor: pointer;
+    background-color: #111;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+  }
+
+  .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+  }

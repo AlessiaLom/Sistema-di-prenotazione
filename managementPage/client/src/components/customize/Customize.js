@@ -5,6 +5,7 @@ import TextForm from '../utility/TextForm';
 import ColorPicker from '../utility/ColorPicker';
 import {BsFacebook, BsInstagram, BsMessenger, BsWhatsapp} from 'react-icons/bs';
 
+let isSideOpen = true;
 
 export default class Customize extends React.Component {
     constructor(props) {
@@ -130,6 +131,22 @@ export default class Customize extends React.Component {
         return false
     }
 
+    handleSideBarChange(){
+        if(isSideOpen){
+            var sideBar = document.querySelector("#sidebarDiv");
+            sideBar.removeAttribute("style");
+            var main = document.querySelector("#mainContentContainer");
+            main.setAttribute("style", "marginLeft: 0");
+            isSideOpen = false;
+        } else {
+            var sideBar = document.querySelector("#sidebarDiv");
+            sideBar.setAttribute("style", "display: block;");
+            var main = document.querySelector("#mainContentContainer");
+            main.setAttribute("style", "marginLeft: 250px");
+            isSideOpen = true;
+        }
+    }
+
     /**
      * Checks for validation errors
      * @returns true if there are validation errors
@@ -207,6 +224,8 @@ export default class Customize extends React.Component {
         // Check if are there empty fields 
         let hasEmptyFields = this.checkEmptyFields()
         return (
+            <>
+            <button className='openbtn' onClick={this.handleSideBarChange}>&#9776;</button>
             <div style={{width: "100%", margin: "1%", padding: "1%"}}>
                 <div className="d-block mb-3">
                     <h4>Info del ristorante</h4>
@@ -232,7 +251,7 @@ export default class Customize extends React.Component {
                         placeholder="Inserisci informazioni aggiuntive"/>
                 </div>
                 <br></br>
-                <div className="d-block mb-3">
+                <div className="d-block mb-3 picker">
                     <h4>Tema colore</h4>
                     <hr></hr>
                     Colore principale:
@@ -240,13 +259,13 @@ export default class Customize extends React.Component {
                         color={this.state.fieldsValues.primaryColor}
                         name="primaryColorPicker"
                         onChange={this.handleChange}
-                    />
+                        />
                     Colore secondario:
                     <ColorPicker
                         color={this.state.fieldsValues.secondaryColor}
                         name="secondaryColorPicker"
                         onChange={this.handleChange}
-                    />
+                        />
                 </div>
                 <br></br>
                 <div className="d-block input-group mb-3">
@@ -258,7 +277,7 @@ export default class Customize extends React.Component {
                             name="logoPath"
                             placeholder="Inserisci il link all'immagine del logo"
                             onChange={this.handleChange}
-                        />
+                            />
                     </div>
                 </div>
                 <br></br>
@@ -323,7 +342,7 @@ export default class Customize extends React.Component {
                     </tbody>
 
                 </table>
-                <div style={{margin: "15 %", padding: "1 %"}}>
+                <div className='buttons' style={{margin: "15 %", padding: "1 %"}}>
                     <button name="cancelChanges" type="button" className="btn btn-light">Annulla</button>
                     <button
                         name="saveChanges"
@@ -336,6 +355,7 @@ export default class Customize extends React.Component {
                 </div>
 
             </div>
+        </>
         )
     }
 }

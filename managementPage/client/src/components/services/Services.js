@@ -3,6 +3,8 @@ import React from "react";
 import "./../../styles/pages.css"
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 
+let isSideOpen = true;
+
 export default class Services extends React.Component {
     constructor(props) {
         super(props);
@@ -67,8 +69,26 @@ export default class Services extends React.Component {
         })
     }
 
+    handleSideBarChange(){
+        if(isSideOpen){
+            var sideBar = document.querySelector("#sidebarDiv");
+            sideBar.removeAttribute("style");
+            var main = document.querySelector("#mainContentContainer");
+            main.setAttribute("style", "marginLeft: 0");
+            isSideOpen = false;
+        } else {
+            var sideBar = document.querySelector("#sidebarDiv");
+            sideBar.setAttribute("style", "display: block;");
+            var main = document.querySelector("#mainContentContainer");
+            main.setAttribute("style", "marginLeft: 250px");
+            isSideOpen = true;
+        }
+    }
+
     render() {
         return (
+            <>
+            <button className='openbtn' onClick={this.handleSideBarChange}>&#9776;</button>
             <div>
                 <h2>React Google Login</h2>
                 <br />
@@ -85,10 +105,11 @@ export default class Services extends React.Component {
                         //cookiePolicy={'single_host_origin'}
                         onFailure={this.onFailure}
                         //scope="https://www.googleapis.com/auth/drive.metadata.readonly"
-                    />
+                        />
                 </GoogleOAuthProvider>;
 
             </div>
+        </>
         );
     }
 

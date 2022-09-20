@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import "./../../styles/pages.css"
+import "./../../styles/activities.css"
 import TimePicker from '../utility/TimePicker';
 import TextForm from '../utility/TextForm';
 import DayPicker from '../utility/DayPicker';
@@ -223,7 +223,7 @@ export default class Activity extends React.Component {
                         validationError={this.state.validationErrors.activityNameError}
                     />
                 </td>
-                <td style={{ width: "25%" }}>
+                <td id="time" style={{ width: "25%" }}>
                     <div style={{ display: "inline" }}>
                         <span className="validationError">{this.state.validationErrors.timesError}</span>
                         <p style={{ float: "left" }}> Dalle: </p>
