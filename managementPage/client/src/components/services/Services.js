@@ -1,7 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from "react";
 import "./../../styles/pages.css"
-import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import {GoogleLogin, GoogleOAuthProvider} from '@react-oauth/google';
+import {MyGoogleLogin} from "./MyGoogleLogin";
 
 export default class Services extends React.Component {
     constructor(props) {
@@ -16,6 +17,7 @@ export default class Services extends React.Component {
         this.logOut = this.logOut.bind(this)
         this.handleLogin = this.handleLogin.bind(this)
     }
+
 
     componentDidMount() {
         /* const initClient = () => {
@@ -32,7 +34,7 @@ export default class Services extends React.Component {
     }
 
     onSuccess = async (data) => {
-        if(Object.keys(data).includes("code")){
+        if (Object.keys(data).includes("code")) {
             console.log('success:', data);
             const res = await fetch("/auth/google", {
                 method: "POST",
@@ -45,7 +47,7 @@ export default class Services extends React.Component {
                 }
             })
             console.log(res)
-        }else{
+        } else {
 
         }
         /* this.setState({
@@ -71,23 +73,26 @@ export default class Services extends React.Component {
         return (
             <div>
                 <h2>React Google Login</h2>
-                <br />
-                <br />
-                <GoogleOAuthProvider clientId={this.clientId}>
-                    <GoogleLogin
-                        //clientId={this.clientId}
-                        //buttonText="Log in with Google"
-                        accessType="offline"
-                        responseType="code"
-                        //isSignedIn={true}
-                        // fetchBasicProfile={true}
-                        onSuccess={this.onSuccess}
-                        //cookiePolicy={'single_host_origin'}
-                        onFailure={this.onFailure}
-                        //scope="https://www.googleapis.com/auth/drive.metadata.readonly"
-                    />
-                </GoogleOAuthProvider>;
+                <br/>
+                <br/>
+                {/*<GoogleOAuthProvider clientId={this.clientId}>*/}
+                {/*    <GoogleLogin*/}
+                {/*        //clientId={this.clientId}*/}
+                {/*        //buttonText="Log in with Google"*/}
+                {/*        accessType="offline"*/}
+                {/*        responseType="code"*/}
+                {/*        //isSignedIn={true}*/}
+                {/*        // fetchBasicProfile={true}*/}
+                {/*        onSuccess={this.onSuccess}*/}
+                {/*        //cookiePolicy={'single_host_origin'}*/}
+                {/*        onFailure={this.onFailure}*/}
+                {/*        scope="https://www.googleapis.com/auth/drive.metadata.readonly"*/}
+                {/*    />*/}
+                {/*</GoogleOAuthProvider>*/}
 
+                <GoogleOAuthProvider clientId={this.clientId}>
+                    <MyGoogleLogin/>
+                </GoogleOAuthProvider>
             </div>
         );
     }
