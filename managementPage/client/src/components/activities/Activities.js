@@ -322,7 +322,7 @@ export default class Activities extends React.Component {
                     <Select
                         onChange={this.handleChange}
                         name="selectBookingForewarning"
-                        options={["Nessun preavviso", "1:00h", "1:30h", "2:00h", "2:30h", "3:00h", "3:30h"]}
+                        options={["Nessun preavviso", "1:00h", "2:00h", "4:00h", "8:00h", "12:00h"]}
                         defaultValue={this.state.fieldsValues.bookingForewarning}
                     />
                     <br></br>

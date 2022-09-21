@@ -225,6 +225,9 @@ export default class BookingForm extends Component {
               })
 
                 let fetchedBookingForewarning = data.bookingForewarning;
+                if(fetchedBookingForewarning === 'Nessun preavviso'){
+                  fetchedBookingForewarning = '0:00h';
+                }
                 let fetchedBookingThreshold = data.bookingThreshold;
                 let fetchedBookingOffset = data.bookingOffset;
 
