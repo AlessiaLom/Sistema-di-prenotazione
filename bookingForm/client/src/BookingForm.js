@@ -14,8 +14,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 let restaurantName = '';
-let activitiesList = [];
 let bookings = [];
+let activitiesList = [];
+let displayedOptions = [];
 const restaurantId = "0001";
 let primaryColor;
 let secondaryColor = "black";
@@ -172,6 +173,7 @@ export default class BookingForm extends Component {
     var button = event.target;
     button.classList.add("active");
     const options = this.state.options;
+    displayedOptions = [];
     const nowHours = parseInt(now.substring(0,2));
     const nowMins = parseInt(now.substring(3,5));
     const forewarningHrs = parseInt(this.state.fieldValues.bookingForewarning.substring(0,2));
@@ -189,6 +191,7 @@ export default class BookingForm extends Component {
         option.disabled = true;
       } else {
         option.disabled = false;
+        displayedOptions.push(option);
       }
     });
     this.state.options = options;
@@ -473,6 +476,7 @@ export default class BookingForm extends Component {
   }
 
   handleDateChange = (date) => {
+    displayedOptions = [];
     this.handleTimeChange(null);
     this.setState({timeValue: []});
     this.state.options.forEach((option) => option.disabled = true);
@@ -603,7 +607,7 @@ export default class BookingForm extends Component {
 
   render(){
     const errors = this.state.errors;
-    const options = this.state.options;
+    const options = displayedOptions;
     const activities = this.state.activities;
     activitiesList = activities;
     return (
