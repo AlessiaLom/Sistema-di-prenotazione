@@ -175,9 +175,15 @@ export default class BookingForm extends Component {
     const nowMins = parseInt(now.substring(3,5));
     const forewarningHrs = parseInt(this.state.fieldValues.bookingForewarning.substring(0,2));
     const forewarningMns = parseInt(this.state.fieldValues.bookingForewarning.substring(3,5));
-    const minHours = nowHours + forewarningHrs;
-    const minMns = nowMins + forewarningMns;
+    let minHours = nowHours + forewarningHrs;
+    let minMns = nowMins + forewarningMns;
+    if(minMns < 10) {
+      minMns = "0" + minMns;
+    } else if(minHours < 10) {
+      minHours = "0" + minHours;
+    }
     const minBookingTime = String(minHours) + ":" + String(minMns);
+    console.log(minBookingTime)
     options.forEach((option) => {
       if(option.name !== name || (isToday && option.value <= minBookingTime)) {
         option.disabled = true;
