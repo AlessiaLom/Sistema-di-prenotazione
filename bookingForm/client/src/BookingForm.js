@@ -5,6 +5,7 @@ import HeaderForm from "./BookingHeader";
 import DatePicker from "react-datepicker";
 import CustomTable from "./CustomTable";
 import Stack from '@mui/material/Stack';
+import { v4 as uuidv4 } from 'uuid';
 
 import 'react-datepicker/dist/react-datepicker.css'
 import ButtonUnstyled, { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled';
@@ -543,8 +544,10 @@ export default class BookingForm extends Component {
     if(validateForm(this.state.errors)) {
       let correctFormatDate = this.state.selectedDate.getFullYear() + '-' + (this.state.selectedDate.getMonth() + 1) + '-' + this.state.selectedDate.getDate();
       let correctFormatTime = this.state.selectedTime.value;
+      let id = uuidv4();
+      id = id.replaceAll('-', '');
       let newBooking = {
-        "id": Math.random().toString(36).slice(2),
+        "id": id,
         "bookingDate": correctFormatDate,
         "bookingTime": correctFormatTime,
         "bookingGuests": this.state.bookingGuests,
