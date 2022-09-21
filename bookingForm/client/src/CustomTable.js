@@ -7,7 +7,7 @@ import { activitiesList } from './BookingForm';
 const THEME = {
   
   Table:
-    `grid-template-columns: 25% 15% 15% 25% 20%;
+    `grid-template-columns: 15% 15% 15% 10% 45%;
     `
   ,
   HeaderRow: `
@@ -30,6 +30,34 @@ const THEME = {
 
 const CustomTable = () => {
   const data = { nodes: activitiesList };
+  data.nodes.forEach(element => {
+    let days = '';
+    if(element.days.includes('L')){
+      days += 'Lunedì ';
+    }
+    if(element.days.includes('Ma')){
+      days += 'Martedì ';
+    }
+    if(element.days.includes('Me')){
+      days += 'Mercoledì ';
+    }
+    if(element.days.includes('G')){
+      days += 'Giovedì ';
+    }
+    if(element.days.includes('V')){
+      days += 'Venerdì ';
+    }
+    if(element.days.includes('S')){
+      days += 'Sabato ';
+    }
+    if(element.days.includes('D')){
+      days += 'Domenica ';
+    }
+    days = days.replaceAll(' ', ',');
+    days = days.slice(0, -1);
+    element.days = days;
+    console.log(days)
+  });
   const theme = useTheme(THEME);
 
   const tree = useTree(data, 
