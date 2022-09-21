@@ -2,12 +2,13 @@ import 'bootstrap/dist/css/bootstrap.css';
 import React from "react";
 import "./../../styles/pages.css"
 import {useGoogleLogin} from '@react-oauth/google';
+import {FcGoogle} from 'react-icons/fc'
 
 function MyGoogleLogin(props) {
     const login = useGoogleLogin({
         onSuccess: codeResponse => sendCode(codeResponse),
         flow: 'auth-code',
-        scope: "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events",
+        scope: "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/spreadsheets",
         select_account: true
     });
 
@@ -25,17 +26,47 @@ function MyGoogleLogin(props) {
                 }
             })
                 .then((res) => res.json())
-                .then((data) => console.log(data))
+                .then((data) => {
+                    console.log(data)
+                    props.onLogin(data)
+                })
         }
     }
 
+    const logout = () => {
+        // delete tokens entry in db by restaurantId
+        props.onLogout()
+    }
+
+    let buttonContent = props.profile ? "Logged in as " + props.profile.email : "Log in with Google"
     return (
         <div>
-            <button onClick={() => login()}>
-                Log in with google
+            <button
+                type="button"
+                className="btn btn-light googleLoginButton"
+                onClick={() => login()}
+                disabled={props.profile}>
+                <table className='googleLoginButton'>
+                    <td className='googleLoginButton'>
+                        <FcGoogle size={40}/>
+                    </td>
+                    <td className='googleLoginButton'>
+                        {buttonContent}
+                    </td>
+                </table>
+            </button>
+            <button
+                type="button"
+                className="btn btn-dark"
+                onClick={() => logout()}
+                hidden={!props.profile}>
+                Log out
             </button>
         </div>
-    );
+);
 }
 
-export {MyGoogleLogin}
+export
+    {
+        MyGoogleLogin
+    }

@@ -202,7 +202,7 @@ recordRoutes.route("/booking/add/:id").post(async function (request, response) {
             bookings: booking
         }
     };
-    if(booking.bookingStatus === 'confirmed'){
+    if (booking.bookingStatus === 'confirmed') {
         await addBookingToCalendar(request.params.id, booking);
     }
     db_connect
@@ -241,6 +241,9 @@ recordRoutes.route("/booking/update").post(function (req, response) {
  * -------------- GOOGLE -------------------
  */
 
+/**
+ * Manages the user's tokens, storing them in an encrypted way. Returns to the client the user's info
+ */
 recordRoutes.route("/auth/google/").post(async (request, response) => {
     let {tokens} = await oauth2Client.getToken(request.body.code) //await oauth2Client.getToken(request.body.googleData);
     let restaurantId = request.body.restaurantId
@@ -285,80 +288,6 @@ recordRoutes.route("/auth/google/").post(async (request, response) => {
 })
 
 /**
- * --------------- UTILITY LIB --------------
- */
-
-/**
- * Converts our booking object into a correct Google Event object
- * @param booking
- * @returns {{summary: string, start: {dateTime: string, timeZone: string}, description: string, end: {dateTime: string, timeZone: string}, id}}
- */
-function bookingToGoogleEvent(booking) {
-    const timeStampStart = booking.bookingDate + "T" + booking.bookingTime + ":00+02:00";
-    let timeHour = parseInt(booking.bookingTime.substring(0,2));
-    let timeMin = booking.bookingTime.substring(3,5);
-    timeHour += 2;
-    let endTime = String(timeHour) + ":" + timeMin;
-    const timeStampEnd = booking.bookingDate + "T" + endTime + ":00+02:00";
-    // parametrize the returned object with fields in booking
-    return {
-        id: booking.id,
-        summary: booking.bookingActivity + ' per ' + booking.bookingGuests,
-        description: booking.guestName + ' ' + booking.guestSurname + ' ha prenotato per ' + booking.bookingGuests + ' alle ' + booking.bookingTime + ' del ' + booking.bookingDate + '. I contatti di ' + booking.guestName + ' sono: ' + booking.guestPhone + ', ' + booking.guestEmail + '. ' + (booking.guestAdditionalInfo != null ? 'Il cliente ha lasciato un messaggio alla prenotazione: ' + booking.guestAdditionalInfo : ''),
-        start: {
-            dateTime: timeStampStart,
-            timeZone: 'Europe/Rome',
-        },
-        end: {
-            dateTime: timeStampEnd,
-            timeZone: 'Europe/Rome',
-        },
-    }
-}
-
-/**
- * Adds a new Event to the restaurant's calendar
- * @param restaurantId
- * @param booking booking object
- * @returns {Promise<void>}
- */
-async function addBookingToCalendar(restaurantId, booking) {
-    let tokens = await getTokens(restaurantId)
-    oauth2Client.setCredentials(tokens);
-    let bookingEvent = bookingToGoogleEvent(booking)
-    await calendar.events.insert({
-        auth: oauth2Client,
-        calendarId: 'primary',
-        resource: bookingEvent,
-    }, function (err, bookingEvent) {
-        if (err) {
-            console.log('There was an error contacting the Calendar service: ' + err);
-            return;
-        }
-
-    });
-    console.log('Event created ' + bookingEvent.id);
-}
-
-/**
- * Removes event from restaurant's calendar
- * @param restaurantId
- * @param bookingId event's id and booking's id are the same
- * @returns {Promise<void>}
- */
-async function removeBookingFromCalendar(restaurantId, bookingId) {
-    let tokens = await getTokens(restaurantId)
-    oauth2Client.setCredentials(tokens);
-
-    const res = await calendar.events.delete({
-        auth: oauth2Client,
-        calendarId: 'primary',
-        eventId: bookingId,
-    });
-    console.log(res.data)
-}
-
-/**
  * Stores the refresh token in the db in an encrypted format
  * @param tokens google oAuth2 tokens taken from login
  * @param restaurantId
@@ -399,41 +328,78 @@ async function getTokens(restaurantId) {
 }
 
 /**
+ * [GOOGLE CALENDAR] Converts our booking object into a correct Google Event object
+ * @param booking
+ * @returns {{summary: string, start: {dateTime: string, timeZone: string}, description: string, end: {dateTime: string, timeZone: string}, id}}
+ */
+function bookingToGoogleEvent(booking) {
+    const timeStampStart = booking.bookingDate + "T" + booking.bookingTime + ":00+02:00";
+    let timeHour = parseInt(booking.bookingTime.substring(0, 2));
+    let timeMin = booking.bookingTime.substring(3, 5);
+    timeHour += 2;
+    let endTime = String(timeHour) + ":" + timeMin;
+    const timeStampEnd = booking.bookingDate + "T" + endTime + ":00+02:00";
+    // parametrize the returned object with fields in booking
+    return {
+        id: booking.id,
+        summary: booking.bookingActivity + ' per ' + booking.bookingGuests,
+        description: booking.guestName + ' ' + booking.guestSurname + ' ha prenotato per ' + booking.bookingGuests + ' alle ' + booking.bookingTime + ' del ' + booking.bookingDate + '. I contatti di ' + booking.guestName + ' sono: ' + booking.guestPhone + ', ' + booking.guestEmail + '. ' + (booking.guestAdditionalInfo != null ? 'Il cliente ha lasciato un messaggio alla prenotazione: ' + booking.guestAdditionalInfo : ''),
+        start: {
+            dateTime: timeStampStart,
+            timeZone: 'Europe/Rome',
+        },
+        end: {
+            dateTime: timeStampEnd,
+            timeZone: 'Europe/Rome',
+        },
+    }
+}
+
+/**
+ * [GOOGLE CALENDAR] Adds a new Event to the restaurant's calendar
+ * @param restaurantId
+ * @param booking booking object
+ * @returns {Promise<void>}
+ */
+async function addBookingToCalendar(restaurantId, booking) {
+    let tokens = await getTokens(restaurantId)
+    oauth2Client.setCredentials(tokens);
+    let bookingEvent = bookingToGoogleEvent(booking)
+    await calendar.events.insert({
+        auth: oauth2Client,
+        calendarId: 'primary',
+        resource: bookingEvent,
+    }, function (err, bookingEvent) {
+        if (err) {
+            console.log('There was an error contacting the Calendar service: ' + err);
+            return;
+        }
+
+    });
+    console.log('Event created ' + bookingEvent.id);
+}
+
+/**
+ * [GOOGLE CALENDAR] Removes event from restaurant's calendar
+ * @param restaurantId
+ * @param bookingId event's id and booking's id are the same
+ * @returns {Promise<void>}
+ */
+async function removeBookingFromCalendar(restaurantId, bookingId) {
+    let tokens = await getTokens(restaurantId)
+    oauth2Client.setCredentials(tokens);
+
+    const res = await calendar.events.delete({
+        auth: oauth2Client,
+        calendarId: 'primary',
+        eventId: bookingId,
+    });
+    console.log(res.data)
+}
+
+
+/**
  * -------------- TESTS -------------------
  */
-
-function testRefreshToken() {
-    console.log("Started timeout")
-    setTimeout(async () => {
-        let tokens = await getTokens("0001")
-        oauth2Client.setCredentials(tokens);
-
-        /* 
-        * Save credential to the global variable in case access token was refreshed.
-        * ACTION ITEM: In a production app, you likely want to save the refresh token
-        *              in a secure persistent database instead.
-        */
-        // userCredential = tokens;
-
-        const drive = google.drive('v3');
-        await drive.files.list({
-            auth: oauth2Client,
-            pageSize: 10,
-            fields: 'nextPageToken, files(id, name)',
-        }, (err1, res1) => {
-            if (err1) return console.log('The API returned an error: ' + err1);
-            const files = res1.data.files;
-            if (files.length) {
-                console.log('Files:');
-                files.map((file) => {
-                    console.log(`${file.name} (${file.id})`);
-                });
-                response.json(files)
-            } else {
-                console.log('No files found.');
-            }
-        });
-    }, 3610000)
-}
 
 module.exports = recordRoutes;
