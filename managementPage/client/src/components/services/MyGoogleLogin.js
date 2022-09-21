@@ -7,7 +7,7 @@ function MyGoogleLogin(props) {
     const login = useGoogleLogin({
         onSuccess: codeResponse => sendCode(codeResponse),
         flow: 'auth-code',
-        scope: "https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events",
+        scope: "https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events",
         select_account: true
     });
 
