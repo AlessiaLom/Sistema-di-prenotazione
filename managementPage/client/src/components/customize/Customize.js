@@ -229,7 +229,7 @@ export default class Customize extends React.Component {
                     <h4>Info del ristorante</h4>
                     <hr></hr>
                     <h6> Nome </h6>
-                    Il nome del ristorante verrà visualizzato sotto al logo
+                    Il nome del ristorante verrà visualizzato di fianco al logo
                     <TextForm
                         value={this.state.fieldsValues.restaurantName}
                         onChange={this.handleChange}
@@ -239,7 +239,7 @@ export default class Customize extends React.Component {
                 </div>
                 <div className="d-block mb-3">
                     <h6> Info aggiuntive</h6>
-                    In questa sezione potrai personalizzare il messaggio visualizzato sotto il nome del ristorante ed il
+                    In questa sezione potrai personalizzare il messaggio di fianco al nome del ristorante ed il
                     logo, per esempio con una frase di benvenuto.
                     <TextForm
                         value={this.state.fieldsValues.additionalInfo}

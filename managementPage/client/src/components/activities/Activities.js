@@ -339,12 +339,8 @@ export default class Activities extends React.Component {
                         placeholder="es. 5"
                     />
                     <br></br>
-                    <h6>Duarata prenotazione</h6>
-                    <p>La durata della prenotazione rappresenta la durata della
-                        permanenza del cliente presso il ristorante e, di conseguenza,
-                        definisce anche ad intervalli di quanto tempo è possibile prenotare
-                        (es. è possibile prenotare ad intervalli di 30 min).
-                    </p>
+                    <h6>Spazio fra le prenotazioni</h6>
+                    <p>Il valore selezionato raprresenta quanto è possibile scaglionare la fascia oraria per le prenotazioni (es. ogni 30min.)</p>
                     <Select
                         defaultValue={this.state.fieldsValues.bookingOffset}
                         onChange={this.handleChange}
