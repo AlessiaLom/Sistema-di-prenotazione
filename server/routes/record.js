@@ -181,28 +181,32 @@ recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (reque
  * ADD NEW BOOKING
  * Booking form query that adds a new booking in the db
  */
-recordRoutes.route("/booking/add/:id").post(function (request, response) {
+recordRoutes.route("/booking/add/:id").post(async function (request, response) {
     let db_connect = dbo.getDb();
     let myQuery = {
         "restaurantId": request.params.id
     };
+    let booking = {
+        id: request.body.id,
+        bookingDate: request.body.bookingDate,
+        bookingTime: request.body.bookingTime,
+        bookingGuests: request.body.bookingGuests,
+        bookingActivity: request.body.bookingActivity,
+        bookingStatus: request.body.bookingStatus,
+        guestName: request.body.guestName,
+        guestSurname: request.body.guestSurname,
+        guestEmail: request.body.guestEmail,
+        guestPhone: request.body.guestPhone,
+        guestAdditionalInfo: request.body.guestAdditionalInfo,
+    }
     let newValues = {
         $push: {
-            bookings: {
-                id: request.body.id,
-                bookingDate: request.body.bookingDate,
-                bookingTime: request.body.bookingTime,
-                bookingGuests: request.body.bookingGuests,
-                bookingActivity: request.body.bookingActivity,
-                bookingStatus: request.body.bookingStatus,
-                guestName: request.body.guestName,
-                guestSurname: request.body.guestSurname,
-                guestEmail: request.body.guestEmail,
-                guestPhone: request.body.guestPhone,
-                guestAdditionalInfo: request.body.guestAdditionalInfo,
-            }
+            bookings: booking
         }
     };
+    if(booking.bookingStatus === 'confirmed'){
+        await addBookingToCalendar(request.params.id, booking);
+    }
     db_connect
         .collection("booking")
         .updateOne(myQuery, newValues, function (err, res) {
@@ -273,17 +277,22 @@ recordRoutes.route("/auth/google/").post(async (request, response) => {
  */
 
 function bookingToGoogleEvent(booking) {
-
+    const timeStampStart = booking.bookingDate + "T" + booking.bookingTime + ":00-00:00";
+    let timeHour = parseInt(booking.bookingTime.substring(0,2));
+    let timeMin = booking.bookingTime.substring(3,5);
+    timeHour += 2;
+    let endTime = String(timeHour) + ":" + timeMin;
+    const timeStampEnd = booking.bookingDate + "T" + endTime + ":00-00:00";
     // parametrize the returned object with fields in booking
     return {
-        'summary': 'Aperitivo per ' + booking.bookingGuests,
-        'description': 'Tizio ha prenotato per 5 alle XX:XX del XX-XX ad un Aperitivo. I contatti di Tizio sono: 423893248932, tizio@gmail.com',
+        'summary': booking.bookingActivity + ' per ' + booking.bookingGuests,
+        'description': booking.guestName + ' ' + booking.guestSurname + ' ha prenotato per ' + booking.bookingGuests + ' alle ' + booking.bookingTime + ' del ' + booking.bookingDate + '. I contatti di ' + booking.guestName + ' sono: ' + booking.guestPhone + ', ' + booking.guestEmail + '. ' + (booking.guestAdditionalInfo != null ? 'Il cliente ha lasciato un messaggio alla prenotazione: ' + booking.guestAdditionalInfo : ''),
         'start': {
-            'dateTime': '2022-09-23T09:00:00-00:00',
+            'dateTime': timeStampStart,
             'timeZone': 'America/Los_Angeles',
         },
         'end': {
-            'dateTime': '2022-09-23T17:00:00-00:00',
+            'dateTime': timeStampEnd,
             'timeZone': 'America/Los_Angeles',
         },
     }

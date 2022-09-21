@@ -183,7 +183,6 @@ export default class BookingForm extends Component {
       minHours = "0" + minHours;
     }
     const minBookingTime = String(minHours) + ":" + String(minMns);
-    console.log(minBookingTime)
     options.forEach((option) => {
       if(option.name !== name || (isToday && option.value <= minBookingTime)) {
         option.disabled = true;
@@ -542,7 +541,7 @@ export default class BookingForm extends Component {
   handleSubmit = (event) => {
     event.preventDefault();
     if(validateForm(this.state.errors)) {
-      let correctFormatDate = this.state.selectedDate.getFullYear() + '-' + this.state.selectedDate.getMonth() + '-' + this.state.selectedDate.getDate();
+      let correctFormatDate = this.state.selectedDate.getFullYear() + '-' + (this.state.selectedDate.getMonth() + 1) + '-' + this.state.selectedDate.getDate();
       let correctFormatTime = this.state.selectedTime.value;
       let newBooking = {
         "id": Math.random().toString(36).slice(2),
@@ -557,6 +556,7 @@ export default class BookingForm extends Component {
         "guestPhone": this.state.guestPhone,
         "guestAdditionalInfo": this.state.guestAdditionalInfo
       }
+      console.log(newBooking.bookingDate);
       window.location.href = window.location.pathname + '?submitting=success';
       return fetch('/booking/add/' + restaurantId, {
           method: 'POST',
