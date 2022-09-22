@@ -17,51 +17,21 @@ export default class ManagementPage extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            restaurantId: '0001',
-            profile: undefined
+            activeItemIndex: 0,
         }
-        this.saveProfile = this.saveProfile.bind(this)
-        this.deleteProfile = this.deleteProfile.bind(this)
-        this.componentDidMount = this.componentDidMount.bind(this)
-        this.handleAuthentication = this.handleAuthentication.bind(this)
+        this.changeContent = this.changeContent.bind(this)
     }
 
     /**
-     * Used to fetch user's google profile if existing in db
+     * saves the index of the currently active menuItem in order to change the content of the page and to highlight the right menuItem in the sideBar
+     * @param {int} i index of the selected menuItem (from top to bottom)
      */
-    componentDidMount() {
-        fetch("/profile/" + this.state.restaurantId, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data)
-                this.setState({
-                    profile: data
-                })
-            })
-    }
-
-    saveProfile(profile) {
+    changeContent(i) {
+        // console.log("" + this.state.activeItemIndex)
         this.setState({
-            profile: profile
+            activeItemIndex: i,
         })
-    }
-
-    deleteProfile() {
-        this.setState({
-            profile: undefined
-        })
-    }
-
-    handleAuthentication(profile) {
-        this.setState({
-            profile: profile
-        })
+        // console.log("" + this.state.activeItemIndex)
     }
 
     render() {
@@ -74,15 +44,11 @@ export default class ManagementPage extends React.Component {
                 </div>
                 <div id="mainContentContainer" className="col shadow p-3 bg-body rounded">
                     <Routes>
-                        <Route path="/" element={<Customize restaurantId={this.state.restaurantId}/>}/>
-                        <Route path="/customize" element={<Customize restaurantId={this.state.restaurantId}/>}/>
-                        <Route path="/activities" element={<Activities restaurantId={this.state.restaurantId}/>}/>
-                        <Route path="/bookings" element={<Bookings restaurantId={this.state.restaurantId}/>}/>
-                        <Route path="/services" element={<Services
-                            onLogout={this.deleteProfile}
-                            profile={this.state.profile}
-                            onLogin={this.saveProfile}
-                            restaurantId={this.state.restaurantId}/>}/>
+                        <Route path="/" element={<Customize restaurantId={this.props.restaurantId}/>}/>
+                        <Route path="/customize" element={<Customize restaurantId={this.props.restaurantId}/>}/>
+                        <Route path="/activities" element={<Activities restaurantId={this.props.restaurantId}/>}/>
+                        <Route path="/bookings" element={<Bookings restaurantId={this.props.restaurantId}/>}/>
+                        <Route path="/services" element={<Services restaurantId={this.props.restaurantId}/>}/>
                         <Route path="/account" element={<p>Ciao mondo</p>}/>
                     </Routes>
 

@@ -97,7 +97,7 @@ recordRoutes.route("/restaurant_info/:id").get(function (req, res) {
  * FETCH AUTHENTICATION
  * Fetches infos about restaurant
  */
- recordRoutes.route("/authentication/:id").get(function (req, res) {
+recordRoutes.route("/authentication/:id").get(function (req, res) {
     let db_connect = dbo.getDb("sdp_db");
     let myQuery = {restaurantId: req.params.id};
     db_connect
@@ -376,17 +376,19 @@ function storeProfile(profile, restaurantId) {
  */
 async function getProfile(restaurantId) {
     let db_connect = dbo.getDb();
-    let myQuery = {restaurantId: restaurantId};
-    return db_connect
+    let myQuery = {
+        restaurantId: restaurantId
+    };
+    let googleData = await db_connect
         .collection("google_data")
         .findOne(myQuery)
-        .then((result) => {
-            if(result){
-                JSON.parse(decrypt(result.profile))
-            }else{
-                {}
-            }
-        })
+        .then((result) => result)
+    if(googleData && googleData.profile){
+        return JSON.parse(decrypt(googleData.profile))
+    }else{
+        return {}
+    }
+
 }
 
 async function revokeAccessToApp(restaurantId) {

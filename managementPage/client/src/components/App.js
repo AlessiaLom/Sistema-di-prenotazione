@@ -14,10 +14,8 @@ export default class App extends React.Component {
         this.state = {
             logged: false
         }
-
         this.onLogin = this.onLogin.bind(this)
         this.onLogout = this.onLogout.bind(this)
-
     }
 
     onLogout() {
@@ -36,7 +34,7 @@ export default class App extends React.Component {
     render() {
         let contentShown
         if (this.state.logged || cookies.get('login')) {
-            contentShown = <ManagementPage onLogout={this.onLogout} restaurantId={"0001"}/>
+            contentShown = <ManagementPage onLogout={this.onLogout} restaurantId="0001"/>
         } else {
             contentShown = <Login onLogin={this.onLogin}/>
         }
