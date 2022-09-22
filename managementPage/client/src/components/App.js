@@ -12,6 +12,7 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            restaurantId: '',
             logged: false
         }
         this.onLogin = this.onLogin.bind(this)
@@ -25,8 +26,9 @@ export default class App extends React.Component {
         })
     }
 
-    onLogin() {
+    onLogin(restaurantId) {
         this.setState({
+            restaurantId: restaurantId,
             logged: true
         })
     }

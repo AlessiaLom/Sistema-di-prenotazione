@@ -81,30 +81,39 @@ recordRoutes.route("/bookings/:id").get(function (request, response) {
  * FETCH RESTAURANT INFO
  * Fetches infos about restaurant
  */
-recordRoutes.route("/restaurant_info/:id").get(function (req, res) {
+recordRoutes.route("/restaurant_info/:id").get(function (request, response) {
     let db_connect = dbo.getDb();
-    let myQuery = {restaurantId: req.params.id};
+    let myQuery = {restaurantId: request.params.id};
     db_connect
         .collection("restaurant_info") //
         .findOne(myQuery, function (err, result) {
             if (err) throw err;
-            res.json(result);
+            response.json(result);
         });
 });
-
 
 /**
  * FETCH AUTHENTICATION
  * Fetches infos about restaurant
  */
-recordRoutes.route("/authentication/:id").get(function (req, res) {
+recordRoutes.route("/authentication").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
-    let myQuery = {restaurantId: req.params.id};
+    let email = request.body.email
+    let password = request.body.password
+    let myQuery = {
+        'credentials.email': email
+    };
     db_connect
         .collection("authentication")
         .findOne(myQuery, function (err, result) {
             if (err) throw err;
-            res.json(result);
+            if (result && result.credentials.password === password) {
+                response.json({
+                    restaurantId: result.restaurantId
+                })
+            } else {
+                response.json({});
+            }
         });
 });
 
@@ -383,9 +392,9 @@ async function getProfile(restaurantId) {
         .collection("google_data")
         .findOne(myQuery)
         .then((result) => result)
-    if(googleData && googleData.profile){
+    if (googleData && googleData.profile) {
         return JSON.parse(decrypt(googleData.profile))
-    }else{
+    } else {
         return {}
     }
 

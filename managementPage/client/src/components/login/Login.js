@@ -1,23 +1,17 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import App from '../App';
 import "./../../styles/login.css"
 import Cookies from 'universal-cookie';
 
 const cookies = new Cookies();
-let credentials = [];
 
 /**
  * Login form to the management page
  */
 export default class Login extends React.Component {
     constructor(props) {
-        /**
-         *  props: no props
-         */
         super(props)
         this.state = {
-            restaurantId: '0001',
             email: null,
             password: null,
             validationErrors: {
@@ -26,33 +20,7 @@ export default class Login extends React.Component {
                 noMatchError: null
             }
         }
-
-        this.componentDidMount = this.componentDidMount.bind(this)
-    }
-
-    componentDidMount() {
-        fetch("/authentication/" + this.state.restaurantId, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data) {
-                credentials = data.credentials;
-                console.dir(credentials)
-            }
-        })
-    }
-
-    /**
-     * Checks whether the fields are matching with valid ones
-     * @returns true if there the fields match
-     */
-    areMatching = (usr, psw) => {
-       return credentials.email === usr && credentials.password === psw;
+        this.handleSubmit = this.handleSubmit.bind(this)
     }
 
     onEmailChange = (event) => {
@@ -91,24 +59,43 @@ export default class Login extends React.Component {
         }
     }
 
-    handleSubmit = (event) => {
-        event.preventDefault();
-        if(!this.areMatching(this.state.email, this.state.password)){
-            this.setState({ validationErrors: {
-                emailError: null,
-                passwordError: null,
-                noMatchError: 'Email e/o password errati.'
-            }});
-        } else {
-            this.setState({ validationErrors: {
-                emailError: null,
-                passwordError: null,
-                noMatchError: null
-            }});
-            cookies.set('login', true, { path: '/' });
-            this.props.onLogin()
-            //window.location.reload();
+    handleSubmit() {
+        if(!this.state.validationErrors.emailError && !this.state.validationErrors.passwordError){
+            fetch("/authentication", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: this.state.email,
+                    password: this.state.password
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (Object.keys(data).includes('restaurantId')) {
+                        cookies.set('login', true, { path: '/' });
+                        this.props.onLogin(data.restaurantId)
+                    }
+                })
         }
+        // event.preventDefault();
+        // if(!this.areMatching(this.state.email, this.state.password)){
+        //     this.setState({ validationErrors: {
+        //         emailError: null,
+        //         passwordError: null,
+        //         noMatchError: 'Email e/o password errati.'
+        //     }});
+        // } else {
+        //     this.setState({ validationErrors: {
+        //         emailError: null,
+        //         passwordError: null,
+        //         noMatchError: null
+        //     }});
+        //
+        //     //window.location.reload();
+        // }
     }
 
     render() {
@@ -117,7 +104,7 @@ export default class Login extends React.Component {
             <>
             <div className='wrapper'>
                 <div className='formContainer'>
-                    <form onSubmit={this.handleSubmit}>
+                    <form>
                         <div className="form-outline mb-4 usrField">
                         {errors.emailError != null && <span className='usrError'>{errors.emailError}</span>}
                             <label className="form-label" htmlFor="usrInput">Email*</label>
@@ -131,7 +118,7 @@ export default class Login extends React.Component {
                             </div>
                         </div>
                         <div className='submit'>
-                            <input type="submit" className="btn btn-primary btn-block mb-4" value="Accedi" disabled={this.state.email === null || this.state.password === null}/>
+                            <input onClick={this.handleSubmit} type="button" className="btn btn-primary btn-block mb-4" value="Accedi" disabled={this.state.email === null || this.state.password === null}/>
                             {errors.noMatchError != null && <span className='matchError'>{errors.noMatchError}</span>}
                         </div>
                     </form>
