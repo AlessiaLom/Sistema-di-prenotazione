@@ -40,7 +40,7 @@ recordRoutes.route("/customize/:id").get(function (request, response) {
     let db_connect = dbo.getDb();
     let myQuery = {restaurantId: request.params.id};
     db_connect
-        .collection("restaurant_info")
+        .collection("customize")
         .findOne(myQuery, function (err, result) {
             if (err) throw err;
             response.json(result);
@@ -85,7 +85,7 @@ recordRoutes.route("/restaurant_info/:id").get(function (request, response) {
     let db_connect = dbo.getDb();
     let myQuery = {restaurantId: request.params.id};
     db_connect
-        .collection("restaurant_info") //
+        .collection("customize") //
         .findOne(myQuery, function (err, result) {
             if (err) throw err;
             response.json(result);
@@ -143,7 +143,7 @@ recordRoutes.route("/customize/save_changes/:id").post(function (request, respon
         },
     };
     db_connect
-        .collection("restaurant_info")
+        .collection("customize")
         .updateOne(myQuery, newValues, function (err, result) {
             if (err) throw err;
             console.log("1 document updated");
