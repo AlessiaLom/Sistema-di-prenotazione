@@ -7,7 +7,7 @@ import { activitiesList } from './BookingForm';
 const THEME = {
   
   Table:
-    `grid-template-columns: 15% 15% 15% 10% 45%;
+    `grid-template-columns: 3fr 1fr 1fr 2fr 5fr;
     `
   ,
   HeaderRow: `
@@ -53,8 +53,8 @@ const CustomTable = () => {
     if(element.days.includes('D')){
       days += 'Domenica ';
     }
-    days = days.replaceAll(' ', ',');
-    days = days.slice(0, -1);
+    days = days.replaceAll(' ', ', ');
+    days = days.slice(0, -2);
     element.days = days;
     console.log(days)
   });

@@ -34,27 +34,27 @@ body {
   color: black;
 }
 
+.tableContainer{
+  margin: 0 5%;
+}
+
 .ButtonUnstyled-root.active{
   color: white;
   background-color: var(--secondary-color);
 }
 
 .css-e53awj-MuiStack-root{
-  margin: 2% 0;
   justify-content: center;
   flex-wrap: wrap;
   gap: 12px;
 }
 
 .bookingControls{
-  float: left;
-  margin-left: 5%;
-  width: 50vw;
+  margin: 0 5%;
 }
 
 .personControls{
-  float: right;
-  margin-right: 5%;
+  margin: 0 5%;
 }
 
 form{
@@ -123,7 +123,6 @@ textarea, input:not(#guestPrivacy), .button{
 }
 
 .bookingDate, .bookingTime, .bookingGuests, .bookingActivity, .resturantTable {
-  margin-left: 5%;
   margin-right: 0;
 }
 
@@ -206,6 +205,14 @@ button:disabled, button[disabled]{
 
 table{
   z-index: 0;
+}
+
+td > div {
+  white-space: break-spaces !important;
+}
+
+table th, table td{
+  font-size: 18px;
 }
 
 .button:active {
@@ -353,10 +360,14 @@ textarea{
   margin-right: 25%;
 }
 
-@media screen and (max-width: 360px) {
+@media screen and (max-width: 380px) {
   .nav a:not(.site-title), .nav{
     padding: 0;
   }
+
+  .tableContainer{
+    margin: 0;
+  }  
 
   .site-title{
     padding: 1%;
@@ -383,6 +394,7 @@ textarea{
 
   .personControls{
     margin-right: 0;
+    margin-left: 0;
     width: 100%;
   }
 
@@ -426,6 +438,11 @@ textarea{
     display: none;
   }
 
+
+  .tableContainer{
+    margin: 0;
+  }
+
   .nav{
     padding: 0;
     gap: 0;
@@ -438,6 +455,7 @@ textarea{
 
   .personControls{
     margin-right: 0;
+    margin-left: 0;
     width: 100%;
   }
 
@@ -482,13 +500,13 @@ textarea{
     margin-left: 0;
   }
 
-  .bookingControls, .personControls{
-    margin-left: 0;
-    width: 100%;
+  .tableContainer{
+    margin: 0;
   }
 
   .bookingControls, .personControls{
-    float: none;
+    margin-left: 0;
+    width: 100%;
   }
 
   .guestName, .guestSurname, .guestEmail, .guestPhone, .guestAdditionalInfo, .guestPrivacy{

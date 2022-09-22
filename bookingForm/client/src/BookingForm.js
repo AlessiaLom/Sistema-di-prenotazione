@@ -566,7 +566,6 @@ export default class BookingForm extends Component {
         "guestPhone": this.state.guestPhone,
         "guestAdditionalInfo": this.state.guestAdditionalInfo
       }
-      console.log(newBooking.bookingDate);
       window.location.href = window.location.pathname + '?submitting=success';
       return fetch('/booking/add/' + restaurantId, {
           method: 'POST',
@@ -618,6 +617,10 @@ export default class BookingForm extends Component {
         <div className="form-wrapper">
             <form onSubmit={this.handleSubmit} noValidate>
             <HeaderForm />
+            <div className="tableContainer">
+              <label className="resturantTableLabel">Servizi offerti dal ristorante:</label>
+              <CustomTable />
+            </div>
             <div className="bookingControls">
             <div className="bookingDate">
                 <label className="booking">Data di prenotazione* {errors.bookingDate.length > 0 && <span className='error'>{errors.bookingDate}</span>}
@@ -654,8 +657,6 @@ export default class BookingForm extends Component {
               </div>
               <div className="resturantTable">
                 <label className={`bookingStatus-${this.state.statusProp}`}>{this.state.statusLabel}</label>
-                <label className="resturantTableLabel">Servizi offerti dal ristorante:</label>
-                <CustomTable />
               </div>
             </div>
             <div className="personControls">
