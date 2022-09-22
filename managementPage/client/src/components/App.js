@@ -46,7 +46,7 @@ export default class App extends React.Component {
     render() {
         let contentShown
         if (this.state.logged || cookies.get('login')) {
-            contentShown = <ManagementPage onLogout={this.onLogout} restaurantId="0001"/>
+            contentShown = <ManagementPage onLogout={this.onLogout} restaurantId={this.state.restaurantId}/>
         } else if(!this.state.showRegisterForm){
             contentShown = <Login onLogin={this.onLogin} register={this.onRegister}/>
         } else {

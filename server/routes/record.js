@@ -101,25 +101,23 @@ recordRoutes.route("/authentication").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
     let email = request.body.email
     let password = request.body.password
-    db_connect
+    let users = db_connect
         .collection("authentication")
-        .find({}, function (err, result) {
-            if (err) throw err;
-            result.forEach((user)=>{
-                let decrypted = JSON.parse(decrypt(user.credentials))
-                if(decrypted.email === email){
-                    if (decrypted.password === password){
-                        response.json({
-                            restaurantId: decrypted.restaurantId
-                        })
-                        return true
-                    }else{
-                        response.json({})
-                        return false
-                    }
+        .find()
+    let respMessage = {}
+    users.forEach((user) => {
+        let decrypted = JSON.parse(decrypt(user.credentials))
+        if (decrypted.email === email) {
+            if (decrypted.password === password) {
+                respMessage = {
+                    restaurantId: user.restaurantId
                 }
-            })
-        });
+            }
+        }
+    }).then(() => {
+        response.json(respMessage)
+    })
+
 });
 
 /**
