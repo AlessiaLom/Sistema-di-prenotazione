@@ -8,6 +8,14 @@ body{
     background: radial-gradient(white, lightgrey, grey);
 }
 
+#regLabel{
+    text-align: center;
+}
+
+#regLabel a {
+    cursor: pointer;
+}
+
 .wrapper{
     display: flex;
     height: 100vh;

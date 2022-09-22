@@ -5,10 +5,14 @@ import Cookies from 'universal-cookie';
 
 const cookies = new Cookies();
 
+const validEmailRegex = RegExp(
+    /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
+  );
+
 /**
  * Login form to the management page
  */
-export default class Login extends React.Component {
+export default class Registration extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -17,24 +21,30 @@ export default class Login extends React.Component {
             validationErrors: {
                 emailError: null,
                 passwordError: null,
-                noMatchError: null
             }
         }
         this.handleSubmit = this.handleSubmit.bind(this)
     }
 
     onEmailChange = (event) => {
-        if(event.target.value != ''){
-            this.setState({ email: event.target.value });
+        if(event.target.value === ''){
+            this.setState({ email: null });
             this.setState({ validationErrors: {
-                emailError: null,
+                emailError: 'Questo campo è obbligatorio',
+                passwordError: null,
+                noMatchError: null
+            }});
+        } else if (!validEmailRegex.test(event.target.value)){
+            this.setState({ email: null });
+            this.setState({ validationErrors: {
+                emailError: 'La mail non è nel formato corretto (mail@example.com)',
                 passwordError: null,
                 noMatchError: null
             }});
         } else {
-            this.setState({ email: null });
+            this.setState({ email: event.target.value });
             this.setState({ validationErrors: {
-                emailError: 'Questo campo è obbligatorio',
+                emailError: null,
                 passwordError: null,
                 noMatchError: null
             }});
@@ -42,18 +52,25 @@ export default class Login extends React.Component {
     }
 
     onPswChange = (event) => {
-        if(event.target.value != ''){
+        if(event.target.value === ''){
+            this.setState({ password: null });
+            this.setState({ validationErrors: {
+                emailError: 'Questo campo è obbligatorio',
+                passwordError: null,
+                noMatchError: null
+            }});
+        } else if (event.target.value.length < 8){
+            this.setState({ email: null });
+            this.setState({ validationErrors: {
+                emailError: null,
+                passwordError: 'La password dev\'essere lunga almeno 8 caratteri',
+                noMatchError: null
+            }});
+        } else {
             this.setState({ password: event.target.value });
             this.setState({ validationErrors: {
                 emailError: null,
                 passwordError: null,
-                noMatchError: null
-            }});
-        } else {
-            this.setState({ password: null });
-            this.setState({ validationErrors: {
-                emailError: null,
-                passwordError: 'Questo campo è obbligatorio',
                 noMatchError: null
             }});
         }
@@ -61,7 +78,7 @@ export default class Login extends React.Component {
 
     handleSubmit() {
         if(!this.state.validationErrors.emailError && !this.state.validationErrors.passwordError){
-            fetch("/authentication", {
+            fetch("/register", {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -76,32 +93,10 @@ export default class Login extends React.Component {
                 .then(data => {
                     if (Object.keys(data).includes('restaurantId')) {
                         cookies.set('login', true, { path: '/' });
-                        this.props.onLogin(data.restaurantId)
-                    } else {
-                        this.setState({ validationErrors: {
-                                     emailError: null,
-                                     passwordError: null,
-                                     noMatchError: 'Email e/o password errati.'
-                                 }});
+                        this.props.onLogin(data.restaurantId);
                     }
                 })
         }
-        // event.preventDefault();
-        // if(!this.areMatching(this.state.email, this.state.password)){
-        //     this.setState({ validationErrors: {
-        //         emailError: null,
-        //         passwordError: null,
-        //         noMatchError: 'Email e/o password errati.'
-        //     }});
-        // } else {
-        //     this.setState({ validationErrors: {
-        //         emailError: null,
-        //         passwordError: null,
-        //         noMatchError: null
-        //     }});
-        //
-        //     //window.location.reload();
-        // }
     }
 
     render() {
@@ -124,9 +119,7 @@ export default class Login extends React.Component {
                             </div>
                         </div>
                         <div className='submit'>
-                            <input onClick={this.handleSubmit} type="button" className="btn btn-primary btn-block mb-4" value="Accedi" disabled={this.state.email === null || this.state.password === null}/>
-                            {errors.noMatchError != null && <span className='matchError'>{errors.noMatchError}</span>}
-                            <label id ="regLabel">Non hai un account? <a onClick={this.props.register} id="register-link" className="link-primary">Registrati</a></label>
+                            <input onClick={this.handleSubmit} type="button" className="btn btn-primary btn-block mb-4" value="Registrati" disabled={this.state.email === null && this.state.password === null}/>
                         </div>
                     </form>
                 </div>

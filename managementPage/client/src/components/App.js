@@ -5,6 +5,7 @@ import "./../styles/sideBar.css"
 import Login from './login/Login';
 import Cookies from 'universal-cookie';
 import ManagementPage from "./managementPage/ManagementPage";
+import Registration from './login/Registration';
 
 const cookies = new Cookies();
 
@@ -13,10 +14,12 @@ export default class App extends React.Component {
         super(props);
         this.state = {
             restaurantId: '',
-            logged: false
+            logged: false,
+            showRegisterForm: false
         }
         this.onLogin = this.onLogin.bind(this)
         this.onLogout = this.onLogout.bind(this)
+        this.onRegister = this.onRegister.bind(this)
     }
 
     onLogout() {
@@ -29,7 +32,14 @@ export default class App extends React.Component {
     onLogin(restaurantId) {
         this.setState({
             restaurantId: restaurantId,
-            logged: true
+            logged: true,
+            showRegisterForm: false
+        })
+    }
+
+    onRegister(){
+        this.setState({
+            showRegisterForm: true
         })
     }
 
@@ -37,8 +47,10 @@ export default class App extends React.Component {
         let contentShown
         if (this.state.logged || cookies.get('login')) {
             contentShown = <ManagementPage onLogout={this.onLogout} restaurantId="0001"/>
+        } else if(!this.state.showRegisterForm){
+            contentShown = <Login onLogin={this.onLogin} register={this.onRegister}/>
         } else {
-            contentShown = <Login onLogin={this.onLogin}/>
+            contentShown = <Registration onLogin={this.onLogin}/>
         }
         return (
             <div>

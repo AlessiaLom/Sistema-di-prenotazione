@@ -256,7 +256,7 @@ recordRoutes.route("/register").post(async (request, response) => {
         credentials: encryptedCredentials
     }
     db_connect
-        .collection("booking")
+        .collection("authentication")
         .insertOne(newUser, function (err, res) {
             if (err) throw err;
             response.json({
