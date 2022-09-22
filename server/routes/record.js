@@ -5,6 +5,7 @@
 const express = require("express");
 const axios = require('axios');
 const https = require("https");
+const uuid = require('uuid');
 const {encrypt, decrypt} = require('./../encryption/encryption');
 
 /**
@@ -100,20 +101,24 @@ recordRoutes.route("/authentication").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
     let email = request.body.email
     let password = request.body.password
-    let myQuery = {
-        'credentials.email': email
-    };
     db_connect
         .collection("authentication")
-        .findOne(myQuery, function (err, result) {
+        .find({}, function (err, result) {
             if (err) throw err;
-            if (result && result.credentials.password === password) {
-                response.json({
-                    restaurantId: result.restaurantId
-                })
-            } else {
-                response.json({});
-            }
+            result.forEach((user)=>{
+                let decrypted = JSON.parse(decrypt(user.credentials))
+                if(decrypted.email === email){
+                    if (decrypted.password === password){
+                        response.json({
+                            restaurantId: decrypted.restaurantId
+                        })
+                        return true
+                    }else{
+                        response.json({})
+                        return false
+                    }
+                }
+            })
         });
 });
 
@@ -234,6 +239,31 @@ recordRoutes.route("/booking/add/:id").post(async function (request, response) {
             response.json(res);
         });
 });
+
+/**
+ * REGISTER NEW USER
+ */
+recordRoutes.route("/register").post(async (request, response) => {
+    let credentials = {
+        email: request.body.email,
+        password: request.body.password
+    }
+    let newRestaurantId = uuid.v4()
+    let encryptedCredentials = encrypt(JSON.stringify(credentials))
+    let db_connect = dbo.getDb()
+    let newUser = {
+        restaurantId: newRestaurantId,
+        credentials: encryptedCredentials
+    }
+    db_connect
+        .collection("booking")
+        .insertOne(newUser, function (err, res) {
+            if (err) throw err;
+            response.json({
+                restaurantId: newRestaurantId
+            });
+        });
+})
 
 /**
  * DELETE EXISTING BOOKING
