@@ -214,11 +214,12 @@ recordRoutes.route("/booking/add/:id").post(async function (request, response) {
  * DELETE EXISTING BOOKING
  * Booking form query that deletes a booking from the db
  */
-recordRoutes.route("/booking/update").post(function (req, response) {
+recordRoutes.route("/booking/update").post(async function (req, response) {
     let db_connect = dbo.getDb();
     let myQuery = {
         restaurantId: req.body.id, 'bookings.id': req.body.bookingId
     };
+    await removeBookingFromCalendar(req.body.id, req.body.bookingId);
     let newValues = {
         $set: {
             'bookings.$.bookingStatus': 'canceled'
