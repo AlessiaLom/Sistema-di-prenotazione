@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import React from "react";
 import "./../../styles/pages.css"
 import {GoogleOAuthProvider} from '@react-oauth/google';
-import {MyGoogleLogin} from "./MyGoogleLogin";
+import {MyGoogleAuth} from "./MyGoogleAuth";
 
 export default class Services extends React.Component {
     constructor(props) {
@@ -14,7 +14,7 @@ export default class Services extends React.Component {
         return (
             <div>
                 <GoogleOAuthProvider clientId={this.clientId}>
-                    <MyGoogleLogin
+                    <MyGoogleAuth
                         onLogin={this.props.onLogin}
                         profile={this.props.profile}
                         restaurantId={this.props.restaurantId}

@@ -4,6 +4,7 @@
 
 const express = require("express");
 const axios = require('axios');
+const https = require("https");
 const {encrypt, decrypt} = require('./../encryption/encryption');
 
 /**
@@ -24,10 +25,7 @@ const dbo = require("./../db/conn.js");// This will help us connect to the datab
 
 const {google} = require('googleapis');
 const calendar = google.calendar('v3');
-var oauth2Client = new google.auth.OAuth2(
-    '504181834497-omrl5mnes3qmvvu39hu5v404lemlfq1c.apps.googleusercontent.com',
-    "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",
-    "postmessage" // you use 'postmessage' when the code is retrieved from a frontend (couldn't find why online)
+var oauth2Client = new google.auth.OAuth2('504181834497-omrl5mnes3qmvvu39hu5v404lemlfq1c.apps.googleusercontent.com', "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", "postmessage" // you use 'postmessage' when the code is retrieved from a frontend (couldn't find why online)
 );
 
 /**
@@ -158,8 +156,7 @@ recordRoutes.route("/activities/save_changes/:id").post(function (request, respo
 recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
     let myQuery = {
-        restaurantId: request.params.id,
-        'bookings.id': request.params.bookingId
+        restaurantId: request.params.id, 'bookings.id': request.params.bookingId
     };
     let newValues = {
         $set: {
@@ -220,8 +217,7 @@ recordRoutes.route("/booking/add/:id").post(async function (request, response) {
 recordRoutes.route("/booking/update").post(function (req, response) {
     let db_connect = dbo.getDb();
     let myQuery = {
-        restaurantId: req.body.id,
-        'bookings.id': req.body.bookingId
+        restaurantId: req.body.id, 'bookings.id': req.body.bookingId
     };
     let newValues = {
         $set: {
@@ -244,47 +240,53 @@ recordRoutes.route("/booking/update").post(function (req, response) {
 /**
  * Manages the user's tokens, storing them in an encrypted way. Returns to the client the user's info
  */
-recordRoutes.route("/auth/google/").post(async (request, response) => {
+recordRoutes.route("/google/login").post(async (request, response) => {
     let {tokens} = await oauth2Client.getToken(request.body.code) //await oauth2Client.getToken(request.body.googleData);
     let restaurantId = request.body.restaurantId
-    if (tokens.refresh_token) {
-        storeTokens(tokens, restaurantId)
-        // save it with the restaurant id
-        /**
-         * RESUME FROM HERE
-         * DO NOT JUST SAVE REFRESH TOKEN BUT ALSO THE ACCESS TOKEN
-         *
-         * Revoke access here https://myaccount.google.com/u/1/permissions?pageId=none to test the receiving of refresh token
-         */
-        // upsert(tokens, request.body.id)
 
+    if (tokens.refresh_token) {
+        let userInfo = {}
+        if (tokens.access_token) {
+            userInfo = await axios
+                .get('https://www.googleapis.com/oauth2/v3/userinfo', {
+                    headers: {Authorization: `Bearer ${tokens.access_token}`},
+                })
+                .then(res => res.data)
+            storeTokens(tokens, restaurantId)
+            storeProfile(userInfo, restaurantId)
+            response.send(JSON.stringify(userInfo))
+        }
     }
-    // console.log(tokens);
-    // testRefreshToken();
-    /*let testBooking = {
-        id: "hcggfhhgdr54332",
-        bookingDate: "2022-9-28",
-        bookingTime: "20:30",
-        bookingGuests: "5",
-        bookingActivity: "Aperitivo",
-        bookingStatus: "confirmed",
-        guestName: "Pippo",
-        guestSurname: "Pluto",
-        guestEmail: "pippo@gmail.com",
-        guestPhone: "3437292344",
-        guestAdditionalInfo: "Additional Info",
-    }
-    await addBookingToCalendar(restaurantId, testBooking)
-    setTimeout(async () => await removeBookingFromCalendar(restaurantId, testBooking.id), 20000)*/
-    // Get user info and return them to the client so that they can be printed
-    if (tokens.access_token) {
-        const userInfo = await axios
-            .get('https://www.googleapis.com/oauth2/v3/userinfo', {
-                headers: {Authorization: `Bearer ${tokens.access_token}`},
-            })
-            .then(res => res.data).then();
-        response.send(JSON.stringify(userInfo))
-    }
+})
+
+/**
+ * Fetches the user's google profile in the App component
+ */
+recordRoutes.route("/profile/:restaurantId").get(async (request, response) => {
+    let profile = await getProfile(request.params.restaurantId)
+    response.send(profile)
+})
+
+/**
+ * Handles google logout, deletes document in db and revokes access to applications
+ * Revoking access to application is necessary so that at the next login the refresh token will be given again
+ */
+recordRoutes.route("/google/logout/:restaurantId").delete(async (request, response) => {
+    // Revoke access to application
+    let restaurantId = request.params.restaurantId
+    await revokeAccessToApp(restaurantId)
+    let db_connect = dbo.getDb();
+    let myQuery = {
+        restaurantId: restaurantId
+    };
+    db_connect
+        .collection("google_data") //
+        .deleteOne(myQuery, function (err, result) {
+            if (err) throw err;
+            response.json(result)
+        });
+
+    // Revoke access to apps
 })
 
 /**
@@ -294,7 +296,9 @@ recordRoutes.route("/auth/google/").post(async (request, response) => {
  */
 function storeTokens(tokens, restaurantId) {
     let db_connect = dbo.getDb("sdp_db");
-    let myQuery = {restaurantId: restaurantId};
+    let myQuery = {
+        restaurantId: restaurantId
+    };
     // ENCRYPTION
     let encrypted = encrypt(JSON.stringify(tokens))
     let newValues = {
@@ -303,12 +307,11 @@ function storeTokens(tokens, restaurantId) {
         },
     };
     db_connect
-        .collection("tokens")
-        .updateOne(myQuery, newValues, function (err, result) {
+        .collection("google_data")
+        .updateOne(myQuery, newValues, {upsert: true}, function (err, result) {
             if (err) throw err;
             console.log("1 document updated " + result);
         });
-
 }
 
 /**
@@ -317,14 +320,83 @@ function storeTokens(tokens, restaurantId) {
  */
 async function getTokens(restaurantId) {
     let db_connect = dbo.getDb();
+    let myQuery = {
+        restaurantId: restaurantId
+    };
+    return db_connect
+        .collection("google_data")
+        .findOne(myQuery)
+        .then((result) => JSON.parse(decrypt(result.tokens)))
+}
+
+/**
+ * Stores google user's encrypted profile object
+ * @param profile google user profile object
+ * @param restaurantId
+ */
+function storeProfile(profile, restaurantId) {
+    let db_connect = dbo.getDb("sdp_db");
+    let myQuery = {restaurantId: restaurantId};
+    // ENCRYPTION
+    let encrypted = encrypt(JSON.stringify(profile))
+    let newValues = {
+        $set: {
+            profile: encrypted
+        },
+    };
+    db_connect
+        .collection("google_data")
+        .updateOne(myQuery, newValues, {upsert: true}, function (err, result) {
+            if (err) throw err;
+            console.log("1 document updated " + result);
+        });
+}
+
+/**
+ * Gets google user's profile object from the db
+ * @param restaurantId
+ * @returns {Promise<*>}
+ */
+async function getProfile(restaurantId) {
+    let db_connect = dbo.getDb();
     let myQuery = {restaurantId: restaurantId};
     return db_connect
-        .collection("tokens")
+        .collection("google_data")
         .findOne(myQuery)
-        .then((result) =>
-            JSON.parse(decrypt(result.tokens))
-        )
+        .then((result) => {
+            if(result){
+                JSON.parse(decrypt(result.profile))
+            }else{
+                {}
+            }
+        })
+}
 
+async function revokeAccessToApp(restaurantId) {
+    let tokens = await getTokens(restaurantId)
+    let postData = "token=" + tokens.refresh_token;
+
+    // Options for POST request to Google's OAuth 2.0 server to revoke a token
+    let postOptions = {
+        host: 'oauth2.googleapis.com', port: '443', path: '/revoke', method: 'POST', headers: {
+            'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(postData)
+        }
+    };
+    // Set up the request
+    const postReq = https.request(postOptions, function (res) {
+        res.setEncoding('utf8');
+        res.on('data', d => {
+            console.log('Response: ' + d);
+        });
+    });
+
+    postReq.on('error', error => {
+        console.log(error)
+    });
+
+    // Post the request with data
+    postReq.write(postData);
+    postReq.end();
 }
 
 /**
@@ -345,12 +417,10 @@ function bookingToGoogleEvent(booking) {
         summary: booking.bookingActivity + ' per ' + booking.bookingGuests,
         description: booking.guestName + ' ' + booking.guestSurname + ' ha prenotato per ' + booking.bookingGuests + ' alle ' + booking.bookingTime + ' del ' + booking.bookingDate + '. I contatti di ' + booking.guestName + ' sono: ' + booking.guestPhone + ', ' + booking.guestEmail + '. ' + (booking.guestAdditionalInfo != null ? 'Il cliente ha lasciato un messaggio alla prenotazione: ' + booking.guestAdditionalInfo : ''),
         start: {
-            dateTime: timeStampStart,
-            timeZone: 'Europe/Rome',
+            dateTime: timeStampStart, timeZone: 'Europe/Rome',
         },
         end: {
-            dateTime: timeStampEnd,
-            timeZone: 'Europe/Rome',
+            dateTime: timeStampEnd, timeZone: 'Europe/Rome',
         },
     }
 }
@@ -366,9 +436,7 @@ async function addBookingToCalendar(restaurantId, booking) {
     oauth2Client.setCredentials(tokens);
     let bookingEvent = bookingToGoogleEvent(booking)
     await calendar.events.insert({
-        auth: oauth2Client,
-        calendarId: 'primary',
-        resource: bookingEvent,
+        auth: oauth2Client, calendarId: 'primary', resource: bookingEvent,
     }, function (err, bookingEvent) {
         if (err) {
             console.log('There was an error contacting the Calendar service: ' + err);
@@ -390,9 +458,7 @@ async function removeBookingFromCalendar(restaurantId, bookingId) {
     oauth2Client.setCredentials(tokens);
 
     const res = await calendar.events.delete({
-        auth: oauth2Client,
-        calendarId: 'primary',
-        eventId: bookingId,
+        auth: oauth2Client, calendarId: 'primary', eventId: bookingId,
     });
     console.log(res.data)
 }

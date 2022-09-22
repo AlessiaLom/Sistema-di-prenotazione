@@ -20,10 +20,30 @@ export default class App extends React.Component {
             activeItemIndex: 0,
             profile: undefined
         }
-        this.changeContent = this.changeContent.bind(this)
-        this.handleAuthentication = this.handleAuthentication.bind(this)
         this.saveProfile = this.saveProfile.bind(this)
         this.deleteProfile = this.deleteProfile.bind(this)
+        this.changeContent = this.changeContent.bind(this)
+        this.componentDidMount = this.componentDidMount.bind(this)
+        this.handleAuthentication = this.handleAuthentication.bind(this)
+    }
+
+    /**
+     * Used to fetch user's google profile if existing in db
+     */
+    componentDidMount() {
+        fetch("/profile/" + this.state.restaurantId, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                this.setState({
+                    profile: data
+                })
+            })
     }
 
     /**

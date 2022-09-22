@@ -4,7 +4,7 @@ import "./../../styles/pages.css"
 import {useGoogleLogin} from '@react-oauth/google';
 import {FcGoogle} from 'react-icons/fc'
 
-function MyGoogleLogin(props) {
+function MyGoogleAuth(props) {
     const login = useGoogleLogin({
         onSuccess: codeResponse => sendCode(codeResponse),
         flow: 'auth-code',
@@ -15,7 +15,7 @@ function MyGoogleLogin(props) {
     const sendCode = async (codeResponse) => {
         if (Object.keys(codeResponse).includes("code")) {
             console.log('success:', codeResponse);
-            await fetch("/auth/google", {
+            await fetch("/google/login", {
                 method: "POST",
                 body: JSON.stringify({
                     code: codeResponse,
@@ -33,9 +33,12 @@ function MyGoogleLogin(props) {
         }
     }
 
-    const logout = () => {
-        // delete tokens entry in db by restaurantId
-        props.onLogout()
+    const logout = async () => {
+        // delete document in db
+        await fetch("/google/logout/" + props.restaurantId , {
+            method: "DELETE",
+        })
+            .then(() => props.onLogout())
     }
 
     let buttonContent = props.profile ? "Logged in as " + props.profile.email : "Log in with Google"
@@ -68,5 +71,5 @@ function MyGoogleLogin(props) {
 
 export
     {
-        MyGoogleLogin
+        MyGoogleAuth
     }
