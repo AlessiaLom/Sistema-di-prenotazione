@@ -17,7 +17,6 @@ let restaurantName = '';
 let bookings = [];
 let activitiesList = [];
 let displayedOptions = [];
-const restaurantId = "0001";
 let primaryColor;
 let secondaryColor = "black";
 export {secondaryColor};
@@ -206,7 +205,7 @@ export default class BookingForm extends Component {
   };
 
   componentDidMount() {
-    fetch("/activities/0001", {
+    fetch("/activities/" + this.props.restaurantId, {
         method: "GET",
         headers: {
             'Content-Type': 'application/json',
@@ -292,7 +291,7 @@ export default class BookingForm extends Component {
                 });
             }
         });
-    fetch("/restaurant_info/0001", {
+    fetch("/restaurant_info/" + this.props.restaurantId, {
       method: "GET",
         headers: {
             'Content-Type': 'application/json',
@@ -376,7 +375,7 @@ export default class BookingForm extends Component {
               }
         });
 
-        fetch("/bookings/0001", {
+        fetch("/bookings/" + this.props.restaurantId, {
           method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -386,7 +385,7 @@ export default class BookingForm extends Component {
         .then(res => res.json())
             .then(data => {
                 if (data) {
-                    if(data.restaurantId === "0001" && data.bookings != null){
+                    if(data.restaurantId === this.props.restaurantId && data.bookings != null){
                       bookings = data.bookings;
                     }
                 }
@@ -567,7 +566,7 @@ export default class BookingForm extends Component {
         "guestAdditionalInfo": this.state.guestAdditionalInfo
       }
       window.location.href = window.location.pathname + '?submitting=success';
-      return fetch('/booking/add/' + restaurantId, {
+      return fetch('/booking/add/' + this.props.restaurantId, {
           method: 'POST',
           body: JSON.stringify(newBooking),
           headers: {

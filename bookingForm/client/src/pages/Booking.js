@@ -1,9 +1,9 @@
 import BookingForm from "../BookingForm";
 
-export default function Booking() {
+export default function Booking(props) {
     return (
       <>
-        <BookingForm />
+        <BookingForm restaurantId={props.restaurantId}/>
       </>
     );
   }

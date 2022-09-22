@@ -1,9 +1,9 @@
 import CancelationForm from "../CancelationForm"
 
-export default function Cancelation() {
+export default function Cancelation(props) {
     return (
       <>
-        <CancelationForm />
+        <CancelationForm restaurantId={props.restaurantId}/>
       </>
     )
   }
