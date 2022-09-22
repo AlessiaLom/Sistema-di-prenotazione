@@ -82,7 +82,7 @@ recordRoutes.route("/bookings/:id").get(function (request, response) {
  * FETCH RESTAURANT INFO
  * Fetches infos about restaurant
  */
-recordRoutes.route("/restaurant_info/:id").get(function (request, response) {
+recordRoutes.route("/customize/:id").get(function (request, response) {
     let db_connect = dbo.getDb();
     let myQuery = {restaurantId: request.params.id};
     db_connect
@@ -207,7 +207,7 @@ recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (reque
 recordRoutes.route("/booking/add/:id").post(async function (request, response) {
     let db_connect = dbo.getDb();
     let myQuery = {
-        "restaurantId": request.params.id
+        restaurantId: request.params.id
     };
     let booking = {
         id: request.body.id,
@@ -261,7 +261,69 @@ recordRoutes.route("/register").post(async (request, response) => {
                 restaurantId: newRestaurantId
             });
         });
+    setUpUsersCollections(newRestaurantId)
 })
+
+function setUpUsersCollections(newRestaurantId) {
+    // Create new customize document
+    newCustomizeDocument(newRestaurantId)
+    // Create new activities document
+    newActivitiesDocument(newRestaurantId)
+    // booking
+    newBookingsDocument(newRestaurantId)
+}
+
+function newCustomizeDocument(restaurantId) {
+    let document = {
+        restaurantId: restaurantId,
+        additionalInfo: "",
+        primaryColor: "",
+        secondaryColor: "",
+        logoPath: "",
+        socialNetworks: "",
+        bookingForewarning: "",
+        bookingOffest: "",
+        bookingTheshold: {
+            $numberInt: ""
+        },
+        restaurantName: ""
+    }
+    let db_connect = dbo.getDb()
+    db_connect
+        .collection("customize")
+        .insertOne(document, function (err, res) {
+            if (err) throw err;
+        });
+}
+
+function newActivitiesDocument(restaurantId) {
+    let document = {
+        restaurantId: restaurantId,
+        bookingForewarning: "",
+        bookingThreshold: "",
+        bookingOffset: "",
+        activities: []
+    }
+    let db_connect = dbo.getDb()
+    db_connect
+        .collection("activities")
+        .insertOne(document, function (err, res) {
+            if (err) throw err;
+        });
+}
+
+function newBookingsDocument(restaurantId) {
+    let document = {
+        restaurantId: restaurantId,
+        bookings: []
+    }
+    let db_connect = dbo.getDb()
+    db_connect
+        .collection("booking")
+        .insertOne(document, function (err, res) {
+            if (err) throw err;
+        });
+}
 
 /**
  * DELETE EXISTING BOOKING
