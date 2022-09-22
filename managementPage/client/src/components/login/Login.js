@@ -77,6 +77,12 @@ export default class Login extends React.Component {
                     if (Object.keys(data).includes('restaurantId')) {
                         cookies.set('login', true, { path: '/' });
                         this.props.onLogin(data.restaurantId)
+                    } else {
+                        this.setState({ validationErrors: {
+                                     emailError: null,
+                                     passwordError: null,
+                                     noMatchError: 'Email e/o password errati.'
+                                 }});
                     }
                 })
         }
