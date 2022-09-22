@@ -92,6 +92,22 @@ recordRoutes.route("/restaurant_info/:id").get(function (req, res) {
         });
 });
 
+
+/**
+ * FETCH AUTHENTICATION
+ * Fetches infos about restaurant
+ */
+ recordRoutes.route("/authentication/:id").get(function (req, res) {
+    let db_connect = dbo.getDb("sdp_db");
+    let myQuery = {restaurantId: req.params.id};
+    db_connect
+        .collection("authentication")
+        .findOne(myQuery, function (err, result) {
+            if (err) throw err;
+            res.json(result);
+        });
+});
+
 /**
  * ----------- SAVE CHANGES TO DB ----------------
  */

@@ -1,0 +1,57 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+body{
+    background: radial-gradient(white, lightgrey, grey);
+}
+
+.wrapper{
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.formContainer{
+    width: 500px;
+    height: 250px;
+}
+
+form{
+    border: 2px solid #333;
+    background-color: white;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 5px;
+    padding: 2%;
+}
+
+label{
+    font-weight: bold;
+}
+
+span, label{
+    display: block;
+}
+
+.matchError{
+    text-align: center;
+}
+
+.submit{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+span{
+    font-size: small;
+    color: red;
+}
+
+.submit{
+    display: flex;
+    justify-content: center;
+}

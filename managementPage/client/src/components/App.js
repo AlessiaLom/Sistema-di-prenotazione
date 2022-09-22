@@ -7,10 +7,13 @@ import Activities from './activities/Activities';
 import Customize from './customize/Customize';
 import Bookings from './bookings/Bookings';
 import Services from './services/Services';
-
+import Login from './login/Login';
+import Cookies from 'universal-cookie';
+ 
+const cookies = new Cookies();
 /**
  * The App component will contain the two main sections: the sidebar and the main content
- * The App component will be the one responible also for the change of the content shown in the page.
+ * The App component will be the one responsible also for the change of the content shown in the page.
  */
 export default class App extends React.Component {
     constructor(props) {
@@ -108,18 +111,19 @@ export default class App extends React.Component {
                 break;
         }
 
-        /**
-         * Renders the SideBar and the main content container that will show the right page
-         */
-        return (
-            <div id="containerDiv" className="row g-0 p-3">
+        const indexPage = (<div id="containerDiv" className="row g-0 p-3">
                 <div id="sidebarDiv" className="col-3 shadow p-3 bg-body rounded">
                     <SideBar onClick={this.changeContent} activeItemIndex={this.state.activeItemIndex}/>
                 </div>
                 <div id="mainContentContainer" className="col shadow p-3 bg-body rounded">
                     {contentShown}
                 </div>
-            </div>
-        )
+            </div>)
+        const loginPage = (<Login />);
+
+        /**
+         * Renders the SideBar and the main content container that will show the right page
+         */
+        return ( cookies.get('login') ? indexPage : loginPage )
     }
 }
