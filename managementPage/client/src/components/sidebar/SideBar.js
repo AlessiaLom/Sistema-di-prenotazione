@@ -24,31 +24,31 @@ export default class SideBar extends React.Component {
             <ul className="nav nav-pills flex-column mb-auto">
                 <MenuItem
                     itemName="customize"
-                    className={this.props.activeItemIndex == 0 ? "nav-link active" : "nav-link link-dark"}
+                    className={this.props.activeItemIndex == 0 ? "nav-link active" : "nav-link "}
                     itemIcon="bi bi-brush"
                     itemDisplayName="Personalizza"
                     onClick={() => this.props.onClick(0)} />
                 <MenuItem
                     itemName="activities"
-                    className={this.props.activeItemIndex == 1 ? "nav-link active" : "nav-link link-dark"}
+                    className={this.props.activeItemIndex == 1 ? "nav-link active" : "nav-link "}
                     itemIcon="bi bi-calendar-range"
                     itemDisplayName="Attività"
                     onClick={() => this.props.onClick(1)} />
                 <MenuItem
                     itemName="bookings"
-                    className={this.props.activeItemIndex == 2 ? "nav-link active" : "nav-link link-dark"}
+                    className={this.props.activeItemIndex == 2 ? "nav-link active" : "nav-link "}
                     itemIcon="bi bi-person-check"
                     itemDisplayName="Prenotazioni"
                     onClick={() => this.props.onClick(2)} />
                 <MenuItem
                     itemName="services"
-                    className={this.props.activeItemIndex == 3 ? "nav-link active" : "nav-link link-dark"}
+                    className={this.props.activeItemIndex == 3 ? "nav-link active" : "nav-link "}
                     itemIcon="bi bi-share"
                     itemDisplayName="Servizi"
                     onClick={() => this.props.onClick(3)} />
                 <MenuItem
                     itemName="account"
-                    className={this.props.activeItemIndex == 4 ? "nav-link active" : "nav-link link-dark"}
+                    className={this.props.activeItemIndex == 4 ? "nav-link active" : "nav-link "}
                     itemIcon="bi bi-gear-wide-connected"
                     itemDisplayName="Account"
                     onClick={() => this.props.onClick(4)} />
