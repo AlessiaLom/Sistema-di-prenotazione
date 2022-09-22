@@ -2,6 +2,8 @@ import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './components/App';
+import { BrowserRouter } from "react-router-dom"
+
 
 /**
  * ManagementApp renders the whole app 
@@ -13,7 +15,11 @@ class ManagementApp extends React.Component{
 
     render() {
         return (
-            <App />
+            <React.StrictMode>
+                <BrowserRouter>
+                    <App />
+                </BrowserRouter>
+            </React.StrictMode>
         )
     }
 }

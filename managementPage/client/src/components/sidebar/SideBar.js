@@ -23,19 +23,19 @@ export default class SideBar extends React.Component {
             <>
             <ul className="nav nav-pills flex-column mb-auto">
                 <MenuItem
-                    itemName="customization"
+                    itemName="customize"
                     className={this.props.activeItemIndex == 0 ? "nav-link active" : "nav-link link-dark"}
                     itemIcon="bi bi-brush"
                     itemDisplayName="Personalizza"
                     onClick={() => this.props.onClick(0)} />
                 <MenuItem
-                    itemName="activity"
+                    itemName="activities"
                     className={this.props.activeItemIndex == 1 ? "nav-link active" : "nav-link link-dark"}
                     itemIcon="bi bi-calendar-range"
                     itemDisplayName="Attività"
                     onClick={() => this.props.onClick(1)} />
                 <MenuItem
-                    itemName="Bookings"
+                    itemName="bookings"
                     className={this.props.activeItemIndex == 2 ? "nav-link active" : "nav-link link-dark"}
                     itemIcon="bi bi-person-check"
                     itemDisplayName="Prenotazioni"
@@ -52,7 +52,7 @@ export default class SideBar extends React.Component {
                     itemIcon="bi bi-gear-wide-connected"
                     itemDisplayName="Account"
                     onClick={() => this.props.onClick(4)} />
-            </ul><Footer /></>
+            </ul><Footer onLogout={this.props.onLogout}/></>
         )
     }
 }

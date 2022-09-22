@@ -218,6 +218,7 @@ export default class Customize extends React.Component {
     }
 
     render() {
+
         let hasErrors = this.checkErrors()
         // Check if are there empty fields 
         let hasEmptyFields = this.checkEmptyFields()

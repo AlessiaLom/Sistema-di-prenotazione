@@ -16,7 +16,7 @@ i {
     margin-right: 10px;
 }
 
-#footerDiv{
+#footerDiv {
     margin-top: 3rem;
     text-align: center;
 }
@@ -28,12 +28,21 @@ i {
     color: white;
     padding: 10px 15px;
     border: none;
-  }
+}
 
-  .closebtn {
+.closebtn {
     position: absolute;
     top: 0;
     right: 25px;
     font-size: 36px;
     margin-left: 50px;
-  }
+}
+
+li.active{
+    background-color: #0d6efd;
+    border-radius: 5px;
+}
+
+li.active a{
+    color: white;
+}

@@ -14,15 +14,15 @@ export default class Footer extends React.Component {
         super(props)
     }
 
-    handleClick = () => {
-        cookies.remove('login');
-        window.location.reload();
-    }
+    // handleClick = () => {
+    //     cookies.remove('login');
+    //     window.location.reload();
+    // }
 
     render() {
         return (
             <div className="mx-auto align-items-center justify-content-center" id="footerDiv">
-                <button type="button" onClick={this.handleClick} className="btn btn-outline-secondary logout">Logout</button>
+                <button type="button" onClick={this.props.onLogout} className="btn btn-outline-secondary logout">Logout</button>
             </div>
         )
     }

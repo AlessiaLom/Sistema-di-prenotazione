@@ -106,7 +106,8 @@ export default class Login extends React.Component {
                 noMatchError: null
             }});
             cookies.set('login', true, { path: '/' });
-            window.location.reload();
+            this.props.onLogin()
+            //window.location.reload();
         }
     }
 

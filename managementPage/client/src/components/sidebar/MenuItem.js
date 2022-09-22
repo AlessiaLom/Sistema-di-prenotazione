@@ -1,33 +1,25 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import {Link, useResolvedPath, useMatch} from "react-router-dom";
 import "./../../styles/sideBar.css"
 
 /**
  * The MenuItem represents one of the options of the menu
  */
-export default class MenuItem extends React.Component {
-    constructor(props) {
-        /**
-         *  props:
-         *      - itemName: name of the <a> element
-         *      - className: name of the class of the <a> element
-         *      - onClick: function triggered onClick, it will trigger the App function used to highlight the active menu link and to change content.
-         *                  the function is passed to the MenuItem component through the SideBar component
-         *      - itemIcon: name of the bootstrap class of the icon
-         *      - itemDisplayName: what is displayed as the name of the menu option (es. Personalizzazione)
-         */
-        super(props)
-    }
+export default function MenuItem(props) {
+    return (
+        <CustomLink to={"/" + props.itemName} className={props.className}><i className={props.itemIcon}></i>{props.itemDisplayName}</CustomLink>
+    )
+}
 
-    render() {
-        return (
-            <li className="nav-item">
-                <a href="#" name={this.props.itemName} className={this.props.className} aria-current="page" onClick={this.props.onClick}>
-                    <i className={this.props.itemIcon}></i>
-                    {this.props.itemDisplayName}
-                </a>
-            </li>
-        )
-    }
+function CustomLink({ to, children, ...props }) {
+    const resolvedPath = useResolvedPath(to)
+    const isActive = useMatch({ path: resolvedPath.pathname, end: true })
+    return (
+        <li className={isActive ? "nav-item active" : "nav-item"}>
+            <Link to={to} {...props}>
+                {children}
+            </Link>
+        </li>
+    )
 }
