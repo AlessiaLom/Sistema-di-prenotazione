@@ -56,7 +56,6 @@ const CustomTable = () => {
     days = days.replaceAll(' ', ', ');
     days = days.slice(0, -2);
     element.days = days;
-    console.log(days)
   });
   const theme = useTheme(THEME);
 
