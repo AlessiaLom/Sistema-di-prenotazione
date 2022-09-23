@@ -31,7 +31,7 @@ export default class Footer extends React.Component {
         return (
             <div className="mx-auto align-items-center justify-content-center" id="footerDiv">
                 <div>
-                    <button type="button" onClick={this.onGenerateUrl} className="btn btn-primary logout">Genera URL</button>
+                    <button type="button" onClick={this.onGenerateUrl} className="btn btn-primary urlGenerator">Genera URL</button>
                 </div>
                 <div>
                     <button type="button" onClick={this.props.onLogout} className="btn btn-outline-secondary logout">Logout</button>

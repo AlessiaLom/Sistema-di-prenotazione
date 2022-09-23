@@ -12,6 +12,15 @@
     display: block;
 }
 
+.urlGenerator{
+    margin-bottom: 1rem;
+}
+
+.urlGenerator, .logout{
+    width: 150px;
+    text-align: center;
+}
+
 i {
     margin-right: 10px;
 }
