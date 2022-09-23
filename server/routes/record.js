@@ -97,13 +97,13 @@ recordRoutes.route("/customize/:id").get(function (request, response) {
  * FETCH AUTHENTICATION
  * Fetches infos about restaurant
  */
-recordRoutes.route("/authentication").post(function (request, response) {
+recordRoutes.route("/authentication").post(async function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
     let email = request.body.email
     let password = request.body.password
-    let users = db_connect
+    let users = await db_connect
         .collection("authentication")
-        .find()
+        .find().toArray()
     let respMessage = {}
     users.forEach((user) => {
         let decrypted = JSON.parse(decrypt(user.credentials))
@@ -114,10 +114,8 @@ recordRoutes.route("/authentication").post(function (request, response) {
                 }
             }
         }
-    }).then(() => {
-        response.json(respMessage)
     })
-
+    response.json(respMessage)
 });
 
 /**

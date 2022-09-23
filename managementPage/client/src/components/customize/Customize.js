@@ -104,7 +104,7 @@ export default class Customize extends React.Component {
         switch (name) {
             case "saveChanges":
                 if (restaurantId) {
-                    fetch('/customize/save_changes/' + this.props.restaurantId, {
+                    fetch('/customize/save_changes/' + restaurantId, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -215,6 +215,10 @@ export default class Customize extends React.Component {
                 }
                 // Update field value in state dictionary
                 newFieldsValues.restaurantName = value
+                break;
+            case "additionalInfo":
+                // console.log("changed " + name + " has value " + value)
+                newFieldsValues.additionalInfo = value
                 break;
             case "primaryColorPicker":
                 // console.log("changed " + name + " has value " + value)

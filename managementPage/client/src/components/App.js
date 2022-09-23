@@ -31,6 +31,8 @@ export default class App extends React.Component {
     }
 
     onLogin(restaurantId) {
+        cookies.set('login', true, {path: '/'});
+        cookies.set('restaurantId', restaurantId, {path: '/'})
         this.setState({
             restaurantId: restaurantId,
             logged: true,

@@ -1,10 +1,13 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import ReactDOM from 'react-dom/client';
 import MenuItem from './MenuItem';
 import Footer from './../Footer';
 import "./../../styles/sideBar.css"
+import Cookies from 'universal-cookie';
 
+const cookies = new Cookies();
+
+const restaurantId = cookies.get('restaurantId')
 /**
  * The SideBar represents the side navigation bar menu 
  */
@@ -53,7 +56,7 @@ export default class SideBar extends React.Component {
                     itemDisplayName="Account"
                     onClick={() => this.props.onClick(4)} />
             </ul><Footer
-                restaurantId={this.props.restaurantId}
+                restaurantId={restaurantId}
                 onLogout={this.props.onLogout}/></>
         )
     }

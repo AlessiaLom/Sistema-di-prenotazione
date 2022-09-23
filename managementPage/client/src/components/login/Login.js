@@ -1,10 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
 import "./../../styles/login.css"
-import Cookies from 'universal-cookie';
-
-const cookies = new Cookies();
-
 /**
  * Login form to the management page
  */
@@ -24,7 +20,7 @@ export default class Login extends React.Component {
     }
 
     onEmailChange = (event) => {
-        if (event.target.value != '') {
+        if (event.target.value !== '') {
             this.setState({
                 email: event.target.value,
                 validationErrors: {
@@ -46,7 +42,7 @@ export default class Login extends React.Component {
     }
 
     onPswChange = (event) => {
-        if (event.target.value != '') {
+        if (event.target.value !== '') {
             this.setState({password: event.target.value});
             this.setState({
                 validationErrors: {
@@ -83,8 +79,6 @@ export default class Login extends React.Component {
                 .then(res => res.json())
                 .then(data => {
                     if (Object.keys(data).includes('restaurantId')) {
-                        cookies.set('login', true, {path: '/'});
-                        cookies.set('restaurantId', data.restaurantId, {path: '/'})
                         this.props.onLogin(data.restaurantId);
                         window.location.reload();
                     } else {
@@ -98,22 +92,6 @@ export default class Login extends React.Component {
                     }
                 })
         }
-        // event.preventDefault();
-        // if(!this.areMatching(this.state.email, this.state.password)){
-        //     this.setState({ validationErrors: {
-        //         emailError: null,
-        //         passwordError: null,
-        //         noMatchError: 'Email e/o password errati.'
-        //     }});
-        // } else {
-        //     this.setState({ validationErrors: {
-        //         emailError: null,
-        //         passwordError: null,
-        //         noMatchError: null
-        //     }});
-        //
-        //     //
-        // }
     }
 
     render() {

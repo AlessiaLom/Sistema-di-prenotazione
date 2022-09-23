@@ -1,9 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
 import "./../../styles/login.css"
-import Cookies from 'universal-cookie';
-
-const cookies = new Cookies();
 
 const validEmailRegex = RegExp(
     /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
@@ -105,8 +102,6 @@ export default class Registration extends React.Component {
                 .then(res => res.json())
                 .then(data => {
                     if (Object.keys(data).includes('restaurantId')) {
-                        cookies.set('login', true, {path: '/'});
-                        cookies.set('restaurantId', data.restaurantId, {path: '/'})
                         this.props.onLogin(data.restaurantId);
                         window.location.reload();
                     } else {
