@@ -39,8 +39,11 @@ export default class ManagementPage extends React.Component {
         return (
             <div id="containerDiv" className="row g-0 p-3">
                 <div id="sidebarDiv" className="col-3 shadow p-3 bg-body rounded">
-                    <SideBar onLogout={this.props.onLogout} onClick={this.changeContent}
-                             activeItemIndex={this.state.activeItemIndex}/>
+                    <SideBar
+                        onLogout={this.props.onLogout}
+                        onClick={this.changeContent}
+                        restaurantId={this.props.restaurantId}
+                        activeItemIndex={this.state.activeItemIndex}/>
                 </div>
                 <div id="mainContentContainer" className="col shadow p-3 bg-body rounded">
                     <Routes>

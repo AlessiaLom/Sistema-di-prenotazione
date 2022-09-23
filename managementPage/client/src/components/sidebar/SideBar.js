@@ -52,7 +52,9 @@ export default class SideBar extends React.Component {
                     itemIcon="bi bi-gear-wide-connected"
                     itemDisplayName="Account"
                     onClick={() => this.props.onClick(4)} />
-            </ul><Footer onLogout={this.props.onLogout}/></>
+            </ul><Footer
+                restaurantId={this.props.restaurantId}
+                onLogout={this.props.onLogout}/></>
         )
     }
 }
