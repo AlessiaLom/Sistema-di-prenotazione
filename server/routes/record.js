@@ -212,6 +212,38 @@ recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (reque
 });
 
 /**
+ * Get booked seats given activity for specified day
+ */
+ recordRoutes.route("/bookings/seats/:id/:day/:activity").get(async function (request, response) {
+    let db_connect = dbo.getDb("sdp_db");
+    let myQuery = {
+        restaurantId: request.params.id,
+    };
+
+    let bookingArray = await db_connect
+        .collection("booking")
+        .findOne(myQuery);
+    
+    let respMessage = {};
+    let seats = 0;
+    let day = new Date(request.params.day);
+    console.log(day)
+    let date = day.getFullYear() + '-' + (day.getMonth()+1) + '-' + day.getDate();
+    let activity = request.params.activity;
+
+    console.log(date)
+    console.log(activity)
+
+    bookingArray.bookings.forEach((booking) => {
+        if(booking.bookingDate === date && booking.bookingActivity === activity && booking.bookingStatus === 'confirmed'){
+            seats += parseInt(booking.bookingGuests);
+        }
+    });
+    respMessage = { bookedSeats: seats };
+    response.json(respMessage);
+});
+
+/**
  * ADD NEW BOOKING
  * Booking form query that adds a new booking in the db
  */
