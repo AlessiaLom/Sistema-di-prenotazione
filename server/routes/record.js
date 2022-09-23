@@ -255,27 +255,50 @@ recordRoutes.route("/booking/add/:id").post(async function (request, response) {
  * REGISTER NEW USER
  */
 recordRoutes.route("/register").post(async (request, response) => {
-    let credentials = {
-        email: request.body.email,
-        password: request.body.password
-    }
-    let newRestaurantId = uuid.v4()
-    let encryptedCredentials = encrypt(JSON.stringify(credentials))
-    let db_connect = dbo.getDb()
-    let newUser = {
-        restaurantId: newRestaurantId,
-        credentials: encryptedCredentials
-    }
-    db_connect
-        .collection("authentication")
-        .insertOne(newUser, function (err, res) {
-            if (err) throw err;
-            response.json({
-                restaurantId: newRestaurantId
+    const users = await getUsers()
+    let exists = existingEmail(users, request.body.email)
+    if(!exists){
+        let credentials = {
+            email: request.body.email,
+            password: request.body.password
+        }
+        let newRestaurantId = uuid.v4()
+        let encryptedCredentials = encrypt(JSON.stringify(credentials))
+        let db_connect = dbo.getDb()
+        let newUser = {
+            restaurantId: newRestaurantId,
+            credentials: encryptedCredentials
+        }
+        db_connect
+            .collection("authentication")
+            .insertOne(newUser, function (err, res) {
+                if (err) throw err;
+                response.json({
+                    restaurantId: newRestaurantId
+                });
             });
-        });
-    setUpUsersCollections(newRestaurantId)
+        setUpUsersCollections(newRestaurantId)
+    }else if(users.length){
+        response.json({})
+    }
 })
+
+async function getUsers() {
+    let db_connect = dbo.getDb("sdp_db");
+    return await db_connect
+        .collection("authentication")
+        .find().toArray()
+}
+
+function existingEmail(users, email) {
+    for (let i = 0; i < users.length; i++) {
+        let decrypted = JSON.parse(decrypt(users[i].credentials))
+        if (decrypted.email === email) {
+            return true
+        }
+    }
+    return false
+}
 
 function setUpUsersCollections(newRestaurantId) {
     // Create new customize document

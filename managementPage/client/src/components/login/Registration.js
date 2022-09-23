@@ -109,6 +109,14 @@ export default class Registration extends React.Component {
                         cookies.set('restaurantId', data.restaurantId, {path: '/'})
                         this.props.onLogin(data.restaurantId);
                         window.location.reload();
+                    } else {
+                        this.setState({
+                            validationErrors: {
+                                emailError: null,
+                                passwordError: null,
+                                noMatchError: 'Email già utilizzata.'
+                            }
+                        }, () => console.log(this.state.validationErrors.noMatchError));
                     }
                 })
         }
@@ -141,6 +149,8 @@ export default class Registration extends React.Component {
                                 <input onClick={this.handleSubmit} type="button"
                                        className="btn btn-primary btn-block mb-4" value="Registrati"
                                        disabled={this.state.email === null && this.state.password === null}/>
+                                {errors.noMatchError != null &&
+                                    <span className='matchError'>{errors.noMatchError}</span>}
                             </div>
                         </form>
                     </div>
