@@ -84,6 +84,7 @@ export default class Login extends React.Component {
                 .then(data => {
                     if (Object.keys(data).includes('restaurantId')) {
                         cookies.set('login', true, {path: '/'});
+                        cookies.set('restaurantId', data.restaurantId, {path: '/'})
                         this.props.onLogin(data.restaurantId)
                     } else {
                         this.setState({

@@ -4,6 +4,13 @@ import "./../../styles/pages.css"
 import TextForm from '../utility/TextForm';
 import ColorPicker from '../utility/ColorPicker';
 import {BsFacebook, BsInstagram, BsMessenger, BsWhatsapp} from 'react-icons/bs';
+import {ToastContainer, toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies();
+
+const restaurantId = cookies.get('restaurantId')
 
 let isSideOpen = true;
 
@@ -59,27 +66,31 @@ export default class Customize extends React.Component {
      * Performs fetch to retrieve info about form customization based on the restaurant id passe as request param
      */
     componentDidMount() {
-        // console.log(JSON.stringify(this.state))
-        fetch("/customize/" + this.props.restaurantId, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        })
-            .then(res => res.json())
-            .then(data => {
-                this.setState({
-                    fieldsValues: {
-                        restaurantName: data.restaurantName,
-                        additionalInfo: data.additionalInfo,
-                        logoPath: data.logoPath,
-                        primaryColor: data.primaryColor,
-                        secondaryColor: data.secondaryColor,
-                        socialNetworks: data.socialNetworks
-                    }
-                })
+        // console.log(JSON.stringify(cookies))
+        if (restaurantId) {
+            fetch("/customize/" + restaurantId, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
             })
+                .then(res => res.json())
+                .then(data => {
+                    this.setState({
+                        fieldsValues: {
+                            restaurantName: data.restaurantName,
+                            additionalInfo: data.additionalInfo,
+                            logoPath: data.logoPath,
+                            primaryColor: data.primaryColor,
+                            secondaryColor: data.secondaryColor,
+                            socialNetworks: data.socialNetworks
+                        }
+                    })
+                })
+        }
+
+
     }
 
     /**
@@ -92,20 +103,46 @@ export default class Customize extends React.Component {
         const {name, value} = event.target
         switch (name) {
             case "saveChanges":
-                fetch('/customize/save_changes/' + this.props.restaurantId, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        additionalInfo: this.state.fieldsValues.additionalInfo,
-                        primaryColor: this.state.fieldsValues.primaryColor,
-                        secondaryColor: this.state.fieldsValues.secondaryColor,
-                        logoPath: this.state.fieldsValues.logoPath,
-                        socialNetworks: this.state.fieldsValues.socialNetworks,
-                        restaurantName: this.state.fieldsValues.restaurantName
-                    })
-                });
+                if (restaurantId) {
+                    fetch('/customize/save_changes/' + this.props.restaurantId, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            additionalInfo: this.state.fieldsValues.additionalInfo,
+                            primaryColor: this.state.fieldsValues.primaryColor,
+                            secondaryColor: this.state.fieldsValues.secondaryColor,
+                            logoPath: this.state.fieldsValues.logoPath,
+                            socialNetworks: this.state.fieldsValues.socialNetworks,
+                            restaurantName: this.state.fieldsValues.restaurantName
+                        })
+                    }).then((res) => {
+                        if (res.ok) {
+                            toast.success('Salvataggio effettuato.', {
+                                toastId: 'saved',
+                                position: "bottom-center",
+                                autoClose: 3000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                            });
+                        } else {
+                            toast.error('Salvataggio fallito.', {
+                                toastId: 'save_error',
+                                position: "top-right",
+                                autoClose: 3000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                            });
+                        }
+                    });
+                }
                 break;
             case "cancelChanges":
                 // MISSING 
@@ -131,10 +168,10 @@ export default class Customize extends React.Component {
         return false
     }
 
-    handleSideBarChange(){
+    handleSideBarChange() {
         let sideBar = document.querySelector("#sidebarDiv");
         let main = document.querySelector("#mainContentContainer");
-        if(isSideOpen){
+        if (isSideOpen) {
             sideBar.removeAttribute("style");
             main.setAttribute("style", "marginLeft: 0");
             isSideOpen = false;
@@ -224,137 +261,149 @@ export default class Customize extends React.Component {
         let hasEmptyFields = this.checkEmptyFields()
         return (
             <>
-            <button className='openbtn' onClick={this.handleSideBarChange}>&#9776;</button>
-            <div style={{width: "100%", margin: "1%", padding: "1%"}}>
-                <div className="d-block mb-3">
-                    <h4>Info del ristorante</h4>
-                    <hr></hr>
-                    <h6> Nome </h6>
-                    Il nome del ristorante verrà visualizzato di fianco al logo
-                    <TextForm
-                        value={this.state.fieldsValues.restaurantName}
-                        onChange={this.handleChange}
-                        validationError={this.state.validationErrors.restaurantNameError}
-                        name="restaurantName"
-                        placeholder="Inserisci il nome del ristorante"/>
-                </div>
-                <div className="d-block mb-3">
-                    <h6> Info aggiuntive</h6>
-                    In questa sezione potrai personalizzare il messaggio di fianco al nome del ristorante ed il
-                    logo, per esempio con una frase di benvenuto.
-                    <TextForm
-                        value={this.state.fieldsValues.additionalInfo}
-                        onChange={this.handleChange}
-                        validationError={this.state.validationErrors.additionalInfoError}
-                        name="additionalInfo"
-                        placeholder="Inserisci informazioni aggiuntive"/>
-                </div>
-                <br></br>
-                <div className="d-block mb-3 picker">
-                    <h4>Tema colore</h4>
-                    <hr></hr>
-                    Colore principale:
-                    <ColorPicker
-                        color={this.state.fieldsValues.primaryColor}
-                        name="primaryColorPicker"
-                        onChange={this.handleChange}
-                        />
-                    Colore secondario:
-                    <ColorPicker
-                        color={this.state.fieldsValues.secondaryColor}
-                        name="secondaryColorPicker"
-                        onChange={this.handleChange}
-                        />
-                </div>
-                <br></br>
-                <div className="d-block input-group mb-3">
-                    <h4>Logo del ristorante</h4>
-                    <hr></hr>
-                    <div className="input-group mb-3">
+                <button className='openbtn' onClick={this.handleSideBarChange}>&#9776;</button>
+                <div style={{width: "100%", margin: "1%", padding: "1%"}}>
+                    <div className="d-block mb-3">
+                        <h4>Info del ristorante</h4>
+                        <hr></hr>
+                        <h6> Nome </h6>
+                        Il nome del ristorante verrà visualizzato di fianco al logo
                         <TextForm
-                            value={this.state.fieldsValues.logoPath}
-                            name="logoPath"
-                            placeholder="Inserisci il link all'immagine del logo"
+                            value={this.state.fieldsValues.restaurantName}
                             onChange={this.handleChange}
-                            />
+                            validationError={this.state.validationErrors.restaurantNameError}
+                            name="restaurantName"
+                            placeholder="Inserisci il nome del ristorante"/>
                     </div>
+                    <div className="d-block mb-3">
+                        <h6> Info aggiuntive</h6>
+                        In questa sezione potrai personalizzare il messaggio di fianco al nome del ristorante ed il
+                        logo, per esempio con una frase di benvenuto.
+                        <TextForm
+                            value={this.state.fieldsValues.additionalInfo}
+                            onChange={this.handleChange}
+                            validationError={this.state.validationErrors.additionalInfoError}
+                            name="additionalInfo"
+                            placeholder="Inserisci informazioni aggiuntive"/>
+                    </div>
+                    <br></br>
+                    <div className="d-block mb-3 picker">
+                        <h4>Tema colore</h4>
+                        <hr></hr>
+                        Colore principale:
+                        <ColorPicker
+                            color={this.state.fieldsValues.primaryColor}
+                            name="primaryColorPicker"
+                            onChange={this.handleChange}
+                        />
+                        Colore secondario:
+                        <ColorPicker
+                            color={this.state.fieldsValues.secondaryColor}
+                            name="secondaryColorPicker"
+                            onChange={this.handleChange}
+                        />
+                    </div>
+                    <br></br>
+                    <div className="d-block input-group mb-3">
+                        <h4>Logo del ristorante</h4>
+                        <hr></hr>
+                        <div className="input-group mb-3">
+                            <TextForm
+                                value={this.state.fieldsValues.logoPath}
+                                name="logoPath"
+                                placeholder="Inserisci il link all'immagine del logo"
+                                onChange={this.handleChange}
+                            />
+                        </div>
+                    </div>
+                    <br></br>
+                    <h4>Social Networks</h4>
+                    <hr></hr>
+                    <p>I link ai social verranno associati ai rispettivi pulsanti
+                        presenti nel form di prenotazione visualizzato dai clienti.
+                        Lasciando vuoto il link di un social si farà in modo che il
+                        suo pulsante non compaia nel form di prenotazione</p>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <BsFacebook size={30}/>
+                            </td>
+                            <td>
+                                <TextForm
+                                    value={this.state.fieldsValues.socialNetworks.facebook}
+                                    name="facebookLink"
+                                    placeholder="Inserisci il link"
+                                    onChange={this.handleChange}/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <BsInstagram size={30}/>
+                            </td>
+                            <td>
+                                <TextForm
+                                    value={this.state.fieldsValues.socialNetworks.instagram}
+                                    name="instagramLink"
+                                    placeholder="Inserisci il link"
+                                    onChange={this.handleChange}/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <BsMessenger size={30}/>
+
+                            </td>
+                            <td>
+                                <TextForm
+                                    value={this.state.fieldsValues.socialNetworks.messenger}
+                                    name="messengerLink"
+                                    placeholder="Inserisci il link"
+                                    onChange={this.handleChange}/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <BsWhatsapp size={30}/>
+
+                            </td>
+                            <td>
+                                <TextForm
+                                    value={this.state.fieldsValues.socialNetworks.whatsapp}
+                                    name="whatsappLink"
+                                    placeholder="Inserisci il link"
+                                    onChange={this.handleChange}/>
+                            </td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                    <div className='buttons' style={{margin: "15 %", padding: "1 %"}}>
+                        <button name="cancelChanges" type="button" className="btn btn-light">Annulla</button>
+                        <button
+                            name="saveChanges"
+                            type="button"
+                            className={"btn btn-primary" + (hasErrors || hasEmptyFields ? " disabled" : "")}
+                            onClick={this.onClick}>
+                            {/*Disable the button if there are validation errors*/}
+                            Salva impostazioni
+                        </button>
+                    </div>
+                    <ToastContainer
+                        position="bottom-center"
+                        autoClose={3000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                    />
+                    {/* Same as */}
+                    <ToastContainer/>
                 </div>
-                <br></br>
-                <h4>Social Networks</h4>
-                <hr></hr>
-                <p>I link ai social verranno associati ai rispettivi pulsanti
-                    presenti nel form di prenotazione visualizzato dai clienti.
-                    Lasciando vuoto il link di un social si farà in modo che il
-                    suo pulsante non compaia nel form di prenotazione</p>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>
-                            <BsFacebook size={30}/>
-                        </td>
-                        <td>
-                            <TextForm
-                                value={this.state.fieldsValues.socialNetworks.facebook}
-                                name="facebookLink"
-                                placeholder="Inserisci il link"
-                                onChange={this.handleChange}/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <BsInstagram size={30}/>
-                        </td>
-                        <td>
-                            <TextForm
-                                value={this.state.fieldsValues.socialNetworks.instagram}
-                                name="instagramLink"
-                                placeholder="Inserisci il link"
-                                onChange={this.handleChange}/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <BsMessenger size={30}/>
-
-                        </td>
-                        <td>
-                            <TextForm
-                                value={this.state.fieldsValues.socialNetworks.messenger}
-                                name="messengerLink"
-                                placeholder="Inserisci il link"
-                                onChange={this.handleChange}/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <BsWhatsapp size={30}/>
-
-                        </td>
-                        <td>
-                            <TextForm
-                                value={this.state.fieldsValues.socialNetworks.whatsapp}
-                                name="whatsappLink"
-                                placeholder="Inserisci il link"
-                                onChange={this.handleChange}/>
-                        </td>
-                    </tr>
-                    </tbody>
-
-                </table>
-                <div className='buttons' style={{margin: "15 %", padding: "1 %"}}>
-                    <button name="cancelChanges" type="button" className="btn btn-light">Annulla</button>
-                    <button
-                        name="saveChanges"
-                        type="button"
-                        className={"btn btn-primary" + (hasErrors || hasEmptyFields ? " disabled" : "")}
-                        onClick={this.onClick}>
-                        {/*Disable the button if there are validation errors*/}
-                        Salva impostazioni
-                    </button>
-                </div>
-
-            </div>
-        </>
+            </>
         )
     }
 }

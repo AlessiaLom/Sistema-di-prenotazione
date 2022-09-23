@@ -3,6 +3,12 @@ import React from "react";
 import {GoogleOAuthProvider} from '@react-oauth/google';
 import {MyGoogleAuth} from "./MyGoogleAuth";
 
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies();
+
+const restaurantId = cookies.get('restaurantId')
+
 let isSideOpen = true;
 
 export default class Services extends React.Component {
@@ -19,7 +25,8 @@ export default class Services extends React.Component {
     }
 
     componentDidMount() {
-        fetch("/profile/" + this.props.restaurantId, {
+        if(restaurantId){
+        fetch("/profile/" + restaurantId, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -35,6 +42,7 @@ export default class Services extends React.Component {
                     })
                 }
             })
+        }
     }
 
     saveProfile(profile) {
@@ -72,7 +80,7 @@ export default class Services extends React.Component {
                     <MyGoogleAuth
                         onLogin={this.saveProfile}
                         profile={this.state.profile}
-                        restaurantId={this.props.restaurantId}
+                        restaurantId={restaurantId}
                         onLogout={this.deleteProfile}/>
                 </GoogleOAuthProvider>
             </div>

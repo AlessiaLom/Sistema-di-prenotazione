@@ -4,7 +4,13 @@ import "./../../styles/activities.css"
 import Activity from './Activity';
 import Select from '../utility/Select';
 import TextForm from '../utility/TextForm';
-import { AiOutlinePlus } from 'react-icons/ai'
+import {AiOutlinePlus} from 'react-icons/ai'
+import {toast} from "react-toastify";
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies();
+
+const restaurantId = cookies.get('restaurantId')
 
 let isSideOpen = true;
 /**
@@ -51,77 +57,106 @@ export default class Activities extends React.Component {
 
     componentDidMount() {
         // Fetch giving the restaurant ID
-        fetch("/activities/" + this.props.restaurantId, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data) {
-                    let fetchedActivitiesDictionary = {} // Instantiate the dictionary of activities
-                    let fetchedActivitiesErrorsDictionary = {} // Instantiate the dictionary of activities' errors
-                    let fetchedActivitiesValues = {} // Will contain the activities values 
-
-                    // Fill dictionaries with data received from db
-                    data.activities.forEach((activity, index) => { // for each activity in the data.activities array
-                        fetchedActivitiesDictionary[index] = // take the index and save a new Activity component in the object, the key of the component will be the index
-                            <Activity
-                                key={index}
-                                uniqueId={index}
-                                onClick={this.deleteActivity}
-                                onChange={this.manageActivityChanges}
-                                activityValues={activity} />
-                        fetchedActivitiesErrorsDictionary[index] = false // Save that the activity han no errors, the key will be the index
-                        fetchedActivitiesValues[index] = activity // Save activity values in the dictionarys
-
-                    })
-                    // Take other fields' values
-                    let fetchedBookingForewarning = data.bookingForewarning
-                    let fetchedBookingThreshold = data.bookingThreshold
-                    let fetchedBookingOffset = data.bookingOffset
-
-                    // Update the state
-                    this.setState({
-                        activitiesDictionary: fetchedActivitiesDictionary,
-                        activitiesErrorsDictionary: fetchedActivitiesErrorsDictionary,
-                        activitiesValues: fetchedActivitiesValues,
-                        lastKey: data.activities.length - 1, // Set the last key used to the last index used in the activities above
-                        fieldsValues: { // Save fields values
-                            bookingForewarning: fetchedBookingForewarning,
-                            bookingThreshold: fetchedBookingThreshold,
-                            bookingOffset: fetchedBookingOffset
-                        }
-                    })
+        if (restaurantId) {
+            fetch("/activities/" + restaurantId, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 }
             })
+                .then(res => res.json())
+                .then(data => {
+                    if (data) {
+                        let fetchedActivitiesDictionary = {} // Instantiate the dictionary of activities
+                        let fetchedActivitiesErrorsDictionary = {} // Instantiate the dictionary of activities' errors
+                        let fetchedActivitiesValues = {} // Will contain the activities values
+
+                        // Fill dictionaries with data received from db
+                        data.activities.forEach((activity, index) => { // for each activity in the data.activities array
+                            fetchedActivitiesDictionary[index] = // take the index and save a new Activity component in the object, the key of the component will be the index
+                                <Activity
+                                    key={index}
+                                    uniqueId={index}
+                                    onClick={this.deleteActivity}
+                                    onChange={this.manageActivityChanges}
+                                    activityValues={activity}/>
+                            fetchedActivitiesErrorsDictionary[index] = false // Save that the activity han no errors, the key will be the index
+                            fetchedActivitiesValues[index] = activity // Save activity values in the dictionarys
+
+                        })
+                        // Take other fields' values
+                        let fetchedBookingForewarning = data.bookingForewarning
+                        let fetchedBookingThreshold = data.bookingThreshold
+                        let fetchedBookingOffset = data.bookingOffset
+
+                        // Update the state
+                        this.setState({
+                            activitiesDictionary: fetchedActivitiesDictionary,
+                            activitiesErrorsDictionary: fetchedActivitiesErrorsDictionary,
+                            activitiesValues: fetchedActivitiesValues,
+                            lastKey: data.activities.length - 1, // Set the last key used to the last index used in the activities above
+                            fieldsValues: { // Save fields values
+                                bookingForewarning: fetchedBookingForewarning,
+                                bookingThreshold: fetchedBookingThreshold,
+                                bookingOffset: fetchedBookingOffset
+                            }
+                        })
+                    }
+                })
+        }
+
     }
 
 
     /**
-     * Handles click on the "Salva impostazioni" button 
+     * Handles click on the "Salva impostazioni" button
      * Sends post request to db for saving changes to the page
-     * @param {*} event event triggered by the click on a button 
+     * @param {*} event event triggered by the click on a button
      */
     onClick(event) {
         const name = event.target.name
         switch (name) {
             case "saveChanges":
-                fetch('/activities/save_changes/' + this.props.restaurantId, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        bookingForewarning: this.state.fieldsValues.bookingForewarning,
-                        bookingThreshold: this.state.fieldsValues.bookingThreshold,
-                        bookingOffset: this.state.fieldsValues.bookingOffset,
-                        activities: Object.values(this.state.activitiesValues), // Array containing the values of the activitiesValues
-                    })
-                });
+                if (restaurantId) {
+                    fetch('/activities/save_changes/' + restaurantId, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            bookingForewarning: this.state.fieldsValues.bookingForewarning,
+                            bookingThreshold: this.state.fieldsValues.bookingThreshold,
+                            bookingOffset: this.state.fieldsValues.bookingOffset,
+                            activities: Object.values(this.state.activitiesValues), // Array containing the values of the activitiesValues
+                        })
+                    }).then((res) => {
+                        if (res.ok) {
+                            toast.success('Salvataggio effettuato.', {
+                                toastId: 'saved',
+                                position: "bottom-center",
+                                autoClose: 3000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                            });
+                        } else {
+                            toast.error('Salvataggio fallito.', {
+                                toastId: 'save_error',
+                                position: "top-right",
+                                autoClose: 3000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                            });
+                        }
+                    });
+                }
                 break;
             default:
                 break;
@@ -162,7 +197,7 @@ export default class Activities extends React.Component {
      * @param {*} event event triggered by some change in the fields
      */
     handleChange(event) {
-        const { name, value } = event.target
+        const {name, value} = event.target
         let newValidationErrors = this.state.validationErrors
         let newFieldsValues = this.state.fieldsValues
 
@@ -200,10 +235,10 @@ export default class Activities extends React.Component {
     }
 
     /**
-    * Checks if the activitiesErrorsDictionary contains at least one true value
-    * Used to enable/disable the "Salva impostazioni" button
-    * @returns true if there is at least one error
-    */
+     * Checks if the activitiesErrorsDictionary contains at least one true value
+     * Used to enable/disable the "Salva impostazioni" button
+     * @returns true if there is at least one error
+     */
     areThereValidationErrors() {
         let values = Object.values(this.state.activitiesErrorsDictionary)
         return values.includes(true) // if at least one dictionary element corresponds to true it means that at least one activity contains errors
@@ -227,11 +262,11 @@ export default class Activities extends React.Component {
         })
     }
 
-    handleSideBarChange(){
+    handleSideBarChange() {
         let sideBar = document.querySelector("#sidebarDiv");
         let main = document.querySelector("#mainContentContainer");
 
-        if(isSideOpen){
+        if (isSideOpen) {
             sideBar.removeAttribute("style");
             main.setAttribute("style", "marginLeft: 0");
             isSideOpen = false;
@@ -312,49 +347,52 @@ export default class Activities extends React.Component {
         // Check if are there empty fields 
         let hasEmptyFields = this.checkEmptyFields()
         return (
-            <><button className='openbtn' onClick={this.handleSideBarChange}>&#9776;</button>
-            <div>
+            <>
+                <button className='openbtn' onClick={this.handleSideBarChange}>&#9776;</button>
                 <div>
-                    <h4>Informazioni generali</h4>
-                    <hr></hr>
-                    <h6>Preavviso minimo</h6>
-                    <p>Il preavviso minimo è espresso in ore e minuti e sarà applicato a tutte le attività elencate nella tabella attività</p>
-                    <Select
-                        onChange={this.handleChange}
-                        name="selectBookingForewarning"
-                        options={["Nessun preavviso", "1:00h", "2:00h", "4:00h", "8:00h", "12:00h"]}
-                        defaultValue={this.state.fieldsValues.bookingForewarning}
-                    />
+                    <div>
+                        <h4>Informazioni generali</h4>
+                        <hr></hr>
+                        <h6>Preavviso minimo</h6>
+                        <p>Il preavviso minimo è espresso in ore e minuti e sarà applicato a tutte le attività elencate
+                            nella tabella attività</p>
+                        <Select
+                            onChange={this.handleChange}
+                            name="selectBookingForewarning"
+                            options={["Nessun preavviso", "1:00h", "2:00h", "4:00h", "8:00h", "12:00h"]}
+                            defaultValue={this.state.fieldsValues.bookingForewarning}
+                        />
+                        <br></br>
+                        <h6>Soglia per conferma automatica</h6>
+                        <p>La soglia per la conferma automatica rappresenta il numero
+                            di coperti entro il quale la conferma della prenotazione
+                            è inviata automaticamente al cliente ed oltre il quale la
+                            conferma sarà manuale da parte del ristoratore</p>
+                        <TextForm
+                            value={this.state.fieldsValues.bookingThreshold}
+                            onChange={this.handleChange}
+                            validationError={this.state.validationErrors.bookingThresholdError}
+                            name="bookingThreshold"
+                            placeholder="es. 5"
+                        />
+                        <br></br>
+                        <h6>Spazio fra le prenotazioni</h6>
+                        <p>Il valore selezionato raprresenta quanto è possibile scaglionare la fascia oraria per le
+                            prenotazioni (es. ogni 30min.)</p>
+                        <Select
+                            defaultValue={this.state.fieldsValues.bookingOffset}
+                            onChange={this.handleChange}
+                            name="selectBookingOffset"
+                            options={["00:15h", "00:30h", "00:45h", "01:00h"]}
+                        />
+                    </div>
                     <br></br>
-                    <h6>Soglia per conferma automatica</h6>
-                    <p>La soglia per la conferma automatica rappresenta il numero
-                        di coperti entro il quale la conferma della prenotazione
-                        è inviata automaticamente al cliente ed oltre il quale la
-                        conferma sarà manuale da parte del ristoratore</p>
-                    <TextForm
-                        value={this.state.fieldsValues.bookingThreshold}
-                        onChange={this.handleChange}
-                        validationError={this.state.validationErrors.bookingThresholdError}
-                        name="bookingThreshold"
-                        placeholder="es. 5"
-                    />
-                    <br></br>
-                    <h6>Spazio fra le prenotazioni</h6>
-                    <p>Il valore selezionato raprresenta quanto è possibile scaglionare la fascia oraria per le prenotazioni (es. ogni 30min.)</p>
-                    <Select
-                        defaultValue={this.state.fieldsValues.bookingOffset}
-                        onChange={this.handleChange}
-                        name="selectBookingOffset"
-                        options={["00:15h", "00:30h", "00:45h", "01:00h"]}
-                    />
-                </div>
-                <br></br>
-                <div>
-                    <h4>Lista attività</h4>
-                    <hr></hr>
-                </div>
-                <table id="activitiesTable">
-                    <thead>
+                    <div>
+                        <h4>Lista attività</h4>
+                        <hr></hr>
+                    </div>
+                    <table id="activitiesTable">
+                        <thead>
                         <tr>
                             <th className="headerCol" scope="col">Nome attività</th>
                             <th className="headerCol" scope="col">Fascia oraria</th>
@@ -362,13 +400,13 @@ export default class Activities extends React.Component {
                             <th className="headerCol" scope="col">Giorni</th>
                             <th className="headerCol" scope="col">Elimina</th>
                         </tr>
-                    </thead>
-                    {/* Renders all the activities */}
-                    <tbody>
+                        </thead>
+                        {/* Renders all the activities */}
+                        <tbody>
                         {activities}
-                    </tbody>
-                </table>
-            </div>
+                        </tbody>
+                    </table>
+                </div>
                 <div id="buttonsDiv">
                     <button
                         onClick={this.onClick}
@@ -384,9 +422,10 @@ export default class Activities extends React.Component {
                         type="button"
                         className={"btn btn-outline-primary" + ((activitiesWithErrors) ? " disabled" : "")}>
                         {/** The "aggiungi attività" button is enabled only if every activity is correct or if there are no activities (so that it is possible to add the first activity) */}
-                        <AiOutlinePlus />
+                        <AiOutlinePlus/>
                     </button>
-                </div></>
+                </div>
+            </>
         )
     }
 }

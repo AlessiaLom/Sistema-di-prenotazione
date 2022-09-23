@@ -125,7 +125,7 @@ recordRoutes.route("/authentication").post(function (request, response) {
  */
 
 /**
- * UPDATE RESTAURANT INFO
+ * UPDATE CUSTOMIZE INFO
  */
 recordRoutes.route("/customize/save_changes/:id").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
@@ -137,20 +137,21 @@ recordRoutes.route("/customize/save_changes/:id").post(function (request, respon
             secondaryColor: request.body.secondaryColor,
             logoPath: request.body.logoPath,
             socialNetworks: request.body.socialNetworks,
-            bookingForewarning: "",
-            bookingOffest: "",
-            bookingTheshold: {
-                $numberInt: ""
-            },
             restaurantName: request.body.restaurantName
         },
     };
     db_connect
         .collection("customize")
         .updateOne(myQuery, newValues, function (err, result) {
-            if (err) throw err;
-            console.log("1 document updated");
-            response.json(result);
+            if (err) {
+                response.status(501)
+                console.log("Error updating customize: " + err)
+            }
+            else {
+                response.status(201)
+                console.log("1 document updated");
+                response.json(result);
+            }
         });
 });
 
@@ -171,9 +172,15 @@ recordRoutes.route("/activities/save_changes/:id").post(function (request, respo
     db_connect
         .collection("activities")
         .updateOne(myQuery, newValues, function (err, result) {
-            if (err) throw err;
-            console.log("1 document updated");
-            response.json(result);
+            if (err) {
+                response.status(501)
+                console.log("Error updating activities: " + err)
+            }
+            else {
+                response.status(201)
+                console.log("1 document updated");
+                response.json(result);
+            }
         });
 });
 
@@ -194,9 +201,15 @@ recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (reque
     db_connect
         .collection("booking")
         .updateOne(myQuery, newValues, function (err, result) {
-            if (err) throw err;
-            console.log("1 document updated");
-            response.json(result);
+            if (err) {
+                response.status(501)
+                console.log("Error updating bookings: " + err)
+            }
+            else {
+                response.status(201)
+                console.log("1 document updated");
+                response.json(result);
+            }
         });
 });
 
@@ -281,11 +294,6 @@ function newCustomizeDocument(restaurantId) {
         secondaryColor: "",
         logoPath: "",
         socialNetworks: "",
-        bookingForewarning: "",
-        bookingOffest: "",
-        bookingTheshold: {
-            $numberInt: ""
-        },
         restaurantName: ""
     }
     let db_connect = dbo.getDb()

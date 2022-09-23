@@ -3,6 +3,8 @@ import React from 'react';
 import "./../../styles/pages.css"
 import Select from '../utility/Select';
 
+
+
 // Booking structure:
 /**
  * id: "f2d6glgryi"
@@ -42,18 +44,19 @@ export default class Booking extends React.Component {
             body: JSON.stringify({
                 newStatus: newStatus
             })
-        })
+        }).then((res) => {
+            this.props.onChange(this.props.uniqueId, newStatus, res.ok)
+        });
     }
 
     handleChange(event) {
-        const { name, value } = event.target
+        const {name, value} = event.target
 
         switch (name) {
             case "selectBookingStatus":
                 let newBooking = this.state.booking
                 newBooking.bookingStatus = value
-                this.setState({ booking: newBooking }, () => this.saveNewStatus(value))
-                this.props.onChange(this.props.uniqueId, value)
+                this.setState({booking: newBooking}, () => this.saveNewStatus(value))
                 break;
             default:
                 break;
@@ -85,8 +88,10 @@ export default class Booking extends React.Component {
                         options={['confirmed', 'pending', 'canceled']}
                         defaultValue={this.state.booking.bookingStatus}
                         onChange={this.handleChange}
+                        disabled={this.state.booking.bookingStatus === 'canceled'}
                     />
                 </td>
+
             </tr>
         )
     }

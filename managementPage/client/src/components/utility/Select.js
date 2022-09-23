@@ -24,6 +24,7 @@ export default class Select extends React.Component {
             (<option
                 key={option}
                 value={option}
+                disabled={this.props.disabled}
                 // selected={option == this.props.defaultValue}
             >
                 {option}

@@ -24,6 +24,7 @@ export default class App extends React.Component {
 
     onLogout() {
         cookies.remove('login')
+        cookies.remove('restaurantId')
         this.setState({
             logged: false
         })
