@@ -1,13 +1,13 @@
 import { Link, useMatch, useResolvedPath } from "react-router-dom"
 
-export default function Navbar() {
+export default function Navbar(props) {
   return (
     <nav className="nav">
       <a href="/" target={'_blank'} className="site-title"></a>
       <p className="additionalInfo"></p>
       <ul>
-        <CustomLink to="/booking">Prenota</CustomLink>
-        <CustomLink to="/cancelation">Cancella</CustomLink>
+        <CustomLink to={props.restaurantId + "/booking"}>Prenota</CustomLink>
+        <CustomLink to={props.restaurantId + "/cancelation"}>Cancella</CustomLink>
       </ul>
     </nav>
   )

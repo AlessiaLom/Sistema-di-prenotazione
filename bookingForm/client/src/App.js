@@ -6,11 +6,13 @@ import Logo from "./Logo";
 import { Route, Routes } from "react-router-dom";
 import Footer from "./Footer";
 
+const relativeURL = window.location.pathname;
+
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        restaurantId: '4b0eb8ef-385d-4a8c-b8c9-21a1bf2ddae6',
+        restaurantId: relativeURL.lastIndexOf('/') != 0 ? relativeURL.substring(relativeURL.indexOf('/') + 1 , relativeURL.lastIndexOf('/')) : relativeURL.substring(relativeURL.indexOf('/') + 1 , relativeURL.length),
     }
 }
 
@@ -18,12 +20,12 @@ render(){
     return (
       <>
         <Logo />
-        <Navbar />
+        <Navbar restaurantId={this.state.restaurantId}/>
         <div className="container">
           <Routes>
-            <Route path ="/" element={<Booking restaurantId={this.state.restaurantId} />} />
-            <Route path="/booking" element={<Booking restaurantId={this.state.restaurantId} />} />
-            <Route path="/cancelation" element={<Cancelation restaurantId={this.state.restaurantId} />} />
+            <Route path ={"/" + this.state.restaurantId} element={<Booking restaurantId={this.state.restaurantId} />} />
+            <Route path={"/" + this.state.restaurantId + "/booking"} element={<Booking restaurantId={this.state.restaurantId} />} />
+            <Route path={"/" + this.state.restaurantId + "/cancelation"} element={<Cancelation restaurantId={this.state.restaurantId} />} />
           </Routes>
         </div>
         <Footer />
