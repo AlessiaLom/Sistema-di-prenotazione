@@ -108,6 +108,7 @@ export default class Registration extends React.Component {
                         cookies.set('login', true, {path: '/'});
                         cookies.set('restaurantId', data.restaurantId, {path: '/'})
                         this.props.onLogin(data.restaurantId);
+                        window.location.reload();
                     }
                 })
         }

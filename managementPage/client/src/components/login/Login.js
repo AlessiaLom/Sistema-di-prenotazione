@@ -85,7 +85,8 @@ export default class Login extends React.Component {
                     if (Object.keys(data).includes('restaurantId')) {
                         cookies.set('login', true, {path: '/'});
                         cookies.set('restaurantId', data.restaurantId, {path: '/'})
-                        this.props.onLogin(data.restaurantId)
+                        this.props.onLogin(data.restaurantId);
+                        window.location.reload();
                     } else {
                         this.setState({
                             validationErrors: {
@@ -111,7 +112,7 @@ export default class Login extends React.Component {
         //         noMatchError: null
         //     }});
         //
-        //     //window.location.reload();
+        //     //
         // }
     }
 
