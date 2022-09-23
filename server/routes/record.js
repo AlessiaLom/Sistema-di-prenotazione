@@ -187,34 +187,69 @@ recordRoutes.route("/activities/save_changes/:id").post(function (request, respo
  * UPDATE BOOKINGS
  * Sets booking's new status when it gets changed by the user in the management page
  */
-recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (request, response) {
+recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(async function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
+    let newStatus = request.body.newStatus
+    let bookingId = request.params.bookingId
+    let restaurantId = request.params.id
     let myQuery = {
-        restaurantId: request.params.id, 'bookings.id': request.params.bookingId
+        restaurantId: restaurantId, 'bookings.id': bookingId
     };
     let newValues = {
         $set: {
-            'bookings.$.bookingStatus': request.body.newStatus
+            'bookings.$.bookingStatus': newStatus
         },
     };
+    let restaurantBookings = await getRestaurantBookingsById(restaurantId, bookingId)
+    let booking = getBookingById(restaurantBookings.bookings, bookingId)
+
+    let addToCalendar = // add to calendar if the status goes to confirmed from pending
+        booking.bookingStatus === 'pending'
+        && newStatus === 'confirmed'
+
+    let removeFromCalendar = //  remove from calendar if going to canceled from confirmed
+        booking.bookingStatus === 'confirmed'
+        && newStatus === 'canceled'
+
     db_connect
         .collection("booking")
-        .updateOne(myQuery, newValues, function (err, result) {
+        .updateOne(myQuery, newValues, async function (err, result) {
             if (err) {
                 response.status(501)
                 console.log("Error updating bookings: " + err)
             } else {
+                if(addToCalendar)
+                    await addBookingToCalendar(restaurantId, booking)
+                else if (removeFromCalendar)
+                    await removeBookingFromCalendar(restaurantId, booking.id)
                 response.status(201)
                 console.log("1 document updated");
                 response.json(result);
             }
         });
+
+    // Add new event to calendar if the new status is confirmed
 });
+
+function getBookingById(bookings, bookingId) {
+    return bookings.find(b => b.id === bookingId)
+}
+
+async function getRestaurantBookingsById(restaurantId, bookingId) {
+    let db_connect = dbo.getDb("sdp_db");
+    let myQuery = {
+        restaurantId: restaurantId,
+        'bookings.id': bookingId
+    };
+    return db_connect
+        .collection('booking')
+        .findOne(myQuery)
+}
 
 /**
  * Get booked seats given activity for specified day
  */
- recordRoutes.route("/bookings/seats/:id/:day/:activity").get(async function (request, response) {
+recordRoutes.route("/bookings/seats/:id/:day/:activity").get(async function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
     let myQuery = {
         restaurantId: request.params.id,
@@ -223,23 +258,23 @@ recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (reque
     let bookingArray = await db_connect
         .collection("booking")
         .findOne(myQuery);
-    
+
     let respMessage = {};
     let seats = 0;
     let day = new Date(request.params.day);
     console.log(day)
-    let date = day.getFullYear() + '-' + (day.getMonth()+1) + '-' + day.getDate();
+    let date = day.getFullYear() + '-' + (day.getMonth() + 1) + '-' + day.getDate();
     let activity = request.params.activity;
 
     console.log(date)
     console.log(activity)
 
     bookingArray.bookings.forEach((booking) => {
-        if(booking.bookingDate === date && booking.bookingActivity === activity && booking.bookingStatus === 'confirmed'){
+        if (booking.bookingDate === date && booking.bookingActivity === activity && booking.bookingStatus === 'confirmed') {
             seats += parseInt(booking.bookingGuests);
         }
     });
-    respMessage = { bookedSeats: seats };
+    respMessage = {bookedSeats: seats};
     response.json(respMessage);
 });
 
@@ -661,9 +696,11 @@ async function addBookingToCalendar(restaurantId, booking) {
 async function removeBookingFromCalendar(restaurantId, bookingId) {
     let tokens = await getTokens(restaurantId)
     oauth2Client.setCredentials(tokens);
-
+    console.log(bookingId)
     const res = await calendar.events.delete({
-        auth: oauth2Client, calendarId: 'primary', eventId: bookingId,
+        auth: oauth2Client,
+        calendarId: 'primary',
+        eventId: bookingId,
     });
     console.log(res.data)
 }

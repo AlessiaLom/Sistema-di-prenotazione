@@ -2,15 +2,19 @@ import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
 import "./../../styles/pages.css"
 
-
 /**
- * Represents an input type time element
+ * Represents an input type date element
+ *
+ * @param value displayed value, dd/mm/yyyy if empty string
+ * @param onChange function called on date change
+ * @param id input type date id attribute
+ * @param name input type date dame attribute
+ * @param min minimum selectable date in yyyy-mm-dd format
+ * @param max maximum selectable date in yyyy-mm-dd format
+ * @param step
  */
 export default class DatePicker extends React.Component {
     constructor(props) {
-        /**
-         *  props:
-        */
         super(props)
     }
 

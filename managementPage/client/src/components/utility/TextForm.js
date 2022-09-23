@@ -4,15 +4,15 @@ import "./../../styles/pages.css"
 
 /**
  * Represents an input text area
+ *
+ * @param validationError error message, if empty doesn't display anything
+ * @param value displayer value
+ * @param name input type text name attribute
+ * @param placeholder
+ * @param onChange
  */
 export default class TextForm extends React.Component {
     constructor(props) {
-        /**
-         *  props:
-         *      - id: id of the html input element
-         *      - placeholder: the placeholder of the input text area
-         *      - validationError: contains the error message for wrong input, used to color the border of red
-         */ 
         super(props)
     }
 

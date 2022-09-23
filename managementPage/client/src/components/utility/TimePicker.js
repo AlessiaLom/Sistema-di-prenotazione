@@ -5,6 +5,14 @@ import "./../../styles/pages.css"
 
 /**
  * Represents an input type time element
+ *
+ * @param value displayed value, --:-- if empty string
+ * @param onChange function called on time change
+ * @param id input type time id attribute
+ * @param name input type time dame attribute
+ * @param min minimum selectable time in hh:mm format
+ * @param max maximum selectable time in hh:mm format
+ * @param step
  */
 export default class TimePicker extends React.Component {
     constructor(props) {
