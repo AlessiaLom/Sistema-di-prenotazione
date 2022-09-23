@@ -227,12 +227,8 @@ recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (reque
     let respMessage = {};
     let seats = 0;
     let day = new Date(request.params.day);
-    console.log(day)
     let date = day.getFullYear() + '-' + (day.getMonth()+1) + '-' + day.getDate();
     let activity = request.params.activity;
-
-    console.log(date)
-    console.log(activity)
 
     bookingArray.bookings.forEach((booking) => {
         if(booking.bookingDate === date && booking.bookingActivity === activity && booking.bookingStatus === 'confirmed'){
