@@ -144,8 +144,7 @@ recordRoutes.route("/customize/save_changes/:id").post(function (request, respon
             if (err) {
                 response.status(501)
                 console.log("Error updating customize: " + err)
-            }
-            else {
+            } else {
                 response.status(201)
                 console.log("1 document updated");
                 response.json(result);
