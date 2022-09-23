@@ -155,6 +155,7 @@ export default class BookingForm extends Component {
 
   handleClick = (event, name) => {
     this.handleTimeChange(null);
+    this.state.errors.bookingTime = '';
     this.setState({timeValue: []});
     let today = new Date();
     let now;
@@ -202,6 +203,21 @@ export default class BookingForm extends Component {
     })
     var selection = document.querySelector("#bookingGuestSelection");
     selection.disabled = false;
+    selection.value = 0;
+
+    fetch("/bookings/seats/" + this.props.restaurantId + "/" + this.state.selectedDate + "/" + this.state.bookingActivity, {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+      })
+      .then(res => res.json())
+      .then(data => {
+          this.state.activityCapacity -= data.bookedSeats;
+          this.state.statusLabel = '';
+          console.log(this.state.activityCapacity)
+      })
   };
 
   componentDidMount() {
@@ -408,7 +424,11 @@ export default class BookingForm extends Component {
           : 'Devi inserire un numero intero maggiore di 1')
         : 'Questo campo è obbligatorio';
 
-        if(Number.isInteger(Number(value)) && Number(value) <= parseInt(bookingThreshold) && Number(value) !== 0){
+        if(Number.isInteger(Number(value)) && (Number(value)) > parseInt(this.state.activityCapacity)){
+          this.state.statusLabel = `\u26D4 Non prenotabile; la richiesta supera il numero di coperti disponibili.`;
+          this.state.statusProp = 'canceled';
+          submitButton.disabled = true;
+        } else if(Number.isInteger(Number(value)) && Number(value) <= parseInt(bookingThreshold) && Number(value) !== 0){
           this.state.statusLabel = `\u2705 Prenotabile automaticamente.`;
           this.state.statusProp = 'confirmed';
           submitButton.disabled = false;
@@ -480,6 +500,7 @@ export default class BookingForm extends Component {
   handleDateChange = (date) => {
     displayedOptions = [];
     this.handleTimeChange(null);
+    this.state.errors.bookingTime = '';
     this.setState({timeValue: []});
     this.state.options.forEach((option) => option.disabled = true);
     this.state.errors.bookingDate = date != null ? '' : 'Questo campo è obbligatorio';
@@ -543,6 +564,11 @@ export default class BookingForm extends Component {
           break;
       }
     });
+    var selection = document.querySelector("#bookingGuestSelection");
+    if(!selection.disabled){
+      selection.value = 0;
+      this.state.statusLabel = '';
+    }
   }
 
   handleSubmit = (event) => {
