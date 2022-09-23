@@ -25,30 +25,6 @@ let isSideOpen = true;
  * @returns {boolean} true if the date is within the bounds
  */
 function isInInterval(date, fromDate, toDate) {
-    // if (fromDate !== '') {
-    //     if (date.year >= fromDate.year) {
-    //         if (toDate !== '') {
-    //             if (date.year <= toDate.year) {
-    //                 return date.month >= fromDate.month
-    //                     && date.day >= fromDate.day
-    //                     && date.month <= toDate.month
-    //                     && date.day <= toDate.day;
-    //             } else {
-    //                 return false
-    //             }
-    //         } else {
-    //             return true
-    //         }
-    //     } else {
-    //         return false
-    //     }
-    // } else if (toDate !== '') {
-    //     return date.year <= toDate.year
-    //         && date.month <= toDate.month
-    //         && date.day <= toDate.day;
-    // } else {
-    //     return true
-    // }
     return date >= fromDate && date <= toDate
 }
 
@@ -76,31 +52,16 @@ function filterByDate(collection, from, to) {
     if (from !== '') {
         fromDate = new Date(from)
         fromDate.setHours(0,0,0,0)
-        // fromDate = {
-        //     year: parseInt(from.split("-")[0]),
-        //     month: parseInt(from.split("-")[1]),
-        //     day: parseInt(from.split("-")[2]),
-        // }
     }
     let toDate = ''
     if (to !== '') {
         toDate = new Date(to)
         toDate.setHours(0,0,0,0)
-        // toDate = {
-        //     year: parseInt(to.split("-")[0]),
-        //     month: parseInt(to.split("-")[1]),
-        //     day: parseInt(to.split("-")[2]),
-        // }
     }
     Object.keys(collection).forEach((key) => {
         let booking = collection[key]
         let bookingDate = new Date(booking.bookingDate)
         bookingDate.setHours(0,0,0,0)
-        // let bookingDate = {
-        //     year: parseInt(booking.bookingDate.split("-")[0]),
-        //     month: parseInt(booking.bookingDate.split("-")[1]),
-        //     day: parseInt(booking.bookingDate.split("-")[2]),
-        // }
         if (isInInterval(bookingDate, fromDate, toDate)) {
             filtered[key] = booking
         }
