@@ -67,7 +67,7 @@ notifyError = (msg) => {
 }
 
   componentDidMount(){
-    fetch("/bookings/0001", {
+    fetch("/bookings/" + this.props.restaurantId, {
       method: "GET",
         headers: {
             'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ notifyError = (msg) => {
             }
         });
 
-    fetch("/restaurant_info/0001", {
+    fetch("/customize/" + this.props.restaurantId, {
       method: "GET",
         headers: {
             'Content-Type': 'application/json',
@@ -242,7 +242,7 @@ notifyError = (msg) => {
           inputPhone.setAttribute("style", "border-color: red; border-style: solid; border-radius: 1%; transition-duration: 0.1s;");
         } else {
           let databody = {
-            "id": "0001",
+            "id": this.props.restaurantId,
             "bookingId": this.state.prenotationID,
             }
           window.location.href = window.location.pathname + '?cancelation=success';

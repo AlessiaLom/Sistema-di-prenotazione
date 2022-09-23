@@ -291,7 +291,7 @@ export default class BookingForm extends Component {
                 });
             }
         });
-    fetch("/restaurant_info/" + this.props.restaurantId, {
+    fetch("/customize/" + this.props.restaurantId, {
       method: "GET",
         headers: {
             'Content-Type': 'application/json',
