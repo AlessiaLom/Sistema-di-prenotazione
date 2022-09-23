@@ -26,7 +26,10 @@ const dbo = require("./../db/conn.js");// This will help us connect to the datab
 
 const {google} = require('googleapis');
 const calendar = google.calendar('v3');
-var oauth2Client = new google.auth.OAuth2('504181834497-omrl5mnes3qmvvu39hu5v404lemlfq1c.apps.googleusercontent.com', "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", "postmessage" // you use 'postmessage' when the code is retrieved from a frontend (couldn't find why online)
+var oauth2Client = new google.auth.OAuth2(
+    '504181834497-omrl5mnes3qmvvu39hu5v404lemlfq1c.apps.googleusercontent.com',
+    "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",
+    "postmessage" // you use 'postmessage' when the code is retrieved from a frontend (couldn't find why online)
 );
 
 /**
@@ -172,8 +175,7 @@ recordRoutes.route("/activities/save_changes/:id").post(function (request, respo
             if (err) {
                 response.status(501)
                 console.log("Error updating activities: " + err)
-            }
-            else {
+            } else {
                 response.status(201)
                 console.log("1 document updated");
                 response.json(result);
@@ -201,8 +203,7 @@ recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(function (reque
             if (err) {
                 response.status(501)
                 console.log("Error updating bookings: " + err)
-            }
-            else {
+            } else {
                 response.status(201)
                 console.log("1 document updated");
                 response.json(result);
@@ -254,7 +255,7 @@ recordRoutes.route("/booking/add/:id").post(async function (request, response) {
 recordRoutes.route("/register").post(async (request, response) => {
     const users = await getUsers()
     let exists = existingEmail(users, request.body.email)
-    if(!exists){
+    if (!exists) {
         let credentials = {
             email: request.body.email,
             password: request.body.password
@@ -274,12 +275,16 @@ recordRoutes.route("/register").post(async (request, response) => {
                     restaurantId: newRestaurantId
                 });
             });
-        setUpUsersCollections(newRestaurantId)
-    }else if(users.length){
+        setupUsersCollections(newRestaurantId)
+    } else if (users.length) {
         response.json({})
     }
 })
 
+/**
+ * Gets all the users from the db
+ * @returns array of users
+ */
 async function getUsers() {
     let db_connect = dbo.getDb("sdp_db");
     return await db_connect
@@ -287,6 +292,12 @@ async function getUsers() {
         .find().toArray()
 }
 
+/**
+ * Checks if an email already exists among a user array
+ * @param users array of users
+ * @param email we want to check
+ * @returns {boolean} true if the email already exists
+ */
 function existingEmail(users, email) {
     for (let i = 0; i < users.length; i++) {
         let decrypted = JSON.parse(decrypt(users[i].credentials))
@@ -297,7 +308,11 @@ function existingEmail(users, email) {
     return false
 }
 
-function setUpUsersCollections(newRestaurantId) {
+/**
+ * Initializes new restaurant's collections in db
+ * @param restaurantId id of the new restaurant
+ */
+function setupUsersCollections(restaurantId) {
     // Create new customize document
     newCustomizeDocument(newRestaurantId)
     // Create new activities document
@@ -306,6 +321,10 @@ function setUpUsersCollections(newRestaurantId) {
     newBookingsDocument(newRestaurantId)
 }
 
+/**
+ * Initializes a new customize document in the customize collection
+ * @param restaurantId
+ */
 function newCustomizeDocument(restaurantId) {
     let document = {
         restaurantId: restaurantId,
@@ -324,6 +343,10 @@ function newCustomizeDocument(restaurantId) {
         });
 }
 
+/**
+ * Initializes a new activities document in the customize collection
+ * @param restaurantId
+ */
 function newActivitiesDocument(restaurantId) {
     let document = {
         restaurantId: restaurantId,
@@ -340,6 +363,10 @@ function newActivitiesDocument(restaurantId) {
         });
 }
 
+/**
+ * Initializes a new bookings document in the customize collection
+ * @param restaurantId
+ */
 function newBookingsDocument(restaurantId) {
     let document = {
         restaurantId: restaurantId,
@@ -608,7 +635,6 @@ async function removeBookingFromCalendar(restaurantId, bookingId) {
     });
     console.log(res.data)
 }
-
 
 /**
  * -------------- TESTS -------------------
