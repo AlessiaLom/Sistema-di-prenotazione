@@ -354,25 +354,25 @@ export default class BookingForm extends Component {
                 var msg = document.getElementById("messenger-div");
                 var ig = document.getElementById("instagram-div");
                 var wa = document.getElementById("whatsapp-div");
-                if(data.socialNetworks.facebook != null){
+                if(data.socialNetworks.facebook != ""){
                   var fblink = document.querySelector("#facebook-link");
                   fblink.setAttribute("href", data.socialNetworks.facebook);
                 } else {
                   fb.style.display = "none";
                 }
-                if(data.socialNetworks.messenger != null){
+                if(data.socialNetworks.messenger != ""){
                   var msglink = document.querySelector("#messenger-link");
                   msglink.setAttribute("href", data.socialNetworks.messenger);
                 } else {
                   msg.style.display = "none";
                 }
-                if(data.socialNetworks.instagram != null){
+                if(data.socialNetworks.instagram != ""){
                   var iglink = document.querySelector("#instagram-link");
                   iglink.setAttribute("href", data.socialNetworks.instagram);
                 } else {
                   ig.style.display = "none";
                 }
-                if(data.socialNetworks.whatsapp != null){
+                if(data.socialNetworks.whatsapp != ""){
                   var walink = document.querySelector("#whatsapp-link");
                   walink.setAttribute("href", data.socialNetworks.whatsapp);
                 } else {
