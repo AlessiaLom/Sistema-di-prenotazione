@@ -156,6 +156,8 @@ notifyError = (msg) => {
               const deleteSuccess = (new URLSearchParams(search)).get('cancelation');
               if (deleteSuccess === 'success') {
                 this.notifySuccess();
+              } else if(deleteSuccess === 'error'){
+                this.notifyError('La prenotazione è già stata cancellata');
               }
         });
   }
@@ -254,7 +256,12 @@ notifyError = (msg) => {
               },
           })
           .then(res => res.json())
-          .then(data => console.log(data));
+          .then(data => {
+            console.log(data)
+            if(Object.keys(data).includes("message")){
+              window.location.href = window.location.pathname + '?cancelation=error';
+            }
+          });
         }
       }
     } else {

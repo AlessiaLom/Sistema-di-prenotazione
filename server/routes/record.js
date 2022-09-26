@@ -452,19 +452,27 @@ recordRoutes.route("/booking/update").post(async function (req, response) {
     let myQuery = {
         restaurantId: req.body.id, 'bookings.id': req.body.bookingId
     };
-    await removeBookingFromCalendar(req.body.id, req.body.bookingId);
-    let newValues = {
-        $set: {
-            'bookings.$.bookingStatus': 'canceled'
-        },
-    };
-    db_connect
-        .collection("booking")
-        .updateOne(myQuery, newValues, function (err, res) {
-            if (err) throw err;
-            // console.log("1 document updated");
-            response.json(res);
-        });
+
+    let restaurantBookings = await getRestaurantBookingsById(req.body.id, req.body.bookingId);
+    let booking = getBookingById(restaurantBookings.bookings, req.body.bookingId);
+
+    if(booking.bookingStatus !== 'canceled'){
+        await removeBookingFromCalendar(req.body.id, req.body.bookingId);
+        let newValues = {
+            $set: {
+                'bookings.$.bookingStatus': 'canceled'
+            },
+        };
+        db_connect
+            .collection("booking")
+            .updateOne(myQuery, newValues, function (err, res) {
+                if (err) throw err;
+                // console.log("1 document updated");
+                response.json(res);
+            });
+    } else {
+        response.json({message: 'La prenotazione inserita è già cancellata'});
+    }
 });
 
 /**
