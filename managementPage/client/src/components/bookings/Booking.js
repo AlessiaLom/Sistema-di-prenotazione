@@ -114,8 +114,14 @@ export default class Booking extends React.Component {
                     {this.state.booking.bookingTime}
                 </td>
                 <td>
-                    {this.state.booking.guestEmail}<br></br>
-                    {this.state.booking.guestPhone}
+                    <a
+                        href={"mailto: " + this.state.booking.guestEmail}>
+                        {this.state.booking.guestEmail}
+                    </a><br></br>
+                    <a
+                        href={"tel: " + this.state.booking.guestPhone}>
+                        {this.state.booking.guestPhone}
+                    </a>
                 </td>
                 <td style={{backgroundColor: statusColor}}>
                     <Select
