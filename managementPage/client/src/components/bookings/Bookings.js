@@ -239,7 +239,7 @@ export default class Bookings extends React.Component {
                         <Filter
                             onClick={this.handleFiltering}/>
                     </div>
-                    <table id="bookingsTable">
+                    <table id="bookingsTable" >
                         <thead>
                         <tr>
                             <th className="headerCol" scope="col">Nome</th>
@@ -251,7 +251,7 @@ export default class Bookings extends React.Component {
                         </tr>
                         </thead>
                         {/* Renders all the bookings */}
-                        <tbody>
+                        <tbody style={{border: 0, margin: 0, padding: 0}}>
                         {bookingsToBeShown}
                         </tbody>
                     </table>

@@ -63,9 +63,41 @@ export default class Booking extends React.Component {
         }
     }
 
+    /**
+     * Restricts selectable options to the only ones actually feasible
+     * @returns {array} array of options to be passed to the select element
+     */
+    getStatusOptions() {
+        switch (this.state.booking.bookingStatus) {
+            case 'confirmed':
+                return ['confirmed', 'canceled']
+            case 'pending':
+                return ['confirmed', 'pending', 'canceled']
+            case 'canceled':
+                return ['canceled']
+            default:
+                return ['confirmed', 'pending', 'canceled']
+        }
+    }
+
+    getStatusColor() {
+        switch (this.state.booking.bookingStatus) {
+            case 'confirmed':
+                return "#d9ead3"
+            case 'pending':
+                return "#fff2cc"
+            case 'canceled':
+                return "#f4cccc"
+            default:
+                return ""
+        }
+    }
+
     render() {
+        let statusOptions = this.getStatusOptions()
+        let statusColor = this.getStatusColor()
         return (
-            <tr>
+            <tr >
                 <td scope="row">
                     {this.state.booking.guestName}
                 </td>
@@ -82,17 +114,19 @@ export default class Booking extends React.Component {
                     {this.state.booking.guestEmail}<br></br>
                     {this.state.booking.guestPhone}
                 </td>
-                <td>
+                <td style={{backgroundColor: statusColor}}>
                     <Select
                         name="selectBookingStatus"
-                        options={['confirmed', 'pending', 'canceled']}
+                        options={statusOptions}
                         defaultValue={this.state.booking.bookingStatus}
                         onChange={this.handleChange}
-                        disabled={this.state.booking.bookingStatus === 'canceled'}
                     />
                 </td>
 
             </tr>
         )
     }
+
+
+
 }

@@ -18,13 +18,12 @@ export default class Select extends React.Component {
     }
 
     render() {
-        let className = "form-control" + (this.props.validationError ? " border-danger" : "")
         let options =
             this.props.options.map(option =>
             (<option
                 key={option}
                 value={option}
-                disabled={this.props.disabled}
+                // disabled={this.props.disabled}
                 // selected={option == this.props.defaultValue}
             >
                 {option}
