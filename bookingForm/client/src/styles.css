@@ -233,6 +233,10 @@ table th, table td{
   margin: 1rem;
 }
 
+.resturantTable{
+  margin-bottom: 1%;
+}
+
 .resturantTableLabel{
   font-weight: bold;
   font-style: italic;
