@@ -223,7 +223,7 @@ export default class Activity extends React.Component {
                         validationError={this.state.validationErrors.activityNameError}
                     />
                 </td>
-                <td id="time" style={{ width: "25%" }}>
+                <td id="time" style={{ width: "10%" }}>
                     <div style={{ display: "inline" }}>
                         <span className="validationError">{this.state.validationErrors.timesError}</span>
                         <p style={{ float: "left" }}> Dalle: </p>
@@ -251,14 +251,14 @@ export default class Activity extends React.Component {
                         onChange={this.handleChange}
                         validationError={this.state.validationErrors.availableSpotsError} />
                 </td>
-                <td style={{ width: "10%" }}>
+                <td style={{ width: "70%" }}>
                     <DayPicker
                         checkedOnes={this.state.activityValues.days}
                         validationError={this.state.validationErrors.daysError}
                         name={"dayPicker" + this.props.uniqueId}
                         onChange={this.handleChange} />
                 </td>
-                <td style={{ width: "10%" }}>
+                <td style={{ width: "5%" }}>
                     <button
                         onClick={() => this.props.onClick(this.props.uniqueId)}
                         type="button"

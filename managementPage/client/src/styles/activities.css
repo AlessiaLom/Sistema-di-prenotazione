@@ -13,12 +13,12 @@ div#buttonsDiv {
     padding-top: 1.5rem;
 }
 
-#activitiesTable{
-    min-width: 100%;
-}
-
 #activitiesTable td{
     min-width: 100px;
+}
+
+#bookingsTable th, #activitiesTable th, #bookingsTable td, #activitiesTable td{
+    text-align: center;
 }
 
 table p{
