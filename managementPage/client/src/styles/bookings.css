@@ -1,5 +1,6 @@
-button[name='applyFilter']{
-    margin-right: 1rem;
+button[name='applyFilter'], button[name='clearFilter']{
+    width: 110px;
+    margin-bottom: 5px;
 }
 
 input#fromDateFilter[type='date'], input#toDateFilter, input#fromTimeFilter, input#toTimeFilter{
@@ -9,7 +10,11 @@ input#fromDateFilter[type='date'], input#toDateFilter, input#fromTimeFilter, inp
 table{
     text-align: left;
     border-collapse: separate;
-    border-spacing: 0.5rem;
+    border-spacing: 0 0.5rem;
+}
+
+.form-select{
+    min-width: 130px;
 }
 
 table input.form-control{

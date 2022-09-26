@@ -40,6 +40,10 @@ function MyGoogleAuth(props) {
             .then(() => props.onLogout())
     }
 
+    const btnStyle = {
+        margin: "0 0 0 2vw",
+    }
+
     let buttonContent = props.profile ? "Logged in as " + props.profile.email : "Log in with Google"
     return (<div>
         <button
@@ -63,6 +67,7 @@ function MyGoogleAuth(props) {
         <button
             type="button"
             className="btn btn-dark"
+            style={btnStyle}
             onClick={() => logout()}
             hidden={!props.profile}>
             Log out

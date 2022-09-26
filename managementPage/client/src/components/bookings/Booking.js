@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
 import "./../../styles/pages.css"
 import Select from '../utility/Select';
+import { withTheme } from '@material-ui/core';
 
 
 
@@ -97,7 +98,7 @@ export default class Booking extends React.Component {
         let statusOptions = this.getStatusOptions()
         let statusColor = this.getStatusColor()
         return (
-            <tr >
+            <tr style={{backgroundColor: statusColor}}>
                 <td scope="row">
                     {this.state.booking.guestName}
                 </td>
@@ -123,7 +124,7 @@ export default class Booking extends React.Component {
                         {this.state.booking.guestPhone}
                     </a>
                 </td>
-                <td style={{backgroundColor: statusColor}}>
+                <td >
                     <Select
                         name="selectBookingStatus"
                         options={statusOptions}
