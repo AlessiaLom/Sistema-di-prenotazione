@@ -65,6 +65,7 @@ button[name='cancelChanges']{
     div#sidebarDiv{
         display: none;
         width: 100%;
+        margin-bottom: 2rem;
     }
 
     div#footerDiv{

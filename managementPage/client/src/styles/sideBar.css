@@ -1,6 +1,7 @@
 #sidebarDiv {
     background-color: rgb(246, 246, 246);
     width: 15%;
+    max-height: 400px;
     display: block;
     overflow: auto;
     min-width: 200px;
