@@ -8,6 +8,11 @@ table input.form-control{
     margin: 0;
 }
 
+div#buttonsDiv {
+    min-height: 100px;
+    padding-top: 1.5rem;
+}
+
 #activitiesTable{
     min-width: 100%;
 }

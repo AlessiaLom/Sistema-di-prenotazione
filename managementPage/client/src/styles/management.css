@@ -31,6 +31,7 @@
 #mainContentContainer {
     max-height: 90vh;
     overflow-y: scroll;
+    overflow-x: hidden;
     display: block;
     white-space: initial;
     margin-left: 1%;
@@ -58,6 +59,7 @@ button[name='cancelChanges']{
     display: none;
     border-radius: 5px;
 }
+
 
 @media screen and (max-width: 714px) {
     .openbtn{
