@@ -160,28 +160,26 @@ export default class Filter extends React.Component {
                                 onChange={this.handleChange}
                             />
                         </td>
-                        <td>
-                            <button
-                                onClick={this.onClick}
-                                name="applyFilter"
-                                type="button"
-                                className="btn btn-primary">
-                                {/*Disable the button if there are validation errors*/}
-                                Filtra
-                                <FiFilter/>
-                            </button>
-                            <button
-                                onClick={this.onClick}
-                                name="clearFilter"
-                                type="button"
-                                className="btn btn-light">
-                                {/*Disable the button if there are validation errors*/}
-                                Ripristina
-                                <GrRevert/>
-                            </button>
-                        </td>
                         </tbody>
                     </table>
+                    <button
+                        onClick={this.onClick}
+                        name="applyFilter"
+                        type="button"
+                        className="btn btn-primary">
+                        {/*Disable the button if there are validation errors*/}
+                        Filtra
+                            <FiFilter/>
+                    </button>
+                    <button
+                        onClick={this.onClick}
+                        name="clearFilter"
+                        type="button"
+                        className="btn btn-light">
+                        {/*Disable the button if there are validation errors*/}
+                        Ripristina
+                            <GrRevert/>
+                    </button>
                 </div>
             </>
         )

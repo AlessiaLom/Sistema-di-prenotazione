@@ -1,16 +1,23 @@
 button[name='applyFilter'], button[name='clearFilter']{
     width: 110px;
     margin-bottom: 5px;
+    float: right;
+    margin-right: 1.5rem;
 }
 
 input#fromDateFilter[type='date'], input#toDateFilter, input#fromTimeFilter, input#toTimeFilter{
-    min-width: 150px
+    min-width: 150px;
 }
 
 table{
     text-align: left;
     border-collapse: separate;
     border-spacing: 0 0.5rem;
+    clear: both;
+}
+
+table#filters, table#bookingsTable{
+   min-width: 100%
 }
 
 .form-select{
@@ -19,10 +26,6 @@ table{
 
 table input.form-control{
     margin: 0;
-}
-
-#bookingsTable td, #filters td{
-    min-width: 100px;
 }
 
 table p{

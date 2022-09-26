@@ -8,6 +8,10 @@ table input.form-control{
     margin: 0;
 }
 
+#activitiesTable{
+    min-width: 100%;
+}
+
 #activitiesTable td{
     min-width: 100px;
 }
