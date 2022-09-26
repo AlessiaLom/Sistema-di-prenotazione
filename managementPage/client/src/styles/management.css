@@ -29,7 +29,7 @@
 }
 
 #mainContentContainer {
-    max-height: 800px;
+    max-height: 90vh;
     overflow-y: scroll;
     display: block;
     white-space: initial;
