@@ -20,6 +20,7 @@ export default class App extends React.Component {
         this.onLogin = this.onLogin.bind(this)
         this.onLogout = this.onLogout.bind(this)
         this.onRegister = this.onRegister.bind(this)
+        this.backToLogin = this.backToLogin.bind(this)
     }
 
     onLogout() {
@@ -46,6 +47,12 @@ export default class App extends React.Component {
         })
     }
 
+    backToLogin(){
+        this.setState({
+            showRegisterForm: false
+        })
+    }
+
     render() {
         let contentShown
         if (this.state.logged || cookies.get('login')) {
@@ -53,7 +60,7 @@ export default class App extends React.Component {
         } else if(!this.state.showRegisterForm){
             contentShown = <Login onLogin={this.onLogin} register={this.onRegister}/>
         } else {
-            contentShown = <Registration onLogin={this.onLogin}/>
+            contentShown = <Registration onBack={this.backToLogin}/>
         }
         return (
             <div>

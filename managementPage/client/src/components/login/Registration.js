@@ -119,7 +119,7 @@ export default class Registration extends React.Component {
 
     render() {
         let errors = this.state.validationErrors;
-        console.log(this.state.email, this.state.password)
+        console.log(this.props.onBack)
         return (
             <>
                 <div className='wrapper'>
@@ -147,6 +147,9 @@ export default class Registration extends React.Component {
                                 {errors.noMatchError != null &&
                                     <span className='matchError'>{errors.noMatchError}</span>}
                             </div>
+                            <label id="regLabel">Torna al <a onClick={this.props.onBack}
+                                                                            id="register-link"
+                                                                            className="link-primary">Login</a></label>
                         </form>
                     </div>
                 </div>
