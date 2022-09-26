@@ -61,7 +61,7 @@ button[name='cancelChanges']{
 }
 
 
-@media screen and (max-width: 714px) {
+@media screen and (max-width: 799px) {
     .openbtn{
         display: block;
     }

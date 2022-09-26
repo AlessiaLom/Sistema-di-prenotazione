@@ -36,7 +36,7 @@ td#time p{
     margin-right: 0.5rem;
 }
 
-@media screen and (min-width: 715px) and (max-width: 1024px){
+@media screen and (min-width: 800px) and (max-width: 1024px){
     #bookingsTable, #filters{
         display: block;
         overflow-x: auto;
@@ -44,7 +44,7 @@ td#time p{
     }
 }
 
-@media screen and (max-width: 714px) {
+@media screen and (max-width: 799px) {
 
     button[name='applyFilter'], button[name='clearFilter']{
         margin: 0;
