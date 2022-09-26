@@ -203,7 +203,7 @@ export default class BookingForm extends Component {
     })
     var selection = document.querySelector("#bookingGuestSelection");
     selection.disabled = false;
-    selection.value = 0;
+    selection.value = null;
 
     fetch("/bookings/seats/" + this.props.restaurantId + "/" + this.state.selectedDate + "/" + this.state.bookingActivity, {
         method: "GET",
@@ -566,7 +566,8 @@ export default class BookingForm extends Component {
     });
     var selection = document.querySelector("#bookingGuestSelection");
     if(!selection.disabled){
-      selection.value = 0;
+      selection.disabled = true;
+      selection.value = null;
       this.state.statusLabel = '';
     }
   }
