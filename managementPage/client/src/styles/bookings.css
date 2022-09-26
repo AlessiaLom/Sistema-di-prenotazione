@@ -2,7 +2,7 @@ button[name='applyFilter']{
     margin-right: 1rem;
 }
 
-input#fromDateFilter[type='date'], input#toDateFilter{
+input#fromDateFilter[type='date'], input#toDateFilter, input#fromTimeFilter, input#toTimeFilter{
     min-width: 150px
 }
 

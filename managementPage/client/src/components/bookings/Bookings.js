@@ -24,7 +24,7 @@ let isSideOpen = true;
  * @param toDate upper date bound
  * @returns {boolean} true if the date is within the bounds
  */
-function isInInterval(date, fromDate, toDate) {
+function isDateInInterval(date, fromDate, toDate) {
     return date >= fromDate && date <= toDate
 }
 
@@ -62,11 +62,44 @@ function filterByDate(collection, from, to) {
         let booking = collection[key]
         let bookingDate = new Date(booking.bookingDate)
         bookingDate.setHours(0,0,0,0)
-        if (isInInterval(bookingDate, fromDate, toDate)) {
+        if (isDateInInterval(bookingDate, fromDate, toDate)) {
             filtered[key] = booking
         }
     })
     return filtered
+}
+
+function isTimeInInterval(time, fromTime, toTime) {
+    return time >= fromTime && time <= toTime;
+}
+
+function filterByTime(collection, from, to) {
+    if(from === '' || to === ''){
+        return collection
+    }
+    let filtered = {}
+    let fromTime = new Date()
+    fromTime.setHours(
+        from.split(":")[0],
+        from.split(":")[1],
+        0)
+    let toTime = new Date()
+    toTime.setHours(
+        to.split(":")[0],
+        to.split(":")[1],
+        0)
+    Object.keys(collection).forEach((key) => {
+        let booking = collection[key]
+        let bookingTime = new Date()
+        bookingTime.setHours(
+            booking.bookingTime.split(":")[0],
+            booking.bookingTime.split(":")[1],
+            0)
+        if (isTimeInInterval(bookingTime, fromTime, toTime)) {
+            filtered[key] = booking
+        }
+    })
+    return filtered;
 }
 
 /**
@@ -138,6 +171,7 @@ export default class Bookings extends React.Component {
             filteredBookings = this.state.bookingsValues
         } else {
             filteredBookings = filterByDate(this.state.bookingsValues, filters.fromDate, filters.toDate)
+            filteredBookings = filterByTime(filteredBookings, filters.fromTime, filters.toTime)
             filteredBookings = filterByStatus(filteredBookings, filters.status)
         }
         this.setState({
