@@ -101,6 +101,9 @@ export default class Booking extends React.Component {
                 <td scope="row">
                     {this.state.booking.guestName}
                 </td>
+                <td scope="row">
+                    {this.state.booking.bookingActivity}
+                </td>
                 <td>
                     {this.state.booking.bookingGuests}
                 </td>

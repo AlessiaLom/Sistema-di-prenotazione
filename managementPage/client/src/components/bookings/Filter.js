@@ -19,6 +19,7 @@ export default class Filter extends React.Component {
                 toDate: '',
                 fromTime: '',
                 toTime: '',
+                activity: '',
                 status: ''
             }
         }
@@ -42,6 +43,9 @@ export default class Filter extends React.Component {
                 break
             case 'toTimeFilter':
                 newFilters.toTime = value
+                break
+            case 'activityFilter':
+                newFilters.activity = value
                 break
             case 'statusFilter':
                 newFilters.status = value
@@ -69,6 +73,7 @@ export default class Filter extends React.Component {
                         toDate: '',
                         fromTime: '',
                         toTime: '',
+                        activity: '',
                         status: ''
                     }
                 }, () => {
@@ -91,6 +96,7 @@ export default class Filter extends React.Component {
                             <td>Al:</td>
                             <td>Dalle:</td>
                             <td>Alle:</td>
+                            <td>Attività</td>
                             <td>Stato:</td>
                             <td></td>
                         </tr>
@@ -137,6 +143,14 @@ export default class Filter extends React.Component {
                                 name="toTimeFilter"
                                 min="00:00"
                                 max="23:59"/>
+                        </td>
+                        <td>
+                            <Select
+                                name="activityFilter"
+                                options={['Seleziona', ...this.props.activitiesNames]}
+                                defaultValue={this.state.filters.activity}
+                                onChange={this.handleChange}
+                            />
                         </td>
                         <td>
                             <Select

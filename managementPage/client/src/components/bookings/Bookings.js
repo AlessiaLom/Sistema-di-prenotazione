@@ -102,6 +102,19 @@ function filterByTime(collection, from, to) {
     return filtered;
 }
 
+function filterByActivity(collection, activity) {
+    if(activity === ''){
+        return collection
+    }
+    let filtered = {}
+    Object.keys(collection).forEach((key) => {
+        if(collection[key].bookingActivity === activity){
+            filtered[key] = collection[key]
+        }
+    })
+    return filtered;
+}
+
 /**
  * Contains activity bookings and manages addition and deletion of bookings of the table.
  */
@@ -172,6 +185,7 @@ export default class Bookings extends React.Component {
         } else {
             filteredBookings = filterByDate(this.state.bookingsValues, filters.fromDate, filters.toDate)
             filteredBookings = filterByTime(filteredBookings, filters.fromTime, filters.toTime)
+            filteredBookings = filterByActivity(filteredBookings, filters.activity)
             filteredBookings = filterByStatus(filteredBookings, filters.status)
         }
         this.setState({
@@ -241,6 +255,14 @@ export default class Bookings extends React.Component {
         }
     }
 
+    getActivitiesNames() {
+        let activitiesNames = new Set()
+        Object.keys(this.state.bookingsValues).forEach((key) => {
+            let booking = this.state.bookingsValues[key]
+            activitiesNames.add(booking.bookingActivity)
+        })
+        return activitiesNames;
+    }
 
     render() {
         let bookingsToBeShown = Object.values(this.getComponents())
@@ -250,6 +272,8 @@ export default class Bookings extends React.Component {
         csvData.forEach((booking) => {
             delete booking.id
         })
+
+        let activitiesNames = this.getActivitiesNames()
         return (
 
             <>
@@ -271,12 +295,14 @@ export default class Bookings extends React.Component {
                     <div>
                         Filtri
                         <Filter
-                            onClick={this.handleFiltering}/>
+                            onClick={this.handleFiltering}
+                            activitiesNames={activitiesNames}/>
                     </div>
                     <table id="bookingsTable" >
                         <thead>
                         <tr>
                             <th className="headerCol" scope="col">Nome</th>
+                            <th className="headerCol" scope="col">Attività</th>
                             <th className="headerCol" scope="col">Numero coperti</th>
                             <th className="headerCol" scope="col">Giorno</th>
                             <th className="headerCol" scope="col">Ora</th>
@@ -306,4 +332,6 @@ export default class Bookings extends React.Component {
             </>
         )
     }
+
+
 }
