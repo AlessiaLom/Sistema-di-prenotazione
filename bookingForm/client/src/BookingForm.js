@@ -678,7 +678,7 @@ export default class BookingForm extends Component {
                   noValidate/></label>                                      
               </div>
               <div className="bookingGuests">
-                <label className="booking">Numero di coperti* {errors.bookingGuests.length > 0 && <span className='error'>{errors.bookingGuests}</span>}<input type="number" className="booking" id="bookingGuestSelection" disabled={true} name="bookingGuests" placeholder="Inserisci i coperti" onChange={this.handleChange} noValidate min={1}/></label>
+                <label className="booking">Numero di coperti* {errors.bookingGuests.length > 0 && <span className='error'>{errors.bookingGuests}</span>}<input type="number" className="booking" onWheel={(e) => e.target.blur()} id="bookingGuestSelection" disabled={true} name="bookingGuests" placeholder="Inserisci i coperti" onChange={this.handleChange} noValidate min={1}/></label>
               </div>
               <div className="resturantTable">
                 <label className={`bookingStatus-${this.state.statusProp}`}>{this.state.statusLabel}</label>
