@@ -17,6 +17,12 @@ body {
     padding-bottom: 50px;
 }
 
+#seatsFullError{
+  font-size: large;
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
 footer { 
     position: absolute; 
     left: 0 ; right: 0; bottom: 0; 
