@@ -61,7 +61,7 @@ td#time p{
         white-space: nowrap;
     }
 
-    button#addActivityButton, button[name='saveChanges']{
+    button#addActivityButton{
         margin-top: 1rem;
     } 
 
