@@ -375,7 +375,7 @@ function existingEmail(users, email) {
  * Initializes new restaurant's collections in db
  * @param restaurantId id of the new restaurant
  */
-function setupUsersCollections(restaurantId) {
+function setupUsersCollections(newRestaurantId) {
     // Create new customize document
     newCustomizeDocument(newRestaurantId)
     // Create new activities document

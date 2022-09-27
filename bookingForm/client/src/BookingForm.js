@@ -216,7 +216,6 @@ export default class BookingForm extends Component {
       .then(data => {
           this.state.activityCapacity -= data.bookedSeats;
           this.state.statusLabel = '';
-          console.log(this.state.activityCapacity)
       })
   };
 

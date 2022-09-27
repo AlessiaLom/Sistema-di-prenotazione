@@ -60,7 +60,7 @@ export default class App extends React.Component {
         } else if(!this.state.showRegisterForm){
             contentShown = <Login onLogin={this.onLogin} register={this.onRegister}/>
         } else {
-            contentShown = <Registration onBack={this.backToLogin}/>
+            contentShown = <Registration onLogin={this.onLogin} onBack={this.backToLogin}/>
         }
         return (
             <div>

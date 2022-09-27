@@ -86,7 +86,6 @@ export default class Registration extends React.Component {
     }
 
     handleSubmit() {
-        console.log(this.state.email, this.state.password)
         if (!this.state.validationErrors.emailError && !this.state.validationErrors.passwordError) {
             fetch("/register", {
                 method: "POST",
@@ -119,7 +118,6 @@ export default class Registration extends React.Component {
 
     render() {
         let errors = this.state.validationErrors;
-        console.log(this.props.onBack)
         return (
             <>
                 <div className='wrapper'>
