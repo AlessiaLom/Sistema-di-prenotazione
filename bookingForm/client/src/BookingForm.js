@@ -646,7 +646,6 @@ export default class BookingForm extends Component {
   } 
 
   render(){
-    console.log(this.state.errors)
     const errors = this.state.errors;
     const options = displayedOptions;
     const activities = this.state.activities;
