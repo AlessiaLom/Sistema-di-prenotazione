@@ -61,10 +61,6 @@ td#time p{
         white-space: nowrap;
     }
 
-    button#addActivityButton{
-        margin-top: 1rem;
-    } 
-
     #activitiesTable input{
         display: inline-block;
     }
