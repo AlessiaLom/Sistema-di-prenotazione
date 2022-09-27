@@ -38,6 +38,7 @@ td#time p{
 }
 
 @media screen and (min-width: 800px) and (max-width: 1024px){
+
     #activitiesTable{
         display: block;
         overflow-x: auto;
@@ -46,6 +47,10 @@ td#time p{
 }
 
 @media screen and (max-width: 799px) {
+
+    #containerDiv{
+        display: block;
+    }
 
     #activitiesTable{
         margin: 0 !important;
