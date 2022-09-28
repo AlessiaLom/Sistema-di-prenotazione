@@ -56,7 +56,6 @@ var oauth2Client = new google.auth.OAuth2(
  * ------------------------ ENDPOINTS (from db) ---------------------------------
  */
 
-
 /**
  * FETCH ACTIVITIES
  * Fetches data for customize page based on the id
@@ -291,33 +290,6 @@ recordRoutes.route("/bookings/save_changes/:restaurantId/:bookingId").post(async
 });
 
 /**
- * Gets a booking object from an array of bookings by giving the booking id
- * @param {array} bookings
- * @param {string} bookingId
- * @returns {*} booking objects corresponding to the id
- */
-function getBookingById(bookings, bookingId) {
-    return bookings.find(b => b.id === bookingId)
-}
-
-/**
- * Gets from the db the array of bookings of a restaurant
- * @param restaurantId
- * @param bookingId (useless?) used to localize the array of bookings that contains a booking with this id
- * @returns {Promise<*>}
- */
-async function getRestaurantBookingsById(restaurantId, bookingId) {
-    let db_connect = dbo.getDb("sdp_db");
-    let myQuery = {
-        restaurantId: restaurantId,
-        'bookings.id': bookingId
-    };
-    return db_connect
-        .collection('booking')
-        .findOne(myQuery)
-}
-
-/**
  * ADD NEW BOOKING
  * Booking form query that adds a new booking in the db
  */
@@ -427,105 +399,6 @@ recordRoutes.route("/register").post(async (request, response) => {
 })
 
 /**
- * Gets all the users from the db
- * @returns array of users
- */
-async function getUsers() {
-    let db_connect = dbo.getDb("sdp_db");
-    return await db_connect
-        .collection("authentication")
-        .find().toArray()
-}
-
-/**
- * Checks if an email already exists among a user array
- * @param users array of users
- * @param email we want to check
- * @returns {boolean} true if the email already exists
- */
-function existingEmail(users, email) {
-    for (let i = 0; i < users.length; i++) {
-        let decrypted = JSON.parse(decrypt(users[i].credentials))
-        if (decrypted.email === email) {
-            return true
-        }
-    }
-    return false
-}
-
-/**
- * Initializes new restaurant's collections in db
- * @param restaurantId id of the new restaurant
- */
-function setupUsersCollections(newRestaurantId) {
-    // Create new customize document
-    newCustomizeDocument(newRestaurantId)
-    // Create new activities document
-    newActivitiesDocument(newRestaurantId)
-    // booking
-    newBookingsDocument(newRestaurantId)
-}
-
-/**
- * Initializes a new customize document in the customize collection
- * @param restaurantId
- */
-function newCustomizeDocument(restaurantId) {
-    let document = {
-        restaurantId: restaurantId,
-        additionalInfo: "",
-        primaryColor: "",
-        secondaryColor: "",
-        logoPath: "",
-        socialNetworks: "",
-        restaurantName: ""
-    }
-    let db_connect = dbo.getDb()
-    db_connect
-        .collection("customize")
-        .insertOne(document, function (err, res) {
-            if (err) throw err;
-        });
-}
-
-/**
- * Initializes a new activities document in the customize collection
- * @param restaurantId
- */
-function newActivitiesDocument(restaurantId) {
-    let document = {
-        restaurantId: restaurantId,
-        bookingForewarning: "",
-        bookingThreshold: "",
-        bookingOffset: "",
-        activities: []
-    }
-    let db_connect = dbo.getDb()
-    db_connect
-        .collection("activities")
-        .insertOne(document, function (err, res) {
-            if (err) throw err;
-        });
-}
-
-/**
- * Initializes a new bookings document in the customize collection
- * @param restaurantId
- */
-function newBookingsDocument(restaurantId) {
-    let document = {
-        restaurantId: restaurantId,
-        bookings: []
-    }
-    let db_connect = dbo.getDb()
-    db_connect
-        .collection("booking")
-        .insertOne(document, function (err, res) {
-            if (err) throw err;
-        });
-}
-
-/**
  * DELETE EXISTING BOOKING
  * Booking form query that deletes a booking from the db
  */
@@ -577,7 +450,7 @@ recordRoutes.route("/booking/update").post(async function (req, response) {
 });
 
 /**
- * ------------------------ GOOGLE ENDPOINTS ---------------------------------
+ * ------------------------ GOOGLE ENDPOINTS ----------------------------------------
  */
 
 /**
@@ -604,6 +477,346 @@ recordRoutes.route("/google/login").post(async (request, response) => {
         }
     }
 })
+
+/**
+ * FETCH USER'S GOOGLE PROFILE OBJ
+ * Fetches the user's Google profile in the App component
+ */
+recordRoutes.route("/profile/:restaurantId").get(async (request, response) => {
+    let profile = await getProfile(request.params.restaurantId)
+    response.send(profile)
+})
+
+/**
+ * LOGOUT
+ * Handles google logout, deletes document in db and revokes access to applications
+ * Revoking access to application is necessary so that at the next login the refresh token will be given again
+ */
+recordRoutes.route("/google/logout/:restaurantId").delete(async (request, response) => {
+    // Revoke access to application
+    let restaurantId = request.params.restaurantId
+    await revokeAccessToApp(restaurantId)
+    let db_connect = dbo.getDb();
+    let myQuery = {
+        restaurantId: restaurantId
+    };
+    db_connect
+        .collection("google_data") //
+        .deleteOne(myQuery, function (err, result) {
+            if (err) throw err;
+            response.json(result)
+        });
+
+    // Revoke access to apps
+})
+
+/**
+ * --------------------------- UTILITY LIBRARY -----------------------------------------
+ */
+
+/**
+ * GOOGLE
+ */
+
+/**
+ * Stores the refresh token in the db in an encrypted format
+ * @param tokens google oAuth2 tokens taken from login
+ * @param restaurantId
+ */
+function storeTokens(tokens, restaurantId) {
+    let db_connect = dbo.getDb("sdp_db");
+    let myQuery = {
+        restaurantId: restaurantId
+    };
+    // ENCRYPTION
+    let encrypted = encrypt(JSON.stringify(tokens))
+    let newValues = {
+        $set: {
+            tokens: encrypted
+        },
+    };
+    db_connect
+        .collection("google_data")
+        .updateOne(myQuery, newValues, {upsert: true}, function (err, result) {
+            if (err) throw err;
+            console.log("1 document updated " + result);
+        });
+}
+
+/**
+ * Gets tokens from db corresponding to the restaurantId passed as argument
+ * @param restaurantId
+ */
+async function getTokens(restaurantId) {
+    let db_connect = dbo.getDb();
+    let myQuery = {
+        restaurantId: restaurantId
+    };
+    return db_connect
+        .collection("google_data")
+        .findOne(myQuery)
+        .then((result) => JSON.parse(decrypt(result.tokens)))
+}
+
+/**
+ * Stores google user's encrypted profile object
+ * @param profile google user profile object
+ * @param restaurantId
+ */
+function storeProfile(profile, restaurantId) {
+    let db_connect = dbo.getDb("sdp_db");
+    let myQuery = {restaurantId: restaurantId};
+    // ENCRYPTION
+    let encrypted = encrypt(JSON.stringify(profile))
+    let newValues = {
+        $set: {
+            profile: encrypted
+        },
+    };
+    db_connect
+        .collection("google_data")
+        .updateOne(myQuery, newValues, {upsert: true}, function (err, result) {
+            if (err) throw err;
+            console.log("1 document updated " + result);
+        });
+}
+
+/**
+ * Gets google user's profile object from the db
+ * @param restaurantId
+ * @returns {Promise<*>}
+ */
+async function getProfile(restaurantId) {
+    let db_connect = dbo.getDb();
+    let myQuery = {
+        restaurantId: restaurantId
+    };
+    let googleData = await db_connect
+        .collection("google_data")
+        .findOne(myQuery)
+        .then((result) => result)
+    if (googleData && googleData.profile) {
+        return JSON.parse(decrypt(googleData.profile))
+    } else {
+        return {}
+    }
+
+}
+
+/**
+ * Revokes app's access to user's Google APIs (used when the user logs out)
+ * @param restaurantId
+ * @returns {Promise<void>}
+ */
+async function revokeAccessToApp(restaurantId) {
+    let tokens = await getTokens(restaurantId)
+    let postData = "token=" + tokens.refresh_token;
+
+    // Options for POST request to Google's OAuth 2.0 server to revoke a token
+    let postOptions = {
+        host: 'oauth2.googleapis.com', port: '443', path: '/revoke', method: 'POST', headers: {
+            'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(postData)
+        }
+    };
+    // Set up the request
+    const postReq = https.request(postOptions, function (res) {
+        res.setEncoding('utf8');
+        res.on('data', d => {
+            console.log('Response: ' + d);
+        });
+    });
+
+    postReq.on('error', error => {
+        console.log(error)
+    });
+
+    // Post the request with data
+    postReq.write(postData);
+    postReq.end();
+}
+
+/**
+ * [GOOGLE CALENDAR] Converts our booking object into a correct Google Event object
+ * @param booking
+ * @returns {{summary: string, start: {dateTime: string, timeZone: string}, description: string, end: {dateTime: string, timeZone: string}, id}}
+ */
+function bookingToGoogleEvent(booking) {
+    const timeStampStart = booking.bookingDate + "T" + booking.bookingTime + ":00+02:00";
+    let timeHour = parseInt(booking.bookingTime.substring(0, 2));
+    let timeMin = booking.bookingTime.substring(3, 5);
+    timeHour += 2;
+    let endTime = String(timeHour) + ":" + timeMin;
+    const timeStampEnd = booking.bookingDate + "T" + endTime + ":00+02:00";
+    // parametrize the returned object with fields in booking
+    return {
+        id: booking.id,
+        summary: booking.bookingActivity + ' per ' + booking.bookingGuests,
+        description: booking.guestName + ' ' + booking.guestSurname + ' ha prenotato per ' + booking.bookingGuests + ' alle ' + booking.bookingTime + ' del ' + booking.bookingDate + '. I contatti di ' + booking.guestName + ' sono: ' + booking.guestPhone + ', ' + booking.guestEmail + '. ' + (booking.guestAdditionalInfo != null ? 'Il cliente ha lasciato un messaggio alla prenotazione: ' + booking.guestAdditionalInfo : ''),
+        start: {
+            dateTime: timeStampStart, timeZone: 'Europe/Rome',
+        },
+        end: {
+            dateTime: timeStampEnd, timeZone: 'Europe/Rome',
+        },
+    }
+}
+
+/**
+ * [GOOGLE CALENDAR] Adds a new Event to the restaurant's calendar
+ * @param restaurantId
+ * @param booking booking object
+ * @returns {Promise<void>}
+ */
+async function addBookingToCalendar(restaurantId, booking) {
+    let tokens = await getTokens(restaurantId)
+    oauth2Client.setCredentials(tokens);
+    let bookingEvent = bookingToGoogleEvent(booking)
+    await calendar.events.insert({
+        auth: oauth2Client, calendarId: 'primary', resource: bookingEvent,
+    }, function (err, bookingEvent) {
+        if (err) {
+            console.log('There was an error contacting the Calendar service: ' + err);
+        }
+
+    });
+    console.log('Event created ' + bookingEvent.id);
+}
+
+/**
+ * [GOOGLE CALENDAR] Removes event from restaurant's calendar
+ * @param restaurantId
+ * @param bookingId event's id and booking's id are the same
+ * @returns {Promise<void>}
+ */
+async function removeBookingFromCalendar(restaurantId, bookingId) {
+    let tokens = await getTokens(restaurantId)
+    oauth2Client.setCredentials(tokens);
+    console.log(bookingId)
+    const res = await calendar.events.delete({
+        auth: oauth2Client,
+        calendarId: 'primary',
+        eventId: bookingId,
+    });
+    console.log(res.data)
+}
+
+/**
+ * Converts a booking to the corresponding request to send to the Google spreadsheet api
+ * @param booking
+ * @param spreadsheetId
+ * @param auth
+ * @returns {{valueInputOption: string, resource: {values: (*|string)[][], range: string}, auth, insertDataOption: string, range: string, spreadsheetId}}
+ */
+function bookingToSpreadsheetRow(booking, spreadsheetId, auth) {
+    return {
+        // The ID of the spreadsheet to update.
+        spreadsheetId: spreadsheetId,
+
+        // The A1 notation of a range to search for a logical table of data.
+        // Values are appended after the last row of the table.
+        range: 'Foglio1!A1:K1',
+
+        // How the input data should be interpreted.
+        valueInputOption: 'USER_ENTERED',
+
+        // How the input data should be inserted.
+        insertDataOption: 'INSERT_ROWS',
+
+        // Columns order => Id, name, surname, guests, activity, time, date, phone, email, additional info, status
+        resource: {
+            "range": "Foglio1!A1:K1",
+            "values": [
+                [
+                    booking.id,
+                    booking.guestName,
+                    booking.guestSurname,
+                    booking.bookingGuests,
+                    booking.bookingActivity,
+                    booking.bookingTime,
+                    booking.bookingDate,
+                    booking.guestPhone,
+                    booking.guestEmail,
+                    booking.guestAdditionalInfo,
+                    booking.bookingStatus
+                ]
+            ]
+        },
+
+        auth: auth,
+    }
+}
+
+/**
+ * Appends booking row to the user's Google Spreadsheet
+ * @param restaurantId
+ * @param booking
+ * @returns {Promise<void>}
+ */
+async function addBookingToSpreadsheet(restaurantId, booking) {
+    let tokens = await getTokens(restaurantId)
+    oauth2Client.setCredentials(tokens);
+    let spreadsheetId = await getSpreadsheetId(restaurantId)
+    let request = bookingToSpreadsheetRow(booking, spreadsheetId, oauth2Client)
+    const sheets = google.sheets('v4');
+    try {
+        const response = (await sheets.spreadsheets.values.append(request)).data;
+        console.log(JSON.stringify(response, null, 2));
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+/**
+ * Updates status of a booking in the restaurant's spreadsheet given the bookingId
+ * @param restaurantId
+ * @param bookingId
+ * @param newStatus
+ * @returns {Promise<void>}
+ */
+async function updateBookingInSpreadsheet(restaurantId, bookingId, newStatus) {
+    let tokens = await getTokens(restaurantId)
+    oauth2Client.setCredentials(tokens);
+    let spreadsheetId = await getSpreadsheetId(restaurantId)
+    const sheets = google.sheets('v4');
+    let request = {
+        // The ID of the spreadsheet to retrieve data from.
+        spreadsheetId: spreadsheetId,
+
+        // The A1 notation of the values to retrieve.
+        range: 'Foglio1',
+
+        auth: oauth2Client,
+    };
+
+    // get all the rows
+    const response = (await sheets.spreadsheets.values.get(request)).data;
+
+    //iterate over the rows and change status
+    response.values.forEach((row) => {
+        if (row.includes(bookingId)) { // if the row contains the booking id -> found the row to modify
+            row[10] = newStatus // update the status
+        }
+    })
+
+    // Clear the spreadsheet
+    await sheets.spreadsheets.values.clear({
+        spreadsheetId: spreadsheetId,
+        range: 'Foglio1',
+        auth: oauth2Client
+    })
+
+    // write all the rows again
+    const res = await sheets.spreadsheets.values.append({
+        spreadsheetId: spreadsheetId,
+        range: "Foglio1!A1:K1",
+        auth: oauth2Client,
+        valueInputOption: "USER_ENTERED",
+        resource: {
+            range: 'Foglio1!A1:K1',
+            values: response.values
+        }
+    });
+}
 
 /**
  * Inits a spreadsheet used to represent bookings. The initialized spreadsheet will have a header row
@@ -874,339 +1087,6 @@ async function getSpreadsheetId(restaurantId) {
 }
 
 /**
- * FETCH USER'S GOOGLE PROFILE OBJ
- * Fetches the user's Google profile in the App component
- */
-recordRoutes.route("/profile/:restaurantId").get(async (request, response) => {
-    let profile = await getProfile(request.params.restaurantId)
-    response.send(profile)
-})
-
-/**
- * LOGOUT
- * Handles google logout, deletes document in db and revokes access to applications
- * Revoking access to application is necessary so that at the next login the refresh token will be given again
- */
-recordRoutes.route("/google/logout/:restaurantId").delete(async (request, response) => {
-    // Revoke access to application
-    let restaurantId = request.params.restaurantId
-    await revokeAccessToApp(restaurantId)
-    let db_connect = dbo.getDb();
-    let myQuery = {
-        restaurantId: restaurantId
-    };
-    db_connect
-        .collection("google_data") //
-        .deleteOne(myQuery, function (err, result) {
-            if (err) throw err;
-            response.json(result)
-        });
-
-    // Revoke access to apps
-})
-
-/**
- * Stores the refresh token in the db in an encrypted format
- * @param tokens google oAuth2 tokens taken from login
- * @param restaurantId
- */
-function storeTokens(tokens, restaurantId) {
-    let db_connect = dbo.getDb("sdp_db");
-    let myQuery = {
-        restaurantId: restaurantId
-    };
-    // ENCRYPTION
-    let encrypted = encrypt(JSON.stringify(tokens))
-    let newValues = {
-        $set: {
-            tokens: encrypted
-        },
-    };
-    db_connect
-        .collection("google_data")
-        .updateOne(myQuery, newValues, {upsert: true}, function (err, result) {
-            if (err) throw err;
-            console.log("1 document updated " + result);
-        });
-}
-
-/**
- * Gets tokens from db corresponding to the restaurantId passed as argument
- * @param restaurantId
- */
-async function getTokens(restaurantId) {
-    let db_connect = dbo.getDb();
-    let myQuery = {
-        restaurantId: restaurantId
-    };
-    return db_connect
-        .collection("google_data")
-        .findOne(myQuery)
-        .then((result) => JSON.parse(decrypt(result.tokens)))
-}
-
-/**
- * Stores google user's encrypted profile object
- * @param profile google user profile object
- * @param restaurantId
- */
-function storeProfile(profile, restaurantId) {
-    let db_connect = dbo.getDb("sdp_db");
-    let myQuery = {restaurantId: restaurantId};
-    // ENCRYPTION
-    let encrypted = encrypt(JSON.stringify(profile))
-    let newValues = {
-        $set: {
-            profile: encrypted
-        },
-    };
-    db_connect
-        .collection("google_data")
-        .updateOne(myQuery, newValues, {upsert: true}, function (err, result) {
-            if (err) throw err;
-            console.log("1 document updated " + result);
-        });
-}
-
-/**
- * Gets google user's profile object from the db
- * @param restaurantId
- * @returns {Promise<*>}
- */
-async function getProfile(restaurantId) {
-    let db_connect = dbo.getDb();
-    let myQuery = {
-        restaurantId: restaurantId
-    };
-    let googleData = await db_connect
-        .collection("google_data")
-        .findOne(myQuery)
-        .then((result) => result)
-    if (googleData && googleData.profile) {
-        return JSON.parse(decrypt(googleData.profile))
-    } else {
-        return {}
-    }
-
-}
-
-/**
- * Revokes app's access to user's Google APIs (used when the user logs out)
- * @param restaurantId
- * @returns {Promise<void>}
- */
-async function revokeAccessToApp(restaurantId) {
-    let tokens = await getTokens(restaurantId)
-    let postData = "token=" + tokens.refresh_token;
-
-    // Options for POST request to Google's OAuth 2.0 server to revoke a token
-    let postOptions = {
-        host: 'oauth2.googleapis.com', port: '443', path: '/revoke', method: 'POST', headers: {
-            'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(postData)
-        }
-    };
-    // Set up the request
-    const postReq = https.request(postOptions, function (res) {
-        res.setEncoding('utf8');
-        res.on('data', d => {
-            console.log('Response: ' + d);
-        });
-    });
-
-    postReq.on('error', error => {
-        console.log(error)
-    });
-
-    // Post the request with data
-    postReq.write(postData);
-    postReq.end();
-}
-
-/**
- * [GOOGLE CALENDAR] Converts our booking object into a correct Google Event object
- * @param booking
- * @returns {{summary: string, start: {dateTime: string, timeZone: string}, description: string, end: {dateTime: string, timeZone: string}, id}}
- */
-function bookingToGoogleEvent(booking) {
-    const timeStampStart = booking.bookingDate + "T" + booking.bookingTime + ":00+02:00";
-    let timeHour = parseInt(booking.bookingTime.substring(0, 2));
-    let timeMin = booking.bookingTime.substring(3, 5);
-    timeHour += 2;
-    let endTime = String(timeHour) + ":" + timeMin;
-    const timeStampEnd = booking.bookingDate + "T" + endTime + ":00+02:00";
-    // parametrize the returned object with fields in booking
-    return {
-        id: booking.id,
-        summary: booking.bookingActivity + ' per ' + booking.bookingGuests,
-        description: booking.guestName + ' ' + booking.guestSurname + ' ha prenotato per ' + booking.bookingGuests + ' alle ' + booking.bookingTime + ' del ' + booking.bookingDate + '. I contatti di ' + booking.guestName + ' sono: ' + booking.guestPhone + ', ' + booking.guestEmail + '. ' + (booking.guestAdditionalInfo != null ? 'Il cliente ha lasciato un messaggio alla prenotazione: ' + booking.guestAdditionalInfo : ''),
-        start: {
-            dateTime: timeStampStart, timeZone: 'Europe/Rome',
-        },
-        end: {
-            dateTime: timeStampEnd, timeZone: 'Europe/Rome',
-        },
-    }
-}
-
-/**
- * [GOOGLE CALENDAR] Adds a new Event to the restaurant's calendar
- * @param restaurantId
- * @param booking booking object
- * @returns {Promise<void>}
- */
-async function addBookingToCalendar(restaurantId, booking) {
-    let tokens = await getTokens(restaurantId)
-    oauth2Client.setCredentials(tokens);
-    let bookingEvent = bookingToGoogleEvent(booking)
-    await calendar.events.insert({
-        auth: oauth2Client, calendarId: 'primary', resource: bookingEvent,
-    }, function (err, bookingEvent) {
-        if (err) {
-            console.log('There was an error contacting the Calendar service: ' + err);
-            return;
-        }
-
-    });
-    console.log('Event created ' + bookingEvent.id);
-}
-
-/**
- * [GOOGLE CALENDAR] Removes event from restaurant's calendar
- * @param restaurantId
- * @param bookingId event's id and booking's id are the same
- * @returns {Promise<void>}
- */
-async function removeBookingFromCalendar(restaurantId, bookingId) {
-    let tokens = await getTokens(restaurantId)
-    oauth2Client.setCredentials(tokens);
-    console.log(bookingId)
-    const res = await calendar.events.delete({
-        auth: oauth2Client,
-        calendarId: 'primary',
-        eventId: bookingId,
-    });
-    console.log(res.data)
-}
-
-/**
- * Converts a booking to the corresponding request to send to the Google spreadsheet api
- * @param booking
- * @param spreadsheetId
- * @param auth
- * @returns {{valueInputOption: string, resource: {values: (*|string)[][], range: string}, auth, insertDataOption: string, range: string, spreadsheetId}}
- */
-function bookingToSpreadsheetRow(booking, spreadsheetId, auth) {
-    return {
-        // The ID of the spreadsheet to update.
-        spreadsheetId: spreadsheetId,
-
-        // The A1 notation of a range to search for a logical table of data.
-        // Values are appended after the last row of the table.
-        range: 'Foglio1!A1:K1',
-
-        // How the input data should be interpreted.
-        valueInputOption: 'USER_ENTERED',
-
-        // How the input data should be inserted.
-        insertDataOption: 'INSERT_ROWS',
-
-        // Columns order => Id, name, surname, guests, activity, time, date, phone, email, additional info, status
-        resource: {
-            "range": "Foglio1!A1:K1",
-            "values": [
-                [
-                    booking.id,
-                    booking.guestName,
-                    booking.guestSurname,
-                    booking.bookingGuests,
-                    booking.bookingActivity,
-                    booking.bookingTime,
-                    booking.bookingDate,
-                    booking.guestPhone,
-                    booking.guestEmail,
-                    booking.guestAdditionalInfo,
-                    booking.bookingStatus
-                ]
-            ]
-        },
-
-        auth: auth,
-    }
-}
-
-/**
- * Appends booking row to the user's Google Spreadsheet
- * @param restaurantId
- * @param booking
- * @returns {Promise<void>}
- */
-async function addBookingToSpreadsheet(restaurantId, booking) {
-    let tokens = await getTokens(restaurantId)
-    oauth2Client.setCredentials(tokens);
-    let spreadsheetId = await getSpreadsheetId(restaurantId)
-    let request = bookingToSpreadsheetRow(booking, spreadsheetId, oauth2Client)
-    const sheets = google.sheets('v4');
-    try {
-        const response = (await sheets.spreadsheets.values.append(request)).data;
-        console.log(JSON.stringify(response, null, 2));
-    } catch (err) {
-        console.error(err);
-    }
-}
-
-/**
- * Updates status of a booking in the restaurant's spreadsheet given the bookingId
- * @param restaurantId
- * @param bookingId
- * @param newStatus
- * @returns {Promise<void>}
- */
-async function updateBookingInSpreadsheet(restaurantId, bookingId, newStatus) {
-    let tokens = await getTokens(restaurantId)
-    oauth2Client.setCredentials(tokens);
-    let spreadsheetId = await getSpreadsheetId(restaurantId)
-    const sheets = google.sheets('v4');
-    let request = {
-        // The ID of the spreadsheet to retrieve data from.
-        spreadsheetId: spreadsheetId,
-
-        // The A1 notation of the values to retrieve.
-        range: 'Foglio1',
-
-        auth: oauth2Client,
-    };
-
-    // get all the rows
-    const response = (await sheets.spreadsheets.values.get(request)).data;
-
-    //iterate over the rows and change status
-    response.values.forEach((row) => {
-        if (row.includes(bookingId)) { // if the row contains the booking id -> found the row to modify
-            row[10] = newStatus // update the status
-        }
-    })
-
-    // Clear the spreadsheet
-    await sheets.spreadsheets.values.clear({
-        spreadsheetId: spreadsheetId,
-        range: 'Foglio1',
-        auth: oauth2Client
-    })
-
-    // write all the rows again
-    const res = await sheets.spreadsheets.values.append({
-        spreadsheetId: spreadsheetId,
-        range: "Foglio1!A1:K1",
-        auth: oauth2Client,
-        valueInputOption: "USER_ENTERED",
-        resource: {
-            range: 'Foglio1!A1:K1',
-            values: response.values
-        }
-    });
-}
-
-/**
  * Given the restaurantId returns the restaurant info
  * @param restaurantId
  * @returns {Promise<*>}
@@ -1221,5 +1101,134 @@ async function getRestaurantInfo(restaurantId){
         .findOne(myQuery)
 }
 
+/**
+ * DB
+ */
+
+/**
+ * Gets all the users from the db
+ * @returns array of users
+ */
+async function getUsers() {
+    let db_connect = dbo.getDb("sdp_db");
+    return await db_connect
+        .collection("authentication")
+        .find().toArray()
+}
+
+/**
+ * Checks if an email already exists among a user array
+ * @param users array of users
+ * @param email we want to check
+ * @returns {boolean} true if the email already exists
+ */
+function existingEmail(users, email) {
+    for (let i = 0; i < users.length; i++) {
+        let decrypted = JSON.parse(decrypt(users[i].credentials))
+        if (decrypted.email === email) {
+            return true
+        }
+    }
+    return false
+}
+
+/**
+ * Initializes new restaurant's collections in db
+ * @param restaurantId id of the new restaurant
+ */
+function setupUsersCollections(restaurantId) {
+    // Create new customize document
+    newCustomizeDocument(restaurantId)
+    // Create new activities document
+    newActivitiesDocument(restaurantId)
+    // booking
+    newBookingsDocument(restaurantId)
+}
+
+/**
+ * Initializes a new customize document in the customize collection
+ * @param restaurantId
+ */
+function newCustomizeDocument(restaurantId) {
+    let document = {
+        restaurantId: restaurantId,
+        additionalInfo: "",
+        primaryColor: "",
+        secondaryColor: "",
+        logoPath: "",
+        socialNetworks: "",
+        restaurantName: ""
+    }
+    let db_connect = dbo.getDb()
+    db_connect
+        .collection("customize")
+        .insertOne(document, function (err, res) {
+            if (err) throw err;
+        });
+}
+
+/**
+ * Initializes a new activities document in the customize collection
+ * @param restaurantId
+ */
+function newActivitiesDocument(restaurantId) {
+    let document = {
+        restaurantId: restaurantId,
+        bookingForewarning: "",
+        bookingThreshold: "",
+        bookingOffset: "",
+        activities: []
+    }
+    let db_connect = dbo.getDb()
+    db_connect
+        .collection("activities")
+        .insertOne(document, function (err, res) {
+            if (err) throw err;
+        });
+}
+
+/**
+ * Initializes a new bookings document in the customize collection
+ * @param restaurantId
+ */
+function newBookingsDocument(restaurantId) {
+    let document = {
+        restaurantId: restaurantId,
+        bookings: []
+    }
+    let db_connect = dbo.getDb()
+    db_connect
+        .collection("booking")
+        .insertOne(document, function (err, res) {
+            if (err) throw err;
+        });
+}
+
+/**
+ * Gets a booking object from an array of bookings by giving the booking id
+ * @param {array} bookings
+ * @param {string} bookingId
+ * @returns {*} booking objects corresponding to the id
+ */
+function getBookingById(bookings, bookingId) {
+    return bookings.find(b => b.id === bookingId)
+}
+
+/**
+ * Gets from the db the array of bookings of a restaurant
+ * @param restaurantId
+ * @param bookingId (useless?) used to localize the array of bookings that contains a booking with this id
+ * @returns {Promise<*>}
+ */
+async function getRestaurantBookingsById(restaurantId, bookingId) {
+    let db_connect = dbo.getDb("sdp_db");
+    let myQuery = {
+        restaurantId: restaurantId,
+        'bookings.id': bookingId
+    };
+    return db_connect
+        .collection('booking')
+        .findOne(myQuery)
+}
 
 module.exports = recordRoutes;
