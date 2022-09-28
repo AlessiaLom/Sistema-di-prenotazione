@@ -605,7 +605,7 @@ async function initSpreadsheet(title, restaurantId) {
                                 "values": [
                                     {
                                         "userEnteredValue": {
-                                            "stringValue": 'Surname'
+                                            "stringValue": 'Guests'
                                         }
                                     }
                                 ]
@@ -620,7 +620,7 @@ async function initSpreadsheet(title, restaurantId) {
                                 "values": [
                                     {
                                         "userEnteredValue": {
-                                            "stringValue": 'Guests'
+                                            "stringValue": 'Activity'
                                         }
                                     }
                                 ]
@@ -635,7 +635,7 @@ async function initSpreadsheet(title, restaurantId) {
                                 "values": [
                                     {
                                         "userEnteredValue": {
-                                            "stringValue": 'Activity'
+                                            "stringValue": 'Time'
                                         }
                                     }
                                 ]
@@ -650,7 +650,7 @@ async function initSpreadsheet(title, restaurantId) {
                                 "values": [
                                     {
                                         "userEnteredValue": {
-                                            "stringValue": 'Time'
+                                            "stringValue": 'Date'
                                         }
                                     }
                                 ]
@@ -665,7 +665,7 @@ async function initSpreadsheet(title, restaurantId) {
                                 "values": [
                                     {
                                         "userEnteredValue": {
-                                            "stringValue": 'Date'
+                                            "stringValue": 'Phone'
                                         }
                                     }
                                 ]
@@ -680,7 +680,7 @@ async function initSpreadsheet(title, restaurantId) {
                                 "values": [
                                     {
                                         "userEnteredValue": {
-                                            "stringValue": 'Phone'
+                                            "stringValue": 'Email'
                                         }
                                     }
                                 ]
@@ -695,21 +695,6 @@ async function initSpreadsheet(title, restaurantId) {
                                 "values": [
                                     {
                                         "userEnteredValue": {
-                                            "stringValue": 'Email'
-                                        }
-                                    }
-                                ]
-                            },
-                        ]
-                    },
-                    {
-                        "startRow": 0,
-                        "startColumn": 10,
-                        "rowData": [
-                            {
-                                "values": [
-                                    {
-                                        "userEnteredValue": {
                                             "stringValue": 'Additional Info'
                                         }
                                     }
@@ -719,7 +704,7 @@ async function initSpreadsheet(title, restaurantId) {
                     },
                     {
                         "startRow": 0,
-                        "startColumn": 11,
+                        "startColumn": 10,
                         "rowData": [
                             {
                                 "values": [
@@ -1020,7 +1005,7 @@ function bookingToSpreadsheetRow(booking, spreadsheetId, auth) {
 
         // The A1 notation of a range to search for a logical table of data.
         // Values are appended after the last row of the table.
-        range: 'Foglio1:A1:L1',  // TODO: Update placeholder value.
+        range: 'Foglio1!A1:L1',  // TODO: Update placeholder value.
 
         // How the input data should be interpreted.
         valueInputOption: 'USER_ENTERED',  // TODO: Update placeholder value.
