@@ -228,7 +228,9 @@ recordRoutes.route("/bookings/save_changes/:restaurantId/:bookingId").post(async
             }
         });
 
-    // Add new event to calendar if the new status is confirmed
+    // Change status of the booking in the spreadsheet
+
+    await updateBookingInSpreadsheet(restaurantId, bookingId, newStatus)
 });
 
 /**
@@ -486,6 +488,10 @@ recordRoutes.route("/booking/update").post(async function (req, response) {
     } else {
         response.json({message: 'La prenotazione inserita è già cancellata'});
     }
+
+    // Change status in spreadsheet
+
+    await updateBookingInSpreadsheet(req.body.id, booking.id, 'canceled')
 });
 
 /**
@@ -762,6 +768,11 @@ function storeSpreadsheetId(spreadsheetId, restaurantId) {
         });
 }
 
+/**
+ * Gets spreadsheetId from db based on the given restaurantId
+ * @param restaurantId
+ * @returns {Promise<{}|any>} spreadsheet id
+ */
 async function getSpreadsheetId(restaurantId) {
     let db_connect = dbo.getDb();
     let myQuery = {
@@ -1001,21 +1012,21 @@ async function removeBookingFromCalendar(restaurantId, bookingId) {
 function bookingToSpreadsheetRow(booking, spreadsheetId, auth) {
     return {
         // The ID of the spreadsheet to update.
-        spreadsheetId: spreadsheetId,  // TODO: Update placeholder value.
+        spreadsheetId: spreadsheetId,
 
         // The A1 notation of a range to search for a logical table of data.
         // Values are appended after the last row of the table.
-        range: 'Foglio1!A1:L1',  // TODO: Update placeholder value.
+        range: 'Foglio1!A1:K1',
 
         // How the input data should be interpreted.
-        valueInputOption: 'USER_ENTERED',  // TODO: Update placeholder value.
+        valueInputOption: 'USER_ENTERED',
 
         // How the input data should be inserted.
-        insertDataOption: 'INSERT_ROWS',  // TODO: Update placeholder value.
+        insertDataOption: 'INSERT_ROWS',
 
         // Columns order => Id, name, surname, guests, activity, time, date, phone, email, additional info, status
         resource: {
-            "range": "Foglio1!A1:L1",
+            "range": "Foglio1!A1:K1",
             "values": [
                 [
                     booking.id,
@@ -1055,6 +1066,58 @@ async function addBookingToSpreadsheet(restaurantId, booking) {
     } catch (err) {
         console.error(err);
     }
+}
+
+/**
+ * Updates status of a booking in the restaurant's spreadsheet given the bookingId
+ * @param restaurantId
+ * @param bookingId
+ * @param newStatus
+ * @returns {Promise<void>}
+ */
+async function updateBookingInSpreadsheet(restaurantId, bookingId, newStatus) {
+    let tokens = await getTokens(restaurantId)
+    oauth2Client.setCredentials(tokens);
+    let spreadsheetId = await getSpreadsheetId(restaurantId)
+    const sheets = google.sheets('v4');
+    let request = {
+        // The ID of the spreadsheet to retrieve data from.
+        spreadsheetId: spreadsheetId,
+
+        // The A1 notation of the values to retrieve.
+        range: 'Foglio1',
+
+        auth: oauth2Client,
+    };
+
+    // get all the rows
+    const response = (await sheets.spreadsheets.values.get(request)).data;
+
+    //iterate over the rows and change status
+    response.values.forEach((row) => {
+        if (row.includes(bookingId)) { // if the row contains the booking id -> found the row to modify
+            row[10] = newStatus // update the status
+        }
+    })
+
+    // Clear the spreadsheet
+    await sheets.spreadsheets.values.clear({
+        spreadsheetId: spreadsheetId,
+        range: 'Foglio1',
+        auth: oauth2Client
+    })
+
+    // write all the rows again
+    const res = await sheets.spreadsheets.values.append({
+        spreadsheetId: spreadsheetId,
+        range: "Foglio1!A1:K1",
+        auth: oauth2Client,
+        valueInputOption: "USER_ENTERED",
+        resource: {
+            range: 'Foglio1!A1:K1',
+            values: response.values
+        }
+    });
 }
 
 module.exports = recordRoutes;
