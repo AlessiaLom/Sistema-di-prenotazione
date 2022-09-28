@@ -1,11 +1,15 @@
 /**
- * MODULES IMPORT
+ * ------------------------ MODULES IMPORT ---------------------------
  */
 
 const express = require("express");
 const axios = require('axios');
 const https = require("https");
 const uuid = require('uuid');
+
+/**
+ * EMAIL
+ */
 
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
@@ -17,6 +21,11 @@ const transporter = nodemailer.createTransport({
     },
     secure: true,
 });
+
+/**
+ * ENCRYPTION
+ */
+
 const {encrypt, decrypt} = require('./../encryption/encryption');
 
 /**
@@ -44,8 +53,9 @@ var oauth2Client = new google.auth.OAuth2(
 );
 
 /**
- * -------------- MY METHODS ---------------
+ * ------------------------ ENDPOINTS (from db) ---------------------------------
  */
+
 
 /**
  * FETCH ACTIVITIES
@@ -68,7 +78,9 @@ recordRoutes.route("/customize/:restaurantId").get(function (request, response) 
  */
 recordRoutes.route("/activities/:restaurantId").get(function (request, response) {
     let db_connect = dbo.getDb();
-    let myQuery = {restaurantId: request.params.restaurantId};
+    let myQuery = {
+        restaurantId: request.params.restaurantId
+    };
     db_connect
         .collection("activities")
         .findOne(myQuery, function (err, result) {
@@ -133,7 +145,36 @@ recordRoutes.route("/authentication").post(async function (request, response) {
 });
 
 /**
- * ----------- SAVE CHANGES TO DB ----------------
+ * FETCH AVAILABILITY INFO
+ * Get booked seats given activity for specified day
+ */
+recordRoutes.route("/bookings/seats/:restaurantId/:day/:activity").get(async function (request, response) {
+    let db_connect = dbo.getDb("sdp_db");
+    let myQuery = {
+        restaurantId: request.params.restaurantId,
+    };
+
+    let bookingArray = await db_connect
+        .collection("booking")
+        .findOne(myQuery);
+
+    let respMessage = {};
+    let seats = 0;
+    let day = new Date(request.params.day);
+    let date = day.getFullYear() + '-' + (day.getMonth() + 1) + '-' + day.getDate();
+    let activity = request.params.activity;
+
+    bookingArray.bookings.forEach((booking) => {
+        if (booking.bookingDate === date && booking.bookingActivity === activity && booking.bookingStatus === 'confirmed') {
+            seats += parseInt(booking.bookingGuests);
+        }
+    });
+    respMessage = {bookedSeats: seats};
+    response.json(respMessage);
+});
+
+/**
+ * ------------------------ ENDPOINTS (to db) ---------------------------------
  */
 
 /**
@@ -275,34 +316,6 @@ async function getRestaurantBookingsById(restaurantId, bookingId) {
         .collection('booking')
         .findOne(myQuery)
 }
-
-/**
- * Get booked seats given activity for specified day
- */
-recordRoutes.route("/bookings/seats/:restaurantId/:day/:activity").get(async function (request, response) {
-    let db_connect = dbo.getDb("sdp_db");
-    let myQuery = {
-        restaurantId: request.params.restaurantId,
-    };
-
-    let bookingArray = await db_connect
-        .collection("booking")
-        .findOne(myQuery);
-
-    let respMessage = {};
-    let seats = 0;
-    let day = new Date(request.params.day);
-    let date = day.getFullYear() + '-' + (day.getMonth() + 1) + '-' + day.getDate();
-    let activity = request.params.activity;
-
-    bookingArray.bookings.forEach((booking) => {
-        if (booking.bookingDate === date && booking.bookingActivity === activity && booking.bookingStatus === 'confirmed') {
-            seats += parseInt(booking.bookingGuests);
-        }
-    });
-    respMessage = {bookedSeats: seats};
-    response.json(respMessage);
-});
 
 /**
  * ADD NEW BOOKING
@@ -564,10 +577,11 @@ recordRoutes.route("/booking/update").post(async function (req, response) {
 });
 
 /**
- * -------------- GOOGLE -------------------
+ * ------------------------ GOOGLE ENDPOINTS ---------------------------------
  */
 
 /**
+ * LOGIN
  * Manages the user's tokens, storing them in an encrypted way. Returns to the client the user's info
  */
 recordRoutes.route("/google/login").post(async (request, response) => {
@@ -860,6 +874,7 @@ async function getSpreadsheetId(restaurantId) {
 }
 
 /**
+ * FETCH USER'S GOOGLE PROFILE OBJ
  * Fetches the user's Google profile in the App component
  */
 recordRoutes.route("/profile/:restaurantId").get(async (request, response) => {
@@ -868,6 +883,7 @@ recordRoutes.route("/profile/:restaurantId").get(async (request, response) => {
 })
 
 /**
+ * LOGOUT
  * Handles google logout, deletes document in db and revokes access to applications
  * Revoking access to application is necessary so that at the next login the refresh token will be given again
  */
@@ -1189,5 +1205,21 @@ async function updateBookingInSpreadsheet(restaurantId, bookingId, newStatus) {
         }
     });
 }
+
+/**
+ * Given the restaurantId returns the restaurant info
+ * @param restaurantId
+ * @returns {Promise<*>}
+ */
+async function getRestaurantInfo(restaurantId){
+    let db_connect = dbo.getDb();
+    let myQuery = {
+        restaurantId: restaurantId
+    };
+    return await db_connect
+        .collection("activities")
+        .findOne(myQuery)
+}
+
 
 module.exports = recordRoutes;
