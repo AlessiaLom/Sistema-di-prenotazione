@@ -2,10 +2,13 @@
  * ------------------------ MODULES IMPORT ---------------------------
  */
 
+const fs = require("fs");
+const path = require("path");
 const express = require("express");
 const axios = require('axios');
 const https = require("https");
 const uuid = require('uuid');
+const handlebars = require('handlebars');
 
 /**
  * EMAIL
@@ -27,6 +30,24 @@ const transporter = nodemailer.createTransport({
  */
 
 const {encrypt, decrypt} = require('./../encryption/encryption');
+
+/**
+ * EMAIL TEMPLATE
+ */
+ const emailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/template.hbs"), "utf8");
+ const template = handlebars.compile(emailTemplateSource);
+
+ const pendingEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/pending.hbs"), "utf8");
+ const pendingTemplate = handlebars.compile(pendingEmailTemplateSource);
+
+ const restaurantEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/newbooking.hbs"), "utf8");
+ const restaurantTemplate = handlebars.compile(restaurantEmailTemplateSource);
+
+ const cancelEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/cancel.hbs"), "utf8");
+ const cancelTemplate = handlebars.compile(cancelEmailTemplateSource);
+
+ const cancelRestaurantEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/rembooking.hbs"), "utf8");
+ const cancelRestaurantTemplate = handlebars.compile(cancelRestaurantEmailTemplateSource);
 
 /**
  * ROUTES
@@ -286,7 +307,7 @@ recordRoutes.route("/bookings/save_changes/:restaurantId/:bookingId").post(async
     let restaurantEmail = await getRestaurantEmail(restaurantId)
     let body = ""
     let subject = ""
-    sendEmailToUser(restaurantEmail, booking.guestEmail, body, subject)
+    sendEmailToUser(booking.guestEmail, body, subject)
 });
 
 /**
@@ -316,8 +337,47 @@ recordRoutes.route("/booking/add/:restaurantId").post(async function (request, r
             bookings: booking
         }
     };
+    let restaurantEmail = await getRestaurantEmail(request.params.restaurantId);
+    let restaurantObject = await getRestaurantInfo(request.params.restaurantId);
+    let restaurantName = restaurantObject.restaurantName;
+    let siteLink = restaurantObject.siteLink;
+    let subject = "";
+    let htmlToSend;
     if (booking.bookingStatus === 'confirmed') {
         await addBookingToCalendar(request.params.restaurantId, booking);
+        subject = "Prenotazione confermata";
+        htmlToSend = template({
+            id: booking.id,
+            restaurantName: restaurantName,
+            siteLink: siteLink,
+            bookingDate: booking.bookingDate,
+            bookingTime: booking.bookingTime,
+            bookingGuests: booking.bookingGuests,
+            bookingActivity: booking.bookingActivity,
+            bookingStatus: booking.bookingStatus,
+            guestName: booking.guestName,
+            guestSurname: booking.guestSurname,
+            guestEmail: booking.guestEmail,
+            guestPhone: booking.guestPhone,
+            guestAdditionalInfo: booking.guestAdditionalInfo,
+        });
+    } else {
+        subject = "Prenotazione presa in carico";
+        htmlToSend = pendingTemplate({
+            id: booking.id,
+            restaurantName: restaurantName,
+            siteLink: siteLink,
+            bookingDate: booking.bookingDate,
+            bookingTime: booking.bookingTime,
+            bookingGuests: booking.bookingGuests,
+            bookingActivity: booking.bookingActivity,
+            bookingStatus: booking.bookingStatus,
+            guestName: booking.guestName,
+            guestSurname: booking.guestSurname,
+            guestEmail: booking.guestEmail,
+            guestPhone: booking.guestPhone,
+            guestAdditionalInfo: booking.guestAdditionalInfo,
+        });
     }
 
     await addBookingToSpreadsheet(request.params.restaurantId, booking)
@@ -328,29 +388,41 @@ recordRoutes.route("/booking/add/:restaurantId").post(async function (request, r
             response.json(res);
         });
 
+    const restaurantHtmlToSend = restaurantTemplate({
+            id: booking.id,
+            restaurantName: restaurantName,
+            siteLink: siteLink,
+            bookingDate: booking.bookingDate,
+            bookingTime: booking.bookingTime,
+            bookingGuests: booking.bookingGuests,
+            bookingActivity: booking.bookingActivity,
+            bookingStatus: booking.bookingStatus,
+            guestName: booking.guestName,
+            guestSurname: booking.guestSurname,
+            guestEmail: booking.guestEmail,
+            guestPhone: booking.guestPhone,
+            guestAdditionalInfo: booking.guestAdditionalInfo,
+    })
+
     // SEND EMAILS
 
     // to customer
-
-    let restaurantEmail = await getRestaurantEmail(request.params.restaurantId)
-    let body = ""
-    let subject = ""
-    sendEmailToUser(restaurantEmail, request.body.guestEmail, body, subject)
+  
+    sendEmailToUser(request.body.guestEmail, htmlToSend, subject)
 
     // to restaurant
 
-    body = ""
-    subject = ""
-    sendEmailToUser(restaurantEmail, request.body.guestEmail, body, subject)
+    subject = "Nuova prenotazione ricevuta";
+    sendEmailToUser(restaurantEmail, restaurantHtmlToSend, subject)
 
 });
 
-function sendEmailToUser(senderEmail, receiverEmail, emailHTML, emailSubject) {
+function sendEmailToUser(receiverEmail, htmlToSend, emailSubject) {
     const mailData = {
-        from: senderEmail,  // sender address
+        from: "booking@kobold.studio",  // sender address
         to: receiverEmail,   // list of receivers
         subject: emailSubject,
-        html: emailHTML
+        html: htmlToSend.toString()
     };
 
     transporter.sendMail(mailData, function (err, info) {
@@ -358,6 +430,11 @@ function sendEmailToUser(senderEmail, receiverEmail, emailHTML, emailSubject) {
             console.log(err)
         else
             console.log(info);
+
+            var body = info.response.toString();
+            body.should.contain('<h1>This is a test</h1>');
+            body.should.contain('Name');
+            done();
     });
 }
 
@@ -402,17 +479,21 @@ recordRoutes.route("/register").post(async (request, response) => {
  * DELETE EXISTING BOOKING
  * Booking form query that deletes a booking from the db
  */
-recordRoutes.route("/booking/update").post(async function (req, response) {
+recordRoutes.route("/booking/update").post(async function (request, response) {
     let db_connect = dbo.getDb();
     let myQuery = {
-        restaurantId: req.body.id, 'bookings.id': req.body.bookingId
+        restaurantId: request.body.id, 'bookings.id': request.body.bookingId
     };
 
-    let restaurantBookings = await getRestaurantBookingsById(req.body.id, req.body.bookingId);
-    let booking = getBookingById(restaurantBookings.bookings, req.body.bookingId);
+    let restaurantBookings = await getRestaurantBookingsById(request.body.id, request.body.bookingId);
+    let booking = getBookingById(restaurantBookings.bookings, request.body.bookingId);
+    let restaurantEmail = await getRestaurantEmail(request.body.id);
+    let restaurantObject = await getRestaurantInfo(request.body.id);
+    let restaurantName = restaurantObject.restaurantName;
+    let siteLink = restaurantObject.siteLink;
 
     if (booking.bookingStatus !== 'canceled') {
-        await removeBookingFromCalendar(req.body.id, req.body.bookingId);
+        await removeBookingFromCalendar(request.body.id, request.body.bookingId);
         let newValues = {
             $set: {
                 'bookings.$.bookingStatus': 'canceled'
@@ -431,22 +512,51 @@ recordRoutes.route("/booking/update").post(async function (req, response) {
 
     // Change status in spreadsheet
 
-    await updateBookingInSpreadsheet(req.body.id, booking.id, 'canceled')
+    await updateBookingInSpreadsheet(request.body.id, booking.id, 'canceled')
 
     // SEND EMAILS
 
     // to customer
 
-    let restaurantEmail = await getRestaurantEmail(req.body.id)
-    let body = ""
-    let subject = ""
-    sendEmailToUser(restaurantEmail, booking.guestEmail, body, subject)
+    const cancelHtmlToSend = cancelTemplate({
+        id: booking.id,
+        restaurantName: restaurantName,
+        siteLink: siteLink,
+        bookingDate: booking.bookingDate,
+        bookingTime: booking.bookingTime,
+        bookingGuests: booking.bookingGuests,
+        bookingActivity: booking.bookingActivity,
+        bookingStatus: booking.bookingStatus,
+        guestName: booking.guestName,
+        guestSurname: booking.guestSurname,
+        guestEmail: booking.guestEmail,
+        guestPhone: booking.guestPhone,
+        guestAdditionalInfo: booking.guestAdditionalInfo,
+    });
+
+    let subject = "Prenotazione cancellata"
+    sendEmailToUser(booking.guestEmail, cancelHtmlToSend, subject);
 
     // to restaurant
 
-    body = ""
-    subject = ""
-    sendEmailToUser(restaurantEmail, booking.guestEmail, body, subject)
+    const restaurantCancelHtmlToSend = cancelRestaurantTemplate({
+        id: booking.id,
+        restaurantName: restaurantName,
+        siteLink: siteLink,
+        bookingDate: booking.bookingDate,
+        bookingTime: booking.bookingTime,
+        bookingGuests: booking.bookingGuests,
+        bookingActivity: booking.bookingActivity,
+        bookingStatus: booking.bookingStatus,
+        guestName: booking.guestName,
+        guestSurname: booking.guestSurname,
+        guestEmail: booking.guestEmail,
+        guestPhone: booking.guestPhone,
+        guestAdditionalInfo: booking.guestAdditionalInfo,
+    });
+
+    subject = "Nuova prenotazione cancellata"
+    sendEmailToUser(restaurantEmail, restaurantCancelHtmlToSend, subject)
 });
 
 /**
@@ -1097,7 +1207,7 @@ async function getRestaurantInfo(restaurantId){
         restaurantId: restaurantId
     };
     return await db_connect
-        .collection("activities")
+        .collection("customize")
         .findOne(myQuery)
 }
 
