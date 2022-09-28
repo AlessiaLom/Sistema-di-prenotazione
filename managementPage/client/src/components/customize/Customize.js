@@ -63,7 +63,7 @@ export default class Customize extends React.Component {
     }
 
     /**
-     * Performs fetch to retrieve info about form customization based on the restaurant id passe as request param
+     * Performs fetch to retrieve info about form customization based on the restaurant id passed as request param
      */
     componentDidMount() {
         // console.log(JSON.stringify(cookies))
@@ -383,7 +383,7 @@ export default class Customize extends React.Component {
 
                     </table>
                     <div className='buttons' style={{margin: "15 %", padding: "1 %"}}>
-                        <button name="cancelChanges" type="button" className="btn btn-light">Annulla</button>
+                        {/*<button name="cancelChanges" type="button" className="btn btn-light">Annulla</button>*/}
                         <button
                             name="saveChanges"
                             type="button"

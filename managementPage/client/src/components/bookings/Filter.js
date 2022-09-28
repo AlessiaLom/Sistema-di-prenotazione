@@ -8,7 +8,7 @@ import {GrRevert} from 'react-icons/gr'
 import TimePicker from "../utility/TimePicker";
 
 /**
- * Filter bar where the user can set several different filters and filter bookings
+ * Filter bar where the user can set several filters and filter bookings
  */
 export default class Filter extends React.Component {
     constructor(props) {

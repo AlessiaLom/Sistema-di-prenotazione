@@ -49,12 +49,12 @@ export default class SideBar extends React.Component {
                     itemIcon="bi bi-share"
                     itemDisplayName="Servizi"
                     onClick={() => this.props.onClick(3)} />
-                <MenuItem
-                    itemName="account"
-                    className={"nav-link"}
-                    itemIcon="bi bi-gear-wide-connected"
-                    itemDisplayName="Account"
-                    onClick={() => this.props.onClick(4)} />
+                {/*<MenuItem*/}
+                {/*    itemName="account"*/}
+                {/*    className={"nav-link"}*/}
+                {/*    itemIcon="bi bi-gear-wide-connected"*/}
+                {/*    itemDisplayName="Account"*/}
+                {/*    onClick={() => this.props.onClick(4)} />*/}
             </ul><Footer
                 restaurantId={restaurantId}
                 onLogout={this.props.onLogout}/></>

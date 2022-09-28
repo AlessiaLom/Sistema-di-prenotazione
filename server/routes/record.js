@@ -40,12 +40,12 @@ var oauth2Client = new google.auth.OAuth2(
  * FETCH ACTIVITIES
  * Fetches data for customize page based on the id
  */
-recordRoutes.route("/customize/:id").get(function (request, response) {
-    let db_connect = dbo.getDb();
-    let myQuery = {restaurantId: request.params.id};
+recordRoutes.route("/customize/:restaurantId").get(function (request, response) {
+    let db_connect = dbo.getDb(); // connect to db
+    let myQuery = {restaurantId: request.params.restaurantId}; // query in db
     db_connect
         .collection("customize")
-        .findOne(myQuery, function (err, result) {
+        .findOne(myQuery, function (err, result) { // returns the first tuple matching the query in the selected collection
             if (err) throw err;
             response.json(result);
         });
@@ -55,9 +55,9 @@ recordRoutes.route("/customize/:id").get(function (request, response) {
  * FETCH CUSTOMIZATION SETTINGS
  * Fetches data for customize page based on the id
  */
-recordRoutes.route("/activities/:id").get(function (request, response) {
+recordRoutes.route("/activities/:restaurantId").get(function (request, response) {
     let db_connect = dbo.getDb();
-    let myQuery = {restaurantId: request.params.id};
+    let myQuery = {restaurantId: request.params.restaurantId};
     db_connect
         .collection("activities")
         .findOne(myQuery, function (err, result) {
@@ -70,9 +70,9 @@ recordRoutes.route("/activities/:id").get(function (request, response) {
  * FETCH BOOKINGS
  * Fetches bookings regarding restaurant with id passed as parameter
  */
-recordRoutes.route("/bookings/:id").get(function (request, response) {
+recordRoutes.route("/bookings/:restaurantId").get(function (request, response) {
     let db_connect = dbo.getDb();
-    let myQuery = {restaurantId: request.params.id};
+    let myQuery = {restaurantId: request.params.restaurantId};
     db_connect
         .collection("booking") // <------------- rename collection to bookingS
         .findOne(myQuery, function (err, result) {
@@ -85,9 +85,9 @@ recordRoutes.route("/bookings/:id").get(function (request, response) {
  * FETCH RESTAURANT INFO
  * Fetches infos about restaurant
  */
-recordRoutes.route("/customize/:id").get(function (request, response) {
+recordRoutes.route("/customize/:restaurantId").get(function (request, response) {
     let db_connect = dbo.getDb();
-    let myQuery = {restaurantId: request.params.id};
+    let myQuery = {restaurantId: request.params.restaurantId};
     db_connect
         .collection("customize") //
         .findOne(myQuery, function (err, result) {
@@ -128,9 +128,9 @@ recordRoutes.route("/authentication").post(async function (request, response) {
 /**
  * UPDATE CUSTOMIZE INFO
  */
-recordRoutes.route("/customize/save_changes/:id").post(function (request, response) {
+recordRoutes.route("/customize/save_changes/:restaurantId").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
-    let myQuery = {restaurantId: request.params.id};
+    let myQuery = {restaurantId: request.params.restaurantId};
     let newValues = {
         $set: {
             additionalInfo: request.body.additionalInfo,
@@ -158,9 +158,9 @@ recordRoutes.route("/customize/save_changes/:id").post(function (request, respon
 /**
  * UPDATE ACTIVITIES
  */
-recordRoutes.route("/activities/save_changes/:id").post(function (request, response) {
+recordRoutes.route("/activities/save_changes/:restaurantId").post(function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
-    let myQuery = {restaurantId: request.params.id};
+    let myQuery = {restaurantId: request.params.restaurantId};
     let newValues = {
         $set: {
             bookingForewarning: request.body.bookingForewarning,
@@ -187,11 +187,11 @@ recordRoutes.route("/activities/save_changes/:id").post(function (request, respo
  * UPDATE BOOKINGS
  * Sets booking's new status when it gets changed by the user in the management page
  */
-recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(async function (request, response) {
+recordRoutes.route("/bookings/save_changes/:restaurantId/:bookingId").post(async function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
     let newStatus = request.body.newStatus
     let bookingId = request.params.bookingId
-    let restaurantId = request.params.id
+    let restaurantId = request.params.restaurantId
     let myQuery = {
         restaurantId: restaurantId, 'bookings.id': bookingId
     };
@@ -207,7 +207,7 @@ recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(async function 
         booking.bookingStatus === 'pending'
         && newStatus === 'confirmed'
 
-    let removeFromCalendar = //  remove from calendar if going to canceled from confirmed
+    let removeFromCalendar = //  remove from calendar if going to be canceled from confirmed
         booking.bookingStatus === 'confirmed'
         && newStatus === 'canceled'
 
@@ -218,7 +218,7 @@ recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(async function 
                 response.status(501)
                 console.log("Error updating bookings: " + err)
             } else {
-                if(addToCalendar)
+                if (addToCalendar)
                     await addBookingToCalendar(restaurantId, booking)
                 else if (removeFromCalendar)
                     await removeBookingFromCalendar(restaurantId, booking.id)
@@ -231,10 +231,22 @@ recordRoutes.route("/bookings/save_changes/:id/:bookingId").post(async function 
     // Add new event to calendar if the new status is confirmed
 });
 
+/**
+ * Gets a booking object from an array of bookings by giving the booking id
+ * @param {array} bookings
+ * @param {string} bookingId
+ * @returns {*} booking objects corresponding to the id
+ */
 function getBookingById(bookings, bookingId) {
     return bookings.find(b => b.id === bookingId)
 }
 
+/**
+ * Gets from the db the array of bookings of a restaurant
+ * @param restaurantId
+ * @param bookingId (useless?) used to localize the array of bookings that contains a booking with this id
+ * @returns {Promise<*>}
+ */
 async function getRestaurantBookingsById(restaurantId, bookingId) {
     let db_connect = dbo.getDb("sdp_db");
     let myQuery = {
@@ -249,10 +261,10 @@ async function getRestaurantBookingsById(restaurantId, bookingId) {
 /**
  * Get booked seats given activity for specified day
  */
-recordRoutes.route("/bookings/seats/:id/:day/:activity").get(async function (request, response) {
+recordRoutes.route("/bookings/seats/:restaurantId/:day/:activity").get(async function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
     let myQuery = {
-        restaurantId: request.params.id,
+        restaurantId: request.params.restaurantId,
     };
 
     let bookingArray = await db_connect
@@ -278,10 +290,10 @@ recordRoutes.route("/bookings/seats/:id/:day/:activity").get(async function (req
  * ADD NEW BOOKING
  * Booking form query that adds a new booking in the db
  */
-recordRoutes.route("/booking/add/:id").post(async function (request, response) {
+recordRoutes.route("/booking/add/:restaurantId").post(async function (request, response) {
     let db_connect = dbo.getDb();
     let myQuery = {
-        restaurantId: request.params.id
+        restaurantId: request.params.restaurantId
     };
     let booking = {
         id: request.body.id,
@@ -302,8 +314,9 @@ recordRoutes.route("/booking/add/:id").post(async function (request, response) {
         }
     };
     if (booking.bookingStatus === 'confirmed') {
-        await addBookingToCalendar(request.params.id, booking);
+        await addBookingToCalendar(request.params.restaurantId, booking);
     }
+    await addBookingToSpreadsheet(request.params.restaurantId, booking)
     db_connect
         .collection("booking")
         .updateOne(myQuery, newValues, function (err, res) {
@@ -456,7 +469,7 @@ recordRoutes.route("/booking/update").post(async function (req, response) {
     let restaurantBookings = await getRestaurantBookingsById(req.body.id, req.body.bookingId);
     let booking = getBookingById(restaurantBookings.bookings, req.body.bookingId);
 
-    if(booking.bookingStatus !== 'canceled'){
+    if (booking.bookingStatus !== 'canceled') {
         await removeBookingFromCalendar(req.body.id, req.body.bookingId);
         let newValues = {
             $set: {
@@ -496,13 +509,292 @@ recordRoutes.route("/google/login").post(async (request, response) => {
                 .then(res => res.data)
             storeTokens(tokens, restaurantId)
             storeProfile(userInfo, restaurantId)
+            let spreadsheetId = await initSpreadsheet('bookings', restaurantId)
+            storeSpreadsheetId(spreadsheetId, restaurantId)
             response.send(JSON.stringify(userInfo))
         }
     }
 })
 
 /**
- * Fetches the user's google profile in the App component
+ * Inits a spreadsheet used to represent bookings. The initialized spreadsheet will have a header row
+ * @param title of the spreadsheet
+ * @param restaurantId
+ * @returns {Promise<*>}
+ */
+async function initSpreadsheet(title, restaurantId) {
+    let tokens = await getTokens(restaurantId)
+    oauth2Client.setCredentials(tokens);
+
+    const service = google.sheets({
+        version: 'v4',
+        auth: oauth2Client
+    });
+    // Columns order => Id, name, surname, guests, activity, time, date, phone, email, additional info, status
+    const resource = {
+        "properties": {
+            "title": title
+        },
+        "sheets": [
+            {
+                "protectedRanges":
+                    [
+                        {
+                            "range":
+                                {
+                                    "startColumnIndex": 0,
+                                    "endColumnIndex": 10,
+                                    "startRowIndex": 0,
+                                    "endRowIndex": 0,
+                                    'sheetId': 0
+                                },
+                            "description": "protected"
+                        }
+                    ],
+                "data": [
+                    {
+                        "startRow": 0,
+                        "startColumn": 0,
+                        "rowData": [
+                            {
+                                "values": [
+                                    {
+                                        "userEnteredValue": {
+                                            "stringValue": 'Id'
+                                        }
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "startRow": 0,
+                        "startColumn": 1,
+                        "rowData": [
+                            {
+                                "values": [
+                                    {
+                                        "userEnteredValue": {
+                                            "stringValue": 'Name'
+                                        }
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "startRow": 0,
+                        "startColumn": 2,
+                        "rowData": [
+                            {
+                                "values": [
+                                    {
+                                        "userEnteredValue": {
+                                            "stringValue": 'Surname'
+                                        }
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "startRow": 0,
+                        "startColumn": 3,
+                        "rowData": [
+                            {
+                                "values": [
+                                    {
+                                        "userEnteredValue": {
+                                            "stringValue": 'Surname'
+                                        }
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "startRow": 0,
+                        "startColumn": 4,
+                        "rowData": [
+                            {
+                                "values": [
+                                    {
+                                        "userEnteredValue": {
+                                            "stringValue": 'Guests'
+                                        }
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "startRow": 0,
+                        "startColumn": 5,
+                        "rowData": [
+                            {
+                                "values": [
+                                    {
+                                        "userEnteredValue": {
+                                            "stringValue": 'Activity'
+                                        }
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "startRow": 0,
+                        "startColumn": 6,
+                        "rowData": [
+                            {
+                                "values": [
+                                    {
+                                        "userEnteredValue": {
+                                            "stringValue": 'Time'
+                                        }
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "startRow": 0,
+                        "startColumn": 7,
+                        "rowData": [
+                            {
+                                "values": [
+                                    {
+                                        "userEnteredValue": {
+                                            "stringValue": 'Date'
+                                        }
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "startRow": 0,
+                        "startColumn": 8,
+                        "rowData": [
+                            {
+                                "values": [
+                                    {
+                                        "userEnteredValue": {
+                                            "stringValue": 'Phone'
+                                        }
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "startRow": 0,
+                        "startColumn": 9,
+                        "rowData": [
+                            {
+                                "values": [
+                                    {
+                                        "userEnteredValue": {
+                                            "stringValue": 'Email'
+                                        }
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "startRow": 0,
+                        "startColumn": 10,
+                        "rowData": [
+                            {
+                                "values": [
+                                    {
+                                        "userEnteredValue": {
+                                            "stringValue": 'Additional Info'
+                                        }
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "startRow": 0,
+                        "startColumn": 11,
+                        "rowData": [
+                            {
+                                "values": [
+                                    {
+                                        "userEnteredValue": {
+                                            "stringValue": 'Status'
+                                        }
+                                    }
+                                ]
+                            },
+                        ]
+                    }
+                ],
+                "properties": {
+                    "sheetId": 0
+                }
+            }
+        ],
+    };
+    try {
+        const spreadsheet = await service.spreadsheets.create({
+            resource,
+            fields: 'spreadsheetId',
+        });
+        console.log(`Spreadsheet ID: ${spreadsheet.data.spreadsheetId}`);
+        return await spreadsheet.data.spreadsheetId;
+    } catch (err) {
+        console.log("Error init spreadsheet: " + err)
+        throw err;
+    }
+}
+
+/**
+ * Stores the encrypted spreadsheetId in the db
+ * @param spreadsheetId
+ * @param restaurantId
+ */
+function storeSpreadsheetId(spreadsheetId, restaurantId) {
+    let db_connect = dbo.getDb("sdp_db");
+    let myQuery = {
+        restaurantId: restaurantId
+    };
+    // ENCRYPTION
+    let encrypted = encrypt(JSON.stringify(spreadsheetId))
+    let newValues = {
+        $set: {
+            spreadsheetId: encrypted
+        },
+    };
+    db_connect
+        .collection("google_data")
+        .updateOne(myQuery, newValues, {upsert: true}, function (err, result) {
+            if (err) throw err;
+            console.log("1 document updated " + result);
+        });
+}
+
+async function getSpreadsheetId(restaurantId) {
+    let db_connect = dbo.getDb();
+    let myQuery = {
+        restaurantId: restaurantId
+    };
+    let googleData = await db_connect
+        .collection("google_data")
+        .findOne(myQuery)
+        .then((result) => result)
+    if (googleData && googleData.spreadsheetId) {
+        return JSON.parse(decrypt(googleData.spreadsheetId))
+    } else {
+        return {}
+    }
+}
+
+/**
+ * Fetches the user's Google profile in the App component
  */
 recordRoutes.route("/profile/:restaurantId").get(async (request, response) => {
     let profile = await getProfile(request.params.restaurantId)
@@ -616,6 +908,11 @@ async function getProfile(restaurantId) {
 
 }
 
+/**
+ * Revokes app's access to user's Google APIs (used when the user logs out)
+ * @param restaurantId
+ * @returns {Promise<void>}
+ */
 async function revokeAccessToApp(restaurantId) {
     let tokens = await getTokens(restaurantId)
     let postData = "token=" + tokens.refresh_token;
@@ -710,7 +1007,69 @@ async function removeBookingFromCalendar(restaurantId, bookingId) {
 }
 
 /**
- * -------------- TESTS -------------------
+ * Converts a booking to the corresponding request to send to the Google spreadsheet api
+ * @param booking
+ * @param spreadsheetId
+ * @param auth
+ * @returns {{valueInputOption: string, resource: {values: (*|string)[][], range: string}, auth, insertDataOption: string, range: string, spreadsheetId}}
  */
+function bookingToSpreadsheetRow(booking, spreadsheetId, auth) {
+    return {
+        // The ID of the spreadsheet to update.
+        spreadsheetId: spreadsheetId,  // TODO: Update placeholder value.
+
+        // The A1 notation of a range to search for a logical table of data.
+        // Values are appended after the last row of the table.
+        range: 'Foglio1:A1:L1',  // TODO: Update placeholder value.
+
+        // How the input data should be interpreted.
+        valueInputOption: 'USER_ENTERED',  // TODO: Update placeholder value.
+
+        // How the input data should be inserted.
+        insertDataOption: 'INSERT_ROWS',  // TODO: Update placeholder value.
+
+        // Columns order => Id, name, surname, guests, activity, time, date, phone, email, additional info, status
+        resource: {
+            "range": "Foglio1!A1:L1",
+            "values": [
+                [
+                    booking.id,
+                    booking.guestName,
+                    booking.guestSurname,
+                    booking.bookingGuests,
+                    booking.bookingActivity,
+                    booking.bookingTime,
+                    booking.bookingDate,
+                    booking.guestPhone,
+                    booking.guestEmail,
+                    booking.guestAdditionalInfo,
+                    booking.bookingStatus
+                ]
+            ]
+        },
+
+        auth: auth,
+    }
+}
+
+/**
+ * Appends booking row to the user's Google Spreadsheet
+ * @param restaurantId
+ * @param booking
+ * @returns {Promise<void>}
+ */
+async function addBookingToSpreadsheet(restaurantId, booking) {
+    let tokens = await getTokens(restaurantId)
+    oauth2Client.setCredentials(tokens);
+    let spreadsheetId = await getSpreadsheetId(restaurantId)
+    let request = bookingToSpreadsheetRow(booking, spreadsheetId, oauth2Client)
+    const sheets = google.sheets('v4');
+    try {
+        const response = (await sheets.spreadsheets.values.append(request)).data;
+        console.log(JSON.stringify(response, null, 2));
+    } catch (err) {
+        console.error(err);
+    }
+}
 
 module.exports = recordRoutes;

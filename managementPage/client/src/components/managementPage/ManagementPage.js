@@ -52,7 +52,7 @@ export default class ManagementPage extends React.Component {
                         <Route path="/activities" element={<Activities restaurantId={this.props.restaurantId}/>}/>
                         <Route path="/bookings" element={<Bookings restaurantId={this.props.restaurantId}/>}/>
                         <Route path="/services" element={<Services restaurantId={this.props.restaurantId}/>}/>
-                        <Route path="/account" element={<p>Ciao mondo</p>}/>
+                        {/*{<Route path="/account" element={<p>Ciao mondo</p>}/>}*/}
                     </Routes>
 
                 </div>
