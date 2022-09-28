@@ -6,6 +6,17 @@ const express = require("express");
 const axios = require('axios');
 const https = require("https");
 const uuid = require('uuid');
+
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+    port: 465,               // true for 465, false for other ports
+    host: "mail.kobold.studio",
+    auth: {
+        user: 'booking@kobold.studio',
+        pass: 'Ym9Nir+bUy84',
+    },
+    secure: true,
+});
 const {encrypt, decrypt} = require('./../encryption/encryption');
 
 /**
@@ -231,6 +242,11 @@ recordRoutes.route("/bookings/save_changes/:restaurantId/:bookingId").post(async
     // Change status of the booking in the spreadsheet
 
     await updateBookingInSpreadsheet(restaurantId, bookingId, newStatus)
+
+    let restaurantEmail = await getRestaurantEmail(restaurantId)
+    let body = ""
+    let subject = ""
+    sendEmailToUser(restaurantEmail, booking.guestEmail, body, subject)
 });
 
 /**
@@ -318,6 +334,7 @@ recordRoutes.route("/booking/add/:restaurantId").post(async function (request, r
     if (booking.bookingStatus === 'confirmed') {
         await addBookingToCalendar(request.params.restaurantId, booking);
     }
+
     await addBookingToSpreadsheet(request.params.restaurantId, booking)
     db_connect
         .collection("booking")
@@ -325,7 +342,44 @@ recordRoutes.route("/booking/add/:restaurantId").post(async function (request, r
             if (err) throw err;
             response.json(res);
         });
+
+    // SEND EMAILS
+
+    // to customer
+
+    let restaurantEmail = await getRestaurantEmail(request.params.restaurantId)
+    let body = ""
+    let subject = ""
+    sendEmailToUser(restaurantEmail, request.body.guestEmail, body, subject)
+
+    // to restaurant
+
+    body = ""
+    subject = ""
+    sendEmailToUser(restaurantEmail, request.body.guestEmail, body, subject)
+
 });
+
+function sendEmailToUser(senderEmail, receiverEmail, emailHTML, emailSubject) {
+    const mailData = {
+        from: senderEmail,  // sender address
+        to: receiverEmail,   // list of receivers
+        subject: emailSubject,
+        html: emailHTML
+    };
+
+    transporter.sendMail(mailData, function (err, info) {
+        if(err)
+            console.log(err)
+        else
+            console.log(info);
+    });
+}
+
+async function getRestaurantEmail(restaurantId) {
+    let profile = await getProfile(restaurantId)
+    return profile.email
+}
 
 /**
  * REGISTER NEW USER
@@ -492,6 +546,21 @@ recordRoutes.route("/booking/update").post(async function (req, response) {
     // Change status in spreadsheet
 
     await updateBookingInSpreadsheet(req.body.id, booking.id, 'canceled')
+
+    // SEND EMAILS
+
+    // to customer
+
+    let restaurantEmail = await getRestaurantEmail(req.body.id)
+    let body = ""
+    let subject = ""
+    sendEmailToUser(restaurantEmail, booking.guestEmail, body, subject)
+
+    // to restaurant
+
+    body = ""
+    subject = ""
+    sendEmailToUser(restaurantEmail, booking.guestEmail, body, subject)
 });
 
 /**
@@ -567,7 +636,8 @@ async function initSpreadsheet(title, restaurantId) {
                                     {
                                         "userEnteredValue": {
                                             "stringValue": 'Id'
-                                        }
+                                        },
+
                                     }
                                 ]
                             },

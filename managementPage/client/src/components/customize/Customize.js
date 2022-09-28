@@ -266,7 +266,7 @@ export default class Customize extends React.Component {
         return (
             <>
                 <button className='openbtn' onClick={this.handleSideBarChange}>&#9776;</button>
-                <div style={{width: "100%", margin: "1%", padding: "1%"}}>
+                <div>
                     <div className="d-block mb-3">
                         <h4>Info del ristorante</h4>
                         <hr></hr>
