@@ -114,7 +114,8 @@ export default class BookingForm extends Component {
         guestEmail: ' ',
         guestPhone: ' ',
         guestPrivacy: ' ',
-        guestAdditionalInfo: ''
+        guestAdditionalInfo: '',
+        activityFull: ' '
       },
       fieldValues: {
         bookingForewarning: '',
@@ -154,6 +155,7 @@ export default class BookingForm extends Component {
   }
 
   handleClick = (event, name) => {
+    let errors = this.state.errors;
     this.handleTimeChange(null);
     this.state.errors.bookingTime = '';
     this.setState({timeValue: []});
@@ -216,6 +218,16 @@ export default class BookingForm extends Component {
       .then(data => {
           this.state.activityCapacity -= data.bookedSeats;
           this.state.statusLabel = '';
+          this.state.activityCapacity === 0 ? this.setState(prevState => ({
+            errors: {
+               ...prevState.errors,
+               activityFull : 'Spiacenti, l\'attività selezionata è al completo.'}})) : 
+               this.setState(prevState => ({errors: { ...prevState.errors, activityFull : ''}}));
+          
+          if(this.state.activityCapacity === 0){
+            displayedOptions.length = 0;
+            selection.disabled = true;
+          }
       })
   };
 
@@ -569,6 +581,7 @@ export default class BookingForm extends Component {
       selection.value = null;
       this.state.statusLabel = '';
     }
+    this.setState(prevState => ({errors: { ...prevState.errors, activityFull : ''}}));
   }
 
   handleSubmit = (event) => {
@@ -655,7 +668,7 @@ export default class BookingForm extends Component {
                     minDate={new Date()} noValidate/></label>
               </div>
               <div className="bookingActivity">
-                <label className="booking">Attività*</label>
+                <label className="booking">Attività* {errors.activityFull.length > 0 && <span className='error' id="seatsFullError">{errors.activityFull}</span>}</label>
                 <Stack spacing={2} direction="row">
                   {activities.map((activity) => {
                     return (<CustomButton key={activity.name} onClick={event => this.handleClick(event, activity.name)}>{activity.name}</CustomButton>)
