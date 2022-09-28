@@ -273,9 +273,9 @@ export default class BookingForm extends Component {
                   let actualTime = activity.start;
                   let endTime = activity.end;
                   let hours = parseInt(String(actualTime).substring(0,2));
-                  let minutes = parseInt(String(actualTime).substring(4,6));
+                  let minutes = parseInt(String(actualTime).substring(3,6));
                   let endHours = parseInt(String(endTime).substring(0,2));
-                  let endMinutes = parseInt(String(endTime).substring(4,6));
+                  let endMinutes = parseInt(String(endTime).substring(3,6));
                   if(actualTime > endTime){
                     endHours += 24;
                   }
