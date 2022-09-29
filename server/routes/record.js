@@ -34,20 +34,21 @@ const {encrypt, decrypt} = require('./../encryption/encryption');
 /**
  * EMAIL TEMPLATE
  */
- const emailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/template.hbs"), "utf8");
- const template = handlebars.compile(emailTemplateSource);
 
- const pendingEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/pending.hbs"), "utf8");
- const pendingTemplate = handlebars.compile(pendingEmailTemplateSource);
+const emailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/template.hbs"), "utf8");
+const template = handlebars.compile(emailTemplateSource);
 
- const restaurantEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/newbooking.hbs"), "utf8");
- const restaurantTemplate = handlebars.compile(restaurantEmailTemplateSource);
+const pendingEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/pending.hbs"), "utf8");
+const pendingTemplate = handlebars.compile(pendingEmailTemplateSource);
 
- const cancelEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/cancel.hbs"), "utf8");
- const cancelTemplate = handlebars.compile(cancelEmailTemplateSource);
+const restaurantEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/newbooking.hbs"), "utf8");
+const restaurantTemplate = handlebars.compile(restaurantEmailTemplateSource);
 
- const cancelRestaurantEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/rembooking.hbs"), "utf8");
- const cancelRestaurantTemplate = handlebars.compile(cancelRestaurantEmailTemplateSource);
+const cancelEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/cancel.hbs"), "utf8");
+const cancelTemplate = handlebars.compile(cancelEmailTemplateSource);
+
+const cancelRestaurantEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/rembooking.hbs"), "utf8");
+const cancelRestaurantTemplate = handlebars.compile(cancelRestaurantEmailTemplateSource);
 
 /**
  * ROUTES
@@ -331,6 +332,7 @@ recordRoutes.route("/booking/add/:restaurantId").post(async function (request, r
         guestEmail: request.body.guestEmail,
         guestPhone: request.body.guestPhone,
         guestAdditionalInfo: request.body.guestAdditionalInfo,
+        guestMarketing: request.body.guestMarketing
     }
     let newValues = {
         $push: {
@@ -389,25 +391,25 @@ recordRoutes.route("/booking/add/:restaurantId").post(async function (request, r
         });
 
     const restaurantHtmlToSend = restaurantTemplate({
-            id: booking.id,
-            restaurantName: restaurantName,
-            siteLink: siteLink,
-            bookingDate: booking.bookingDate,
-            bookingTime: booking.bookingTime,
-            bookingGuests: booking.bookingGuests,
-            bookingActivity: booking.bookingActivity,
-            bookingStatus: booking.bookingStatus,
-            guestName: booking.guestName,
-            guestSurname: booking.guestSurname,
-            guestEmail: booking.guestEmail,
-            guestPhone: booking.guestPhone,
-            guestAdditionalInfo: booking.guestAdditionalInfo,
+        id: booking.id,
+        restaurantName: restaurantName,
+        siteLink: siteLink,
+        bookingDate: booking.bookingDate,
+        bookingTime: booking.bookingTime,
+        bookingGuests: booking.bookingGuests,
+        bookingActivity: booking.bookingActivity,
+        bookingStatus: booking.bookingStatus,
+        guestName: booking.guestName,
+        guestSurname: booking.guestSurname,
+        guestEmail: booking.guestEmail,
+        guestPhone: booking.guestPhone,
+        guestAdditionalInfo: booking.guestAdditionalInfo,
     })
 
     // SEND EMAILS
 
     // to customer
-  
+
     sendEmailToUser(request.body.guestEmail, htmlToSend, subject)
 
     // to restaurant
@@ -426,15 +428,15 @@ function sendEmailToUser(receiverEmail, htmlToSend, emailSubject) {
     };
 
     transporter.sendMail(mailData, function (err, info) {
-        if(err)
+        if (err)
             console.log(err)
         else
             console.log(info);
 
-            var body = info.response.toString();
-            body.should.contain('<h1>This is a test</h1>');
-            body.should.contain('Name');
-            done();
+        var body = info.response.toString();
+        body.should.contain('<h1>This is a test</h1>');
+        body.should.contain('Name');
+        done();
     });
 }
 
@@ -1201,7 +1203,7 @@ async function getSpreadsheetId(restaurantId) {
  * @param restaurantId
  * @returns {Promise<*>}
  */
-async function getRestaurantInfo(restaurantId){
+async function getRestaurantInfo(restaurantId) {
     let db_connect = dbo.getDb();
     let myQuery = {
         restaurantId: restaurantId
