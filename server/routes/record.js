@@ -870,7 +870,7 @@ function bookingToSpreadsheetRow(booking, spreadsheetId, auth) {
 
         // The A1 notation of a range to search for a logical table of data.
         // Values are appended after the last row of the table.
-        range: 'Foglio1!A1:K1',
+        range: 'Foglio1!A1:L1',
 
         // How the input data should be interpreted.
         valueInputOption: 'USER_ENTERED',
@@ -880,7 +880,7 @@ function bookingToSpreadsheetRow(booking, spreadsheetId, auth) {
 
         // Columns order => Id, name, surname, guests, activity, time, date, phone, email, additional info, status
         resource: {
-            "range": "Foglio1!A1:K1",
+            "range": "Foglio1!A1:L1",
             "values": [
                 [
                     booking.id,
@@ -893,6 +893,7 @@ function bookingToSpreadsheetRow(booking, spreadsheetId, auth) {
                     booking.guestPhone,
                     booking.guestEmail,
                     booking.guestAdditionalInfo,
+                    booking.guestMarketing,
                     booking.bookingStatus
                 ]
             ]
@@ -950,7 +951,7 @@ async function updateBookingInSpreadsheet(restaurantId, bookingId, newStatus) {
     //iterate over the rows and change status
     response.values.forEach((row) => {
         if (row.includes(bookingId)) { // if the row contains the booking id -> found the row to modify
-            row[10] = newStatus // update the status
+            row[11] = newStatus // update the status
         }
     })
 
@@ -964,11 +965,11 @@ async function updateBookingInSpreadsheet(restaurantId, bookingId, newStatus) {
     // write all the rows again
     const res = await sheets.spreadsheets.values.append({
         spreadsheetId: spreadsheetId,
-        range: "Foglio1!A1:K1",
+        range: "Foglio1!A1:L1",
         auth: oauth2Client,
         valueInputOption: "USER_ENTERED",
         resource: {
-            range: 'Foglio1!A1:K1',
+            range: 'Foglio1!A1:L1',
             values: response.values
         }
     });
@@ -1164,6 +1165,21 @@ async function initSpreadsheet(title, restaurantId) {
                     {
                         "startRow": 0,
                         "startColumn": 10,
+                        "rowData": [
+                            {
+                                "values": [
+                                    {
+                                        "userEnteredValue": {
+                                            "stringValue": 'Marketing'
+                                        }
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "startRow": 0,
+                        "startColumn": 11,
                         "rowData": [
                             {
                                 "values": [
