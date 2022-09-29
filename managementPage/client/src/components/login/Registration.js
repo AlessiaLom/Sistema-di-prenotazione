@@ -125,16 +125,14 @@ export default class Registration extends React.Component {
                         <form>
                             <div className="form-outline mb-4 usrField">
                                 {errors.emailError != null && <span className='usrError'>{errors.emailError}</span>}
-                                <label className="form-label" htmlFor="usrInput">Email*</label>
-                                <input type="email" id="usrInput" className="form-control"
+                                <input placeholder='E-mail' type="email" id="usrInput" className="form-control"
                                        onChange={this.onEmailChange}/>
                             </div>
                             <div>
                                 <div className="form-outline mb-4 pswField">
                                     {errors.passwordError != null &&
                                         <span className='pswError'>{errors.passwordError}</span>}
-                                    <label className="form-label" htmlFor="pswInput">Password*</label>
-                                    <input type="password" id="pswInput" className="form-control"
+                                    <input placeholder='Password' type="password" id="pswInput" className="form-control"
                                            onChange={this.onPswChange}/>
                                 </div>
                             </div>
