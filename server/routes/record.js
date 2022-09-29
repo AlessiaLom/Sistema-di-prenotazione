@@ -50,6 +50,12 @@ const cancelTemplate = handlebars.compile(cancelEmailTemplateSource);
 const cancelRestaurantEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/rembooking.hbs"), "utf8");
 const cancelRestaurantTemplate = handlebars.compile(cancelRestaurantEmailTemplateSource);
 
+ const restaurantConfirmEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/pendingconfirmed.hbs"), "utf8");
+ const restaurantConfirmTemplate = handlebars.compile(restaurantConfirmEmailTemplateSource);
+
+ const restaurantCancelEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/pendingcanceled.hbs"), "utf8");
+ const restaurantCancelTemplate = handlebars.compile(restaurantCancelEmailTemplateSource);
+
 /**
  * ROUTES
  */
@@ -305,10 +311,48 @@ recordRoutes.route("/bookings/save_changes/:restaurantId/:bookingId").post(async
 
     await updateBookingInSpreadsheet(restaurantId, bookingId, newStatus)
 
-    let restaurantEmail = await getRestaurantEmail(restaurantId)
-    let body = ""
-    let subject = ""
-    sendEmailToUser(booking.guestEmail, body, subject)
+    let restaurantObject = await getRestaurantInfo(restaurantId);
+    let restaurantName = restaurantObject.restaurantName;
+    let siteLink = restaurantObject.siteLink;
+    let subject = "";
+    let htmlToSend;
+    if(newStatus === "confirmed"){
+        subject = "Prenotazione accettata dal ristorante";
+        htmlToSend = restaurantConfirmTemplate({
+            id: booking.id,
+            restaurantName: restaurantName,
+            siteLink: siteLink,
+            bookingDate: booking.bookingDate,
+            bookingTime: booking.bookingTime,
+            bookingGuests: booking.bookingGuests,
+            bookingActivity: booking.bookingActivity,
+            bookingStatus: booking.bookingStatus,
+            guestName: booking.guestName,
+            guestSurname: booking.guestSurname,
+            guestEmail: booking.guestEmail,
+            guestPhone: booking.guestPhone,
+            guestAdditionalInfo: booking.guestAdditionalInfo,
+        });
+    } else if(newStatus === "canceled"){
+        subject = "Prenotazione rifiutata dal ristorante";
+        htmlToSend = restaurantCancelTemplate({
+            id: booking.id,
+            restaurantName: restaurantName,
+            siteLink: siteLink,
+            bookingDate: booking.bookingDate,
+            bookingTime: booking.bookingTime,
+            bookingGuests: booking.bookingGuests,
+            bookingActivity: booking.bookingActivity,
+            bookingStatus: booking.bookingStatus,
+            guestName: booking.guestName,
+            guestSurname: booking.guestSurname,
+            guestEmail: booking.guestEmail,
+            guestPhone: booking.guestPhone,
+            guestAdditionalInfo: booking.guestAdditionalInfo,
+        });
+    }
+    
+    sendEmailToUser(booking.guestEmail, htmlToSend, subject);
 });
 
 /**
