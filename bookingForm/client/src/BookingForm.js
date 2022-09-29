@@ -102,6 +102,7 @@ export default class BookingForm extends Component {
       guestEmail: null,
       guestPhone: null,
       guestPrivacy: null,
+      guestMarketing: false,
       guestAdditionalInfo: null,
       activities: [],
       options: [],
@@ -584,6 +585,14 @@ export default class BookingForm extends Component {
     this.setState(prevState => ({errors: { ...prevState.errors, activityFull : ''}}));
   }
 
+  handleMarketingChange = (event) => {
+    if(event.target.checked){
+      this.state.guestMarketing = true;
+    } else {
+      this.state.guestMarketing = false;
+    }
+  }
+
   handleSubmit = (event) => {
     event.preventDefault();
     if(validateForm(this.state.errors)) {
@@ -602,7 +611,8 @@ export default class BookingForm extends Component {
         "guestSurname": this.state.guestSurname,
         "guestEmail": this.state.guestEmail,
         "guestPhone": this.state.guestPhone,
-        "guestAdditionalInfo": this.state.guestAdditionalInfo
+        "guestAdditionalInfo": this.state.guestAdditionalInfo,
+        "guestMarketing": this.state.guestMarketing
       }
       window.location.href = window.location.pathname + '?submitting=success';
       return fetch('/booking/add/' + this.props.restaurantId, {
@@ -722,7 +732,11 @@ export default class BookingForm extends Component {
                 {errors.guestPrivacy.length > 0 && 
                     <span className='privacyError person'>{errors.guestPrivacy}</span>}
                     <input className="person" type="checkbox" id="guestPrivacy" name="guestPrivacy" onChange={this.handleChange} noValidate/>
-                    <label className="person" id="privacyLabel" htmlFor="guestPrivacy">Acconsento al trattamento dei dati personali*</label>
+                    <label className="person" id="privacyLabel" htmlFor="guestPrivacy">Acconsento al <a href="#" target={"_blank"}>trattamento dei dati personali</a>*</label>
+                </div>
+                <div className="guestMarketing">
+                  <input className="person" type="checkbox" id="guestMarketing" name="guestMarketing" onChange={this.handleMarketingChange} noValidate/>
+                  <label className="person" id="marketingLabel" htmlFor="guestMarketing">Acconsento che le mie informazioni vengano utilizzate per <a href="#" target={"_blank"}>operazioni di marketing</a></label>
                 </div>
             </div>
             <div className="submit">
