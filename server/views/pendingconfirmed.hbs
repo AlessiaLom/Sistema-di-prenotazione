@@ -387,8 +387,11 @@ table{
             		<td>
             			<div class="text" style="padding: 0 3em; text-align: center;">
                             <h1 style="color: white;">Gentile {{guestName}} {{guestSurname}},</h1>
-            				<h2 style="color: white;">Abbiamo ricevuto la tua richiesta ed abbiamo annullato la prenotazione con ID {{id}}.</h2>
-            				<p style="color: white;">Speriamo di rivederci presto!</p>
+            				<h2 style="color: white;">Buone notizie, il ristorante ha confermato la tua prenotazione!</h2>
+            				<p style="color: white;">Ecco un riepilogo della prenotazione: </p>
+            				<p style="color: white;">ID: {{id}}.</p>
+                            <p style="color: white;">Hai prenotato la seguente attività: {{bookingActivity}} per {{bookingGuests}} persone.</p>
+                            <p style="color: white;">Ti aspettiamo il giorno {{bookingDate}} alle ore {{bookingTime}}!</p>
             			</div>
             		</td>
             	</tr>
