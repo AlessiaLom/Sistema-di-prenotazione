@@ -50,11 +50,11 @@ const cancelTemplate = handlebars.compile(cancelEmailTemplateSource);
 const cancelRestaurantEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/rembooking.hbs"), "utf8");
 const cancelRestaurantTemplate = handlebars.compile(cancelRestaurantEmailTemplateSource);
 
- const restaurantConfirmEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/pendingconfirmed.hbs"), "utf8");
- const restaurantConfirmTemplate = handlebars.compile(restaurantConfirmEmailTemplateSource);
+const restaurantConfirmEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/pendingconfirmed.hbs"), "utf8");
+const restaurantConfirmTemplate = handlebars.compile(restaurantConfirmEmailTemplateSource);
 
- const restaurantCancelEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/pendingcanceled.hbs"), "utf8");
- const restaurantCancelTemplate = handlebars.compile(restaurantCancelEmailTemplateSource);
+const restaurantCancelEmailTemplateSource = fs.readFileSync(path.join(__dirname, "./../views/pendingcanceled.hbs"), "utf8");
+const restaurantCancelTemplate = handlebars.compile(restaurantCancelEmailTemplateSource);
 
 /**
  * ROUTES
@@ -316,7 +316,7 @@ recordRoutes.route("/bookings/save_changes/:restaurantId/:bookingId").post(async
     let siteLink = restaurantObject.siteLink;
     let subject = "";
     let htmlToSend;
-    if(newStatus === "confirmed"){
+    if (newStatus === "confirmed") {
         subject = "Prenotazione accettata dal ristorante";
         htmlToSend = restaurantConfirmTemplate({
             id: booking.id,
@@ -333,7 +333,7 @@ recordRoutes.route("/bookings/save_changes/:restaurantId/:bookingId").post(async
             guestPhone: booking.guestPhone,
             guestAdditionalInfo: booking.guestAdditionalInfo,
         });
-    } else if(newStatus === "canceled"){
+    } else if (newStatus === "canceled") {
         subject = "Prenotazione rifiutata dal ristorante";
         htmlToSend = restaurantCancelTemplate({
             id: booking.id,
@@ -351,7 +351,7 @@ recordRoutes.route("/bookings/save_changes/:restaurantId/:bookingId").post(async
             guestAdditionalInfo: booking.guestAdditionalInfo,
         });
     }
-    
+
     sendEmailToUser(booking.guestEmail, htmlToSend, subject);
 });
 
@@ -462,32 +462,6 @@ recordRoutes.route("/booking/add/:restaurantId").post(async function (request, r
     sendEmailToUser(restaurantEmail, restaurantHtmlToSend, subject)
 
 });
-
-function sendEmailToUser(receiverEmail, htmlToSend, emailSubject) {
-    const mailData = {
-        from: "booking@kobold.studio",  // sender address
-        to: receiverEmail,   // list of receivers
-        subject: emailSubject,
-        html: htmlToSend.toString()
-    };
-
-    transporter.sendMail(mailData, function (err, info) {
-        if (err)
-            console.log(err)
-        else
-            console.log(info);
-
-        var body = info.response.toString();
-        body.should.contain('<h1>This is a test</h1>');
-        body.should.contain('Name');
-        done();
-    });
-}
-
-async function getRestaurantEmail(restaurantId) {
-    let profile = await getProfile(restaurantId)
-    return profile.email
-}
 
 /**
  * REGISTER NEW USER
@@ -794,25 +768,42 @@ async function revokeAccessToApp(restaurantId) {
 /**
  * [GOOGLE CALENDAR] Converts our booking object into a correct Google Event object
  * @param booking
+ * @param activityEndingTime
  * @returns {{summary: string, start: {dateTime: string, timeZone: string}, description: string, end: {dateTime: string, timeZone: string}, id}}
  */
-function bookingToGoogleEvent(booking) {
-    const timeStampStart = booking.bookingDate + "T" + booking.bookingTime + ":00+02:00";
-    let timeHour = parseInt(booking.bookingTime.substring(0, 2));
-    let timeMin = booking.bookingTime.substring(3, 5);
-    timeHour += 2;
-    let endTime = String(timeHour) + ":" + timeMin;
-    const timeStampEnd = booking.bookingDate + "T" + endTime + ":00+02:00";
+function bookingToGoogleEvent(booking, activityEndingTime) {
+
+    // starting date time in the Google format: yyyy-mm-ddThh:mm:ms+02:00
+    const googleFormattedStart = booking.bookingDate + "T" + booking.bookingTime + ":00+02:00";
+
+    let googleFormattedEnd
+    if (booking.bookingTime < activityEndingTime) {
+        googleFormattedEnd = booking.bookingDate + "T" + activityEndingTime + ":00+02:00";
+    } else if (booking.bookingTime > activityEndingTime) { // if the ending time goes to the next day, the day has to be incremented by 1
+        let startingDateObj = new Date(booking.bookingDate)
+        startingDateObj.setDate(startingDateObj.getDate() + 1)
+        let newEndingDate =
+            startingDateObj.getFullYear() + "-" +
+            (startingDateObj.getMonth() + 1) + "-" +
+            startingDateObj.getDate()
+        googleFormattedEnd = newEndingDate + "T" + activityEndingTime + ":00+02:00";
+    }
     // parametrize the returned object with fields in booking
     return {
         id: booking.id,
         summary: booking.bookingActivity + ' per ' + booking.bookingGuests,
-        description: booking.guestName + ' ' + booking.guestSurname + ' ha prenotato per ' + booking.bookingGuests + ' alle ' + booking.bookingTime + ' del ' + booking.bookingDate + '. I contatti di ' + booking.guestName + ' sono: ' + booking.guestPhone + ', ' + booking.guestEmail + '. ' + (booking.guestAdditionalInfo != null ? 'Il cliente ha lasciato un messaggio alla prenotazione: ' + booking.guestAdditionalInfo : ''),
+        description: booking.guestName + ' ' + booking.guestSurname +
+            ' ha prenotato per ' + booking.bookingGuests +
+            ' alle ' + booking.bookingTime +
+            ' del ' + booking.bookingDate +
+            '. I contatti di ' + booking.guestName +
+            ' sono: ' + booking.guestPhone + ', ' + booking.guestEmail + '. ' +
+            (booking.guestAdditionalInfo != null ? 'Il cliente ha lasciato un messaggio alla prenotazione: ' + booking.guestAdditionalInfo : ''),
         start: {
-            dateTime: timeStampStart, timeZone: 'Europe/Rome',
+            dateTime: googleFormattedStart, timeZone: 'Europe/Rome',
         },
         end: {
-            dateTime: timeStampEnd, timeZone: 'Europe/Rome',
+            dateTime: googleFormattedEnd, timeZone: 'Europe/Rome',
         },
     }
 }
@@ -826,12 +817,16 @@ function bookingToGoogleEvent(booking) {
 async function addBookingToCalendar(restaurantId, booking) {
     let tokens = await getTokens(restaurantId)
     oauth2Client.setCredentials(tokens);
-    let bookingEvent = bookingToGoogleEvent(booking)
+    let activity = await getActivityData(restaurantId, booking.bookingActivity) //  get the activity of the booking to retrieve the ending time
+    let bookingEvent = bookingToGoogleEvent(booking, activity.endingTime) // create google formatted request
     await calendar.events.insert({
-        auth: oauth2Client, calendarId: 'primary', resource: bookingEvent,
+        auth: oauth2Client,
+        calendarId: 'primary',
+        resource: bookingEvent,
     }, function (err, bookingEvent) {
         if (err) {
             console.log('There was an error contacting the Calendar service: ' + err);
+            throw err
         }
 
     });
@@ -1259,18 +1254,13 @@ async function getSpreadsheetId(restaurantId) {
 }
 
 /**
- * Given the restaurantId returns the restaurant info
+ * Gets the restaurant's email from the google_data collection
  * @param restaurantId
  * @returns {Promise<*>}
  */
-async function getRestaurantInfo(restaurantId) {
-    let db_connect = dbo.getDb();
-    let myQuery = {
-        restaurantId: restaurantId
-    };
-    return await db_connect
-        .collection("customize")
-        .findOne(myQuery)
+async function getRestaurantEmail(restaurantId) {
+    let profile = await getProfile(restaurantId)
+    return profile.email
 }
 
 /**
@@ -1401,6 +1391,70 @@ async function getRestaurantBookingsById(restaurantId, bookingId) {
     return db_connect
         .collection('booking')
         .findOne(myQuery)
+}
+
+/**
+ * Gets activity object from db based on the restaurant id and the activity name
+ * @param restaurantId
+ * @param activityName
+ * @returns {Promise<void>}
+ */
+async function getActivityData(restaurantId, activityName) {
+    let db_connect = dbo.getDb(); // connect to db
+    let myQuery = {
+        restaurantId: restaurantId
+    }; // query in db
+    let activitiesData = await db_connect
+        .collection("activities")
+        .findOne(myQuery)
+    let activitiesArray = activitiesData.activities
+    return activitiesArray.find(a => a.activityName === activityName)
+}
+
+/**
+ * Given the restaurantId returns the restaurant info
+ * @param restaurantId
+ * @returns {Promise<*>}
+ */
+async function getRestaurantInfo(restaurantId) {
+    let db_connect = dbo.getDb();
+    let myQuery = {
+        restaurantId: restaurantId
+    };
+    return await db_connect
+        .collection("customize")
+        .findOne(myQuery)
+}
+
+/**
+ * EMAIL
+ */
+
+/**
+ * Sends email to user using nodemailer
+ * @param receiverEmail
+ * @param htmlToSend
+ * @param emailSubject
+ */
+function sendEmailToUser(receiverEmail, htmlToSend, emailSubject) {
+    const mailData = {
+        from: "booking@kobold.studio",  // sender address
+        to: receiverEmail,   // list of receivers
+        subject: emailSubject,
+        html: htmlToSend.toString()
+    };
+
+    transporter.sendMail(mailData, function (err, info) {
+        if (err)
+            console.log(err)
+        else
+            console.log(info);
+
+        var body = info.response.toString();
+        body.should.contain('<h1>This is a test</h1>');
+        body.should.contain('Name');
+        done();
+    });
 }
 
 module.exports = recordRoutes;
