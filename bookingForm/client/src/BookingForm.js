@@ -13,8 +13,11 @@ import { styled } from '@mui/system';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const today = new Date();
+
 let restaurantName = '';
 let bookings = [];
+let minBookingTime;
 let activitiesList = [];
 let displayedOptions = [];
 let primaryColor;
@@ -155,12 +158,7 @@ export default class BookingForm extends Component {
       });
   }
 
-  handleClick = (event, name) => {
-    let errors = this.state.errors;
-    this.handleTimeChange(null);
-    this.state.errors.bookingTime = '';
-    this.setState({timeValue: []});
-    let today = new Date();
+  getMinBookingTime(date){
     let now;
     if(today.getHours() < 10)
       now = "0" + today.getHours() + ":";
@@ -170,6 +168,29 @@ export default class BookingForm extends Component {
       now += "0" + today.getMinutes();
     else
       now += today.getMinutes();
+      const nowHours = parseInt(now.substring(0,2));
+      const nowMins = parseInt(now.substring(3,5));
+      const forewarningHrs = parseInt(this.state.fieldValues.bookingForewarning.substring(0,2));
+      const forewarningMns = parseInt(this.state.fieldValues.bookingForewarning.substring(3,5));
+      let minHours = nowHours + forewarningHrs;
+      let minMns = nowMins + forewarningMns;
+      if(minMns < 10) {
+        minMns = "0" + minMns;
+      } else if(minHours < 10) {
+        minHours = "0" + minHours;
+      }
+      if(minHours >= 24)
+        minBookingTime = "23:59";
+      else
+        minBookingTime = String(minHours) + ":" + String(minMns);
+      return compareDates(date, today) ? minBookingTime : now;
+  }
+
+  handleClick = (event, name) => {
+    let errors = this.state.errors;
+    this.handleTimeChange(null);
+    this.state.errors.bookingTime = '';
+    this.setState({timeValue: []});
     let isToday = compareDates(this.state.selectedDate, today);
     var allButtons = document.querySelectorAll(".ButtonUnstyled-root");
     allButtons.forEach((button) => { button.classList.remove("active"); })
@@ -177,18 +198,8 @@ export default class BookingForm extends Component {
     button.classList.add("active");
     const options = this.state.options;
     displayedOptions = [];
-    const nowHours = parseInt(now.substring(0,2));
-    const nowMins = parseInt(now.substring(3,5));
-    const forewarningHrs = parseInt(this.state.fieldValues.bookingForewarning.substring(0,2));
-    const forewarningMns = parseInt(this.state.fieldValues.bookingForewarning.substring(3,5));
-    let minHours = nowHours + forewarningHrs;
-    let minMns = nowMins + forewarningMns;
-    if(minMns < 10) {
-      minMns = "0" + minMns;
-    } else if(minHours < 10) {
-      minHours = "0" + minHours;
-    }
-    const minBookingTime = String(minHours) + ":" + String(minMns);
+    let minBookingTime = this.getMinBookingTime(today);
+   
     options.forEach((option) => {
       if(option.name !== name || (isToday && option.value <= minBookingTime)) {
         option.disabled = true;
@@ -583,6 +594,19 @@ export default class BookingForm extends Component {
       this.state.statusLabel = '';
     }
     this.setState(prevState => ({errors: { ...prevState.errors, activityFull : ''}}));
+
+    //Disable buttons with unavailable properties when date is today
+    if(compareDates(today, date)){
+      var allButtons = document.querySelectorAll(".ButtonUnstyled-root");
+      const minBookingTime = this.getMinBookingTime(date);
+      this.state.activities.forEach((activity) => {
+        allButtons.forEach((button) => {
+          if(button.innerHTML === activity.name && minBookingTime >= activity.end){
+            button.disabled = true;
+          }
+        });
+      });
+    }
   }
 
   handleMarketingChange = (event) => {
