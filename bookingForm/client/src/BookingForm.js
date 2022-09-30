@@ -13,10 +13,12 @@ import { styled } from '@mui/system';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const today = new Date();
+
 let restaurantName = '';
 let bookings = [];
+let minBookingTime;
 let activitiesList = [];
-let displayedOptions = [];
 let primaryColor;
 let secondaryColor = "black";
 export {secondaryColor};
@@ -106,6 +108,7 @@ export default class BookingForm extends Component {
       guestAdditionalInfo: null,
       activities: [],
       options: [],
+      displayedOptions: [],
       errors: {
         bookingDate: '',
         bookingTime: ' ',
@@ -155,12 +158,7 @@ export default class BookingForm extends Component {
       });
   }
 
-  handleClick = (event, name) => {
-    let errors = this.state.errors;
-    this.handleTimeChange(null);
-    this.state.errors.bookingTime = '';
-    this.setState({timeValue: []});
-    let today = new Date();
+  getMinBookingTime(date){
     let now;
     if(today.getHours() < 10)
       now = "0" + today.getHours() + ":";
@@ -170,66 +168,84 @@ export default class BookingForm extends Component {
       now += "0" + today.getMinutes();
     else
       now += today.getMinutes();
+      const nowHours = parseInt(now.substring(0,2));
+      const nowMins = parseInt(now.substring(3,5));
+      const forewarningHrs = parseInt(this.state.fieldValues.bookingForewarning.substring(0,2));
+      const forewarningMns = parseInt(this.state.fieldValues.bookingForewarning.substring(3,5));
+      let minHours = nowHours + forewarningHrs;
+      let minMns = nowMins + forewarningMns;
+      if(minMns < 10) {
+        minMns = "0" + minMns;
+      } else if(minHours < 10) {
+        minHours = "0" + minHours;
+      }
+      if(minHours >= 24)
+        minBookingTime = "23:59";
+      else
+        minBookingTime = String(minHours) + ":" + String(minMns);
+      return compareDates(date, today) ? minBookingTime : now;
+  }
+
+  handleClick = (event, name) => {
+    let errors = this.state.errors;
+    this.handleTimeChange(null);
+    this.setState(prevState => ({
+      errors: {
+         ...prevState.errors,
+         bookingTime : ''}}));
+    this.setState({timeValue: []});
     let isToday = compareDates(this.state.selectedDate, today);
     var allButtons = document.querySelectorAll(".ButtonUnstyled-root");
     allButtons.forEach((button) => { button.classList.remove("active"); })
     var button = event.target;
     button.classList.add("active");
     const options = this.state.options;
-    displayedOptions = [];
-    const nowHours = parseInt(now.substring(0,2));
-    const nowMins = parseInt(now.substring(3,5));
-    const forewarningHrs = parseInt(this.state.fieldValues.bookingForewarning.substring(0,2));
-    const forewarningMns = parseInt(this.state.fieldValues.bookingForewarning.substring(3,5));
-    let minHours = nowHours + forewarningHrs;
-    let minMns = nowMins + forewarningMns;
-    if(minMns < 10) {
-      minMns = "0" + minMns;
-    } else if(minHours < 10) {
-      minHours = "0" + minHours;
-    }
-    const minBookingTime = String(minHours) + ":" + String(minMns);
+    this.setState({displayedOptions: []});
+    let minBookingTime = this.getMinBookingTime(today);
+    let buffer = [];
+
     options.forEach((option) => {
       if(option.name !== name || (isToday && option.value <= minBookingTime)) {
         option.disabled = true;
       } else {
         option.disabled = false;
-        displayedOptions.push(option);
+        buffer.push(option);
       }
     });
-    this.state.options = options;
-    this.state.bookingActivity = name;
+    this.setState({ displayedOptions: buffer, options: options});
     this.state.activities.forEach((activity) => {
       if(activity.name === name){
-        this.state.activityCapacity = activity.spots;
+        this.setState({ activityCapacity: activity.spots, bookingActivity: activity.name }, () => {
+          var selection = document.querySelector("#bookingGuestSelection");
+          selection.disabled = false;
+          selection.value = null;
+      
+          fetch("/bookings/seats/" + this.props.restaurantId + "/" + this.state.selectedDate + "/" + this.state.bookingActivity, {
+              method: "GET",
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+              },
+            })
+            .then(res => res.json())
+            .then(data => {
+                let capacity = this.state.activityCapacity;
+                capacity -= data.bookedSeats;
+                this.setState({ activityCapacity: capacity, statusLabel: '' });
+                this.state.activityCapacity === 0 ? this.setState(prevState => ({
+                  errors: {
+                     ...prevState.errors,
+                     activityFull : 'Spiacenti, l\'attività selezionata è al completo.'}})) : 
+                     this.setState(prevState => ({errors: { ...prevState.errors, activityFull : ''}}));
+                
+                if(this.state.activityCapacity === 0){
+                  this.setState({ displayedOptions: []});
+                  selection.disabled = true;
+                }
+            });
+        });
       }
-    })
-    var selection = document.querySelector("#bookingGuestSelection");
-    selection.disabled = false;
-    selection.value = null;
-
-    fetch("/bookings/seats/" + this.props.restaurantId + "/" + this.state.selectedDate + "/" + this.state.bookingActivity, {
-        method: "GET",
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-      })
-      .then(res => res.json())
-      .then(data => {
-          this.state.activityCapacity -= data.bookedSeats;
-          this.state.statusLabel = '';
-          this.state.activityCapacity === 0 ? this.setState(prevState => ({
-            errors: {
-               ...prevState.errors,
-               activityFull : 'Spiacenti, l\'attività selezionata è al completo.'}})) : 
-               this.setState(prevState => ({errors: { ...prevState.errors, activityFull : ''}}));
-          
-          if(this.state.activityCapacity === 0){
-            displayedOptions.length = 0;
-            selection.disabled = true;
-          }
-      })
+    });
   };
 
   componentDidMount() {
@@ -243,7 +259,8 @@ export default class BookingForm extends Component {
         .then(res => res.json())
         .then(data => {
             if (data) {
-              let fetchedActivitiesDictionary = []
+              let fetchedActivitiesDictionary = [];
+              let options = [];
 
               data.activities.forEach((activity, index) => {
                   fetchedActivitiesDictionary.push(new Activity(activity.activityName,
@@ -265,11 +282,10 @@ export default class BookingForm extends Component {
                     bookingThreshold: fetchedBookingThreshold,
                     bookingOffset: fetchedBookingOffset
                   },
-                });
-                let offsetHrs = parseInt(String(this.state.fieldValues.bookingOffset).substring(0,2));
-                let offsetMins = parseInt(String(this.state.fieldValues.bookingOffset).substring(3,5));
+                }, () => {
+                  let offsetHrs = parseInt(String(this.state.fieldValues.bookingOffset).substring(0,2));
+                  let offsetMins = parseInt(String(this.state.fieldValues.bookingOffset).substring(3,5));
 
-                let options = [];
                 this.state.activities.forEach((activity) => {
                   let actualTime = activity.start;
                   let endTime = activity.end;
@@ -314,9 +330,11 @@ export default class BookingForm extends Component {
                       minutes -= 60;
                     }
                   }
-                  options.sort(compare);
-                  this.state.options = options;
                 });
+                });
+                
+                options.sort(compare);
+                this.setState({ options: options });
             }
         });
     fetch("/customize/" + this.props.restaurantId, {
@@ -437,24 +455,19 @@ export default class BookingForm extends Component {
         : 'Questo campo è obbligatorio';
 
         if(Number.isInteger(Number(value)) && (Number(value)) > parseInt(this.state.activityCapacity)){
-          this.state.statusLabel = `\u26D4 Non prenotabile; la richiesta supera il numero di coperti disponibili.`;
-          this.state.statusProp = 'canceled';
+          this.setState({statusLabel : `\u26D4 Non prenotabile; la richiesta supera il numero di coperti disponibili.`, statusProp: 'canceled'});
           submitButton.disabled = true;
         } else if(Number.isInteger(Number(value)) && Number(value) <= parseInt(bookingThreshold) && Number(value) !== 0){
-          this.state.statusLabel = `\u2705 Prenotabile automaticamente.`;
-          this.state.statusProp = 'confirmed';
+          this.setState({statusLabel : `\u2705 Prenotabile automaticamente.`, statusProp : 'confirmed'});
           submitButton.disabled = false;
         } else if(Number(value) > parseInt(bookingThreshold) && Number(value) <= parseInt(bookingCapacity)) {
-          this.state.statusLabel = `⚠️ Prenotabile accordandosi col ristorante.`;
-          this.state.statusProp = 'pending';
+          this.setState({statusLabel : `⚠️ Prenotabile accordandosi col ristorante.`, statusProp : 'pending'});
           submitButton.disabled = false;
         } else if(Number(value) > parseInt(bookingCapacity)){
-          this.state.statusLabel = `\u26D4 Non prenotabile; la richiesta supera il numero di coperti disponibili.`;
-          this.state.statusProp = 'canceled';
+          this.setState({statusLabel : `\u26D4 Non prenotabile; la richiesta supera il numero di coperti disponibili.`, statusProp : 'canceled' });
           submitButton.disabled = true;
         } else{
-          this.state.statusLabel = '';
-          this.state.statusProp = '';
+          this.setState({statusLabel : '', statusProp : '' });
         }
       break;
       case 'guestName': 
@@ -504,92 +517,120 @@ export default class BookingForm extends Component {
   }
 
   handleTimeChange = (time) => {
-    this.state.timeValue = time;
-    this.state.errors.bookingTime = time != null ? '' : 'Questo campo è obbligatorio';
-    this.setState({ selectedTime: time });
+    this.setState({ selectedTime: time, timeValue: time }, () => {
+      time == null ? this.setState(prevState => ({
+        errors: {
+           ...prevState.errors,
+           bookingTime : 'Questo campo è obbligatorio'}})) : 
+           this.setState(prevState => ({errors: { ...prevState.errors, bookingTime : ''}}));
+    });
   }
 
   handleDateChange = (date) => {
-    displayedOptions = [];
+    this.setState({ displayedOptions: [], timeValue: []});
     this.handleTimeChange(null);
-    this.state.errors.bookingTime = '';
-    this.setState({timeValue: []});
+    this.setState(prevState => ({errors: { ...prevState.errors, bookingTime : ''}}));;
     this.state.options.forEach((option) => option.disabled = true);
-    this.state.errors.bookingDate = date != null ? '' : 'Questo campo è obbligatorio';
-    this.setState({ selectedDate: date });
-    let weekDay = date.toLocaleString('it-IT', {weekday: 'long'});
-    var activitiesBtns = document.querySelectorAll(".ButtonUnstyled-root");
-    activitiesBtns.forEach((button) => {button.disabled = false; button.classList.remove("active");});
-    activitiesBtns.forEach((button) => {
-      switch(weekDay){
-        case "lunedì":
-          this.state.activities.forEach((activity) => {
-            if(activity.name === button.innerHTML && !activity.days.includes("L")) {
-              button.disabled = true;
-            } 
-          });
-          break;
-        case "martedì":
-          this.state.activities.forEach((activity) => {
-            if(activity.name === button.innerHTML && !activity.days.includes("Ma")) {
-              button.disabled = true;
-            } 
-          });
-          break;
-        case "mercoledì":
-          this.state.activities.forEach((activity) => {
-            if(activity.name === button.innerHTML && !activity.days.includes("Me")) {
-              button.disabled = true;
-            } 
-          });
-          break;
-        case "giovedì":
-          this.state.activities.forEach((activity) => {
-            if(activity.name === button.innerHTML && !activity.days.includes("G")) {
-              button.disabled = true;
-            } 
-          });
-          break;
-        case "venerdì":
-          this.state.activities.forEach((activity) => {
-            if(activity.name === button.innerHTML && !activity.days.includes("V")) {
-              button.disabled = true;
-            } 
-          });
-          break;
-        case "sabato":
-          this.state.activities.forEach((activity) => {
-            if(activity.name === button.innerHTML && !activity.days.includes("S")) {
-              button.disabled = true;
-            } 
-          });
-          break;
-        case "domenica":
-          this.state.activities.forEach((activity) => {
-            if(activity.name === button.innerHTML && !activity.days.includes("D")) {
-              button.disabled = true;
-            } 
-          });
-          break;
-        default:
-          button.disabled = true;
-          break;
-      }
-    });
+    date == null ? this.setState(prevState => ({
+      errors: {
+         ...prevState.errors,
+         bookingDate : 'Questo campo è obbligatorio'}})) : 
+         this.setState(prevState => ({errors: { ...prevState.errors, bookingDate : ''}}));
+    let weekDay;
+    if(date != null){
+      weekDay = date.toLocaleString('it-IT', {weekday: 'long'});
+      var activitiesBtns = document.querySelectorAll(".ButtonUnstyled-root");
+      activitiesBtns.forEach((button) => {button.disabled = false; button.classList.remove("active");});
+      activitiesBtns.forEach((button) => {
+        switch(weekDay){
+          case "lunedì":
+            this.state.activities.forEach((activity) => {
+              if(activity.name === button.innerHTML && !activity.days.includes("L")) {
+                button.disabled = true;
+              } 
+            });
+            break;
+          case "martedì":
+            this.state.activities.forEach((activity) => {
+              if(activity.name === button.innerHTML && !activity.days.includes("Ma")) {
+                button.disabled = true;
+              } 
+            });
+            break;
+          case "mercoledì":
+            this.state.activities.forEach((activity) => {
+              if(activity.name === button.innerHTML && !activity.days.includes("Me")) {
+                button.disabled = true;
+              } 
+            });
+            break;
+          case "giovedì":
+            this.state.activities.forEach((activity) => {
+              if(activity.name === button.innerHTML && !activity.days.includes("G")) {
+                button.disabled = true;
+              } 
+            });
+            break;
+          case "venerdì":
+            this.state.activities.forEach((activity) => {
+              if(activity.name === button.innerHTML && !activity.days.includes("V")) {
+                button.disabled = true;
+              } 
+            });
+            break;
+          case "sabato":
+            this.state.activities.forEach((activity) => {
+              if(activity.name === button.innerHTML && !activity.days.includes("S")) {
+                button.disabled = true;
+              } 
+            });
+            break;
+          case "domenica":
+            this.state.activities.forEach((activity) => {
+              if(activity.name === button.innerHTML && !activity.days.includes("D")) {
+                button.disabled = true;
+              } 
+            });
+            break;
+          default:
+            button.disabled = true;
+            break;
+        }
+      });
+    }
+      
     var selection = document.querySelector("#bookingGuestSelection");
     if(!selection.disabled){
       selection.disabled = true;
       selection.value = null;
-      this.state.statusLabel = '';
+      this.setState({ statusLabel: '' });
     }
     this.setState(prevState => ({errors: { ...prevState.errors, activityFull : ''}}));
+
+    var allButtons = document.querySelectorAll(".ButtonUnstyled-root");
+    //Disable buttons with unavailable properties when date is today
+    if(date != null){
+      if(compareDates(today, date)){
+        const minBookingTime = this.getMinBookingTime(date);
+        this.state.activities.forEach((activity) => {
+          allButtons.forEach((button) => {
+            if(button.innerHTML === activity.name && minBookingTime >= activity.end){
+              button.disabled = true;
+            }
+          });
+        });
+      } 
+    } else {
+      allButtons.forEach((button) => button.disabled = true);
+    }
+    this.setState({ selectedDate: date });
   }
 
   handleMarketingChange = (event) => {
     if(event.target.checked){
-      this.state.guestMarketing = true;
+      this.setState({ guestMarketing: true})
     } else {
-      this.state.guestMarketing = false;
+      this.setState({ guestMarketing: false})
     }
   }
 
@@ -657,7 +698,7 @@ export default class BookingForm extends Component {
 
   render(){
     const errors = this.state.errors;
-    const options = displayedOptions;
+    const options = this.state.displayedOptions;
     const activities = this.state.activities;
     activitiesList = activities;
     return (

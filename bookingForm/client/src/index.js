@@ -2,14 +2,26 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 import App from "./App"
 import "./styles.css"
-import { BrowserRouter, Route } from "react-router-dom"
-import Booking from "./pages/Booking"
+import { BrowserRouter } from "react-router-dom"
 
-const root = ReactDOM.createRoot(document.getElementById("root"))
-root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
-)
+/**
+ * Seatyzen renders the whole app 
+ */
+ class Seatyzen extends React.Component{
+  constructor(props) {
+      super(props)
+  }
+
+  render() {
+      return (
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      )
+  }
+}
+
+// ========================================
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<Seatyzen />);
