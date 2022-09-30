@@ -3,3 +3,4 @@
 .vscode/
 .DS_Store
 /server/temp_utils/
+log.txt

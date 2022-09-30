@@ -8,7 +8,7 @@ import { BsTrash } from 'react-icons/bs'
 
 /**
  * Checks if the two times set by the user are in chronological order (starting time < ending time) or not
- * @param {*} startingTime activity's statrting time
+ * @param {*} startingTime activity's starting time
  * @param {*} endingTime activity's ending time
  * @returns true if in chronological order
  */
@@ -23,7 +23,7 @@ function checkChronologicalOrder(startingTime, endingTime) {
     }
     if (startObj.hours > endObj.hours) {
         return true
-    } else if (startObj.hours == endObj.hours) {
+    } else if (startObj.hours === endObj.hours) {
         if (startObj.minutes > endObj.minutes) {
             return true
         }
@@ -78,7 +78,7 @@ export default class Activity extends React.Component {
     checkErrors() {
         let validationErrors = this.state.validationErrors
         for (const error in validationErrors) {
-            if (validationErrors[error] != '')
+            if (validationErrors[error] !== '')
                 return true
         }
         return false
@@ -91,7 +91,7 @@ export default class Activity extends React.Component {
     checkEmptyFields() {
         let activityValues = this.state.activityValues
         for (const field in activityValues) {
-            if (activityValues[field].toString().trim() == '') {
+            if (activityValues[field].toString().trim() === '') {
                 return true
             }
         }
@@ -114,7 +114,7 @@ export default class Activity extends React.Component {
         switch (name) {
             case "activityName" + this.props.uniqueId: // Activity name accepts whatever name except empy name
                 // console.log("changed " + name + " has value " + value)
-                if (value && value.trim() != '') { // If activity name has no value, the row contains errors regarding activity name
+                if (value && value.trim() !== '') { // If activity name has no value, the row contains errors regarding activity name
                     newValidationErrors.activityNameError = ''
                 } else {
                     newValidationErrors.activityNameError = 'Campo obbligatorio'
@@ -148,7 +148,7 @@ export default class Activity extends React.Component {
 
                 // get endingTime value to perform checkings
                 endingTime = newActivityValues.endingTime
-                if (endingTime != undefined) {
+                if (endingTime !== undefined) {
                     if (checkChronologicalOrder(newActivityValues.startingTime, endingTime)) {
                         newValidationErrors.timesError = "Rispettare ordine cronologico"
                     } else {
@@ -169,7 +169,7 @@ export default class Activity extends React.Component {
 
                 // get endingTime value to perform checkings
                 startingTime = newActivityValues.startingTime
-                if (startingTime != undefined) {
+                if (startingTime !== undefined) {
                     if (checkChronologicalOrder(startingTime, newActivityValues.endingTime)) {
                         newValidationErrors.timesError = "Rispettare ordine cronologico"
                     } else {
@@ -184,7 +184,7 @@ export default class Activity extends React.Component {
                 } else {
                     days += value
                 }
-                if (days == '') {
+                if (days === '') {
                     newValidationErrors.daysError = 'Seleziona almeno un giorno'
                 } else {
                     newValidationErrors.daysError = ''

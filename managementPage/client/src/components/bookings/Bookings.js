@@ -177,7 +177,7 @@ export default class Bookings extends React.Component {
      * Handles filtering
      */
     handleFiltering(filters) {
-        let filteredBookings = {}
+        let filteredBookings
         if (!Object.values(filters).find(v => {
             return v !== ''
         })) { // if all the filters fields are empty -> return all the bookings (happens when filters are cleared)

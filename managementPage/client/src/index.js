@@ -15,11 +15,11 @@ class ManagementApp extends React.Component{
 
     render() {
         return (
-            <React.StrictMode>
+            //<React.StrictMode>
                 <BrowserRouter>
                     <App />
                 </BrowserRouter>
-            </React.StrictMode>
+            //</React.StrictMode>
         )
     }
 }

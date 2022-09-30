@@ -74,7 +74,7 @@ const dbo = require("./../db/conn.js");// This will help us connect to the datab
 
 const {google} = require('googleapis');
 const calendar = google.calendar('v3');
-var oauth2Client = new google.auth.OAuth2(
+let oauth2Client = new google.auth.OAuth2(
     '504181834497-omrl5mnes3qmvvu39hu5v404lemlfq1c.apps.googleusercontent.com',
     "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",
     "postmessage" // you use 'postmessage' when the code is retrieved from a frontend (couldn't find why online)
@@ -85,7 +85,7 @@ var oauth2Client = new google.auth.OAuth2(
  */
 
 /**
- * FETCH ACTIVITIES
+ * FETCH CUSTOMIZATION SETTINGS
  * Fetches data for customize page based on the id
  */
 recordRoutes.route("/customize/:restaurantId").get(function (request, response) {
@@ -94,13 +94,21 @@ recordRoutes.route("/customize/:restaurantId").get(function (request, response) 
     db_connect
         .collection("customize")
         .findOne(myQuery, function (err, result) { // returns the first tuple matching the query in the selected collection
-            if (err) throw err;
+            if (err) {
+                console.log("Error in FETCH CUSTOMIZATION: " + err)
+                logError(err, "Restaurant " + request.params.restaurantId + " failed fetching customization from DB")
+            } else {
+                if (result)
+                    logEvent("Restaurant " + request.params.restaurantId + " fetched customization from DB")
+                else
+                    logEvent("Restaurant " + request.params.restaurantId + " fetched nothing from customization")
+            }
             response.json(result);
         });
 });
 
 /**
- * FETCH CUSTOMIZATION SETTINGS
+ * FETCH ACTIVITIES
  * Fetches data for customize page based on the id
  */
 recordRoutes.route("/activities/:restaurantId").get(function (request, response) {
@@ -111,7 +119,15 @@ recordRoutes.route("/activities/:restaurantId").get(function (request, response)
     db_connect
         .collection("activities")
         .findOne(myQuery, function (err, result) {
-            if (err) throw err;
+            if (err) {
+                console.log("Error in FETCH ACTIVITIES: " + err)
+                logError(err, "Restaurant " + request.params.restaurantId + " failed fetching activities from DB")
+            } else {
+                if (result)
+                    logEvent("Restaurant " + request.params.restaurantId + " fetched activities from DB")
+                else
+                    logEvent("Restaurant " + request.params.restaurantId + " fetched nothing from activities")
+            }
             response.json(result);
         });
 });
@@ -124,24 +140,17 @@ recordRoutes.route("/bookings/:restaurantId").get(function (request, response) {
     let db_connect = dbo.getDb();
     let myQuery = {restaurantId: request.params.restaurantId};
     db_connect
-        .collection("booking") // <------------- rename collection to bookingS
+        .collection("booking") // <  rename collection to bookingS
         .findOne(myQuery, function (err, result) {
-            if (err) throw err;
-            response.json(result);
-        });
-});
-
-/**
- * FETCH RESTAURANT INFO
- * Fetches infos about restaurant
- */
-recordRoutes.route("/customize/:restaurantId").get(function (request, response) {
-    let db_connect = dbo.getDb();
-    let myQuery = {restaurantId: request.params.restaurantId};
-    db_connect
-        .collection("customize") //
-        .findOne(myQuery, function (err, result) {
-            if (err) throw err;
+            if (err) {
+                console.log("Error in FETCH BOOKINGS: " + err)
+                logError(err, "Restaurant " + request.params.restaurantId + " failed fetching bookings from DB")
+            } else {
+                if (result)
+                    logEvent("Restaurant " + request.params.restaurantId + " fetched bookings from DB")
+                else
+                    logEvent("Restaurant " + request.params.restaurantId + " fetched nothing from bookings")
+            }
             response.json(result);
         });
 });
@@ -154,21 +163,27 @@ recordRoutes.route("/authentication").post(async function (request, response) {
     let db_connect = dbo.getDb("sdp_db");
     let email = request.body.email
     let password = request.body.password
-    let users = await db_connect
-        .collection("authentication")
-        .find().toArray()
-    let respMessage = {}
-    users.forEach((user) => {
-        let decrypted = JSON.parse(decrypt(user.credentials))
-        if (decrypted.email === email) {
-            if (decrypted.password === password) {
-                respMessage = {
-                    restaurantId: user.restaurantId
+    try {
+        let users = await db_connect
+            .collection("authentication")
+            .find().toArray()
+        let respMessage = {}
+        users.forEach((user) => {
+            let decrypted = JSON.parse(decrypt(user.credentials))
+            if (decrypted.email === email) {
+                if (decrypted.password === password) {
+                    respMessage = {
+                        restaurantId: user.restaurantId
+                    }
+                    logEvent("User " + email + " authenticated")
                 }
             }
-        }
-    })
-    response.json(respMessage)
+        })
+        response.json(respMessage)
+    } catch (err) {
+        console.log("Error in FETCH CUSTOMIZATION: " + err)
+        logError(err, "User " + email + " failed authentication")
+    }
 });
 
 /**
@@ -181,23 +196,29 @@ recordRoutes.route("/bookings/seats/:restaurantId/:day/:activity").get(async fun
         restaurantId: request.params.restaurantId,
     };
 
-    let bookingArray = await db_connect
-        .collection("booking")
-        .findOne(myQuery);
+    try {
+        let bookingArray = await db_connect
+            .collection("booking")
+            .findOne(myQuery);
+        let respMessage = {};
+        let seats = 0;
+        let day = new Date(request.params.day);
+        let date = day.getFullYear() + '-' + (day.getMonth() + 1) + '-' + day.getDate();
+        let activity = request.params.activity;
 
-    let respMessage = {};
-    let seats = 0;
-    let day = new Date(request.params.day);
-    let date = day.getFullYear() + '-' + (day.getMonth() + 1) + '-' + day.getDate();
-    let activity = request.params.activity;
+        bookingArray.bookings.forEach((booking) => {
+            if (booking.bookingDate === date && booking.bookingActivity === activity && booking.bookingStatus === 'confirmed') {
+                seats += parseInt(booking.bookingGuests);
+            }
+        });
+        respMessage = {bookedSeats: seats};
+        logEvent("Fetched availability for restaurant: " + request.params.restaurantId)
+        response.json(respMessage);
+    } catch (err) {
+        console.log("Error in FETCH AVAILABILITY INFO: " + err)
+        logError(err, "Could not fetch availability for restaurant: " + request.params.restaurantId)
+    }
 
-    bookingArray.bookings.forEach((booking) => {
-        if (booking.bookingDate === date && booking.bookingActivity === activity && booking.bookingStatus === 'confirmed') {
-            seats += parseInt(booking.bookingGuests);
-        }
-    });
-    respMessage = {bookedSeats: seats};
-    response.json(respMessage);
 });
 
 /**
@@ -224,9 +245,11 @@ recordRoutes.route("/customize/save_changes/:restaurantId").post(function (reque
         .collection("customize")
         .updateOne(myQuery, newValues, function (err, result) {
             if (err) {
+                logError(err, "Could not update customization settings for restaurant: " + request.params.restaurantId)
                 response.status(501)
                 console.log("Error updating customize: " + err)
             } else {
+                logEvent("Updated customization settings for restaurant: " + request.params.restaurantId)
                 response.status(201)
                 console.log("1 document updated");
                 response.json(result);
@@ -252,9 +275,11 @@ recordRoutes.route("/activities/save_changes/:restaurantId").post(function (requ
         .collection("activities")
         .updateOne(myQuery, newValues, function (err, result) {
             if (err) {
+                logError(err, "Could not update activities settings for restaurant: " + request.params.restaurantId)
                 response.status(501)
                 console.log("Error updating activities: " + err)
             } else {
+                logEvent("Updated activities settings for restaurant: " + request.params.restaurantId)
                 response.status(201)
                 console.log("1 document updated");
                 response.json(result);
@@ -294,6 +319,7 @@ recordRoutes.route("/bookings/save_changes/:restaurantId/:bookingId").post(async
         .collection("booking")
         .updateOne(myQuery, newValues, async function (err, result) {
             if (err) {
+                logError(err, "Could not update booking " + bookingId + " status to " + newStatus)
                 response.status(501)
                 console.log("Error updating bookings: " + err)
             } else {
@@ -301,6 +327,7 @@ recordRoutes.route("/bookings/save_changes/:restaurantId/:bookingId").post(async
                     await addBookingToCalendar(restaurantId, booking)
                 else if (removeFromCalendar)
                     await removeBookingFromCalendar(restaurantId, booking.id)
+                logEvent("Updated booking " + bookingId + " status to " + newStatus)
                 response.status(201)
                 console.log("1 document updated");
                 response.json(result);
@@ -356,6 +383,43 @@ recordRoutes.route("/bookings/save_changes/:restaurantId/:bookingId").post(async
 });
 
 /**
+ * REGISTER NEW USER
+ */
+recordRoutes.route("/register").post(async (request, response) => {
+    const users = await getUsers()
+    let exists = existingEmail(users, request.body.email)
+    if (!exists) {
+        let credentials = {
+            email: request.body.email,
+            password: request.body.password
+        }
+        let newRestaurantId = uuid.v4()
+        let encryptedCredentials = encrypt(JSON.stringify(credentials))
+        let db_connect = dbo.getDb()
+        let newUser = {
+            restaurantId: newRestaurantId,
+            credentials: encryptedCredentials
+        }
+        db_connect
+            .collection("authentication")
+            .insertOne(newUser, function (err, res) {
+                if (err) {
+                    console.log("Error REGISTER NEW USER: " + err)
+                    logError(err, "Could not register new user with mail " + request.body.email)
+                } else {
+                    logEvent("Register new user with mail " + request.body.email)
+                }
+                response.json({
+                    restaurantId: newRestaurantId
+                });
+            });
+        setupUsersCollections(newRestaurantId)
+    } else if (users.length) {
+        response.json({})
+    }
+})
+
+/**
  * ADD NEW BOOKING
  * Booking form query that adds a new booking in the db
  */
@@ -407,6 +471,8 @@ recordRoutes.route("/booking/add/:restaurantId").post(async function (request, r
             guestPhone: booking.guestPhone,
             guestAdditionalInfo: booking.guestAdditionalInfo,
         });
+
+
     } else {
         subject = "Prenotazione presa in carico";
         htmlToSend = pendingTemplate({
@@ -430,7 +496,12 @@ recordRoutes.route("/booking/add/:restaurantId").post(async function (request, r
     db_connect
         .collection("booking")
         .updateOne(myQuery, newValues, function (err, res) {
-            if (err) throw err;
+            if (err) {
+                console.log("Error ADD NEW BOOKING (customer action): " + err)
+                logError(err, "Could add new booking (customer action) to restaurant" + request.params.restaurantId)
+            } else {
+                logEvent("Added new booking (customer action) to restaurant" + request.params.restaurantId)
+            }
             response.json(res);
         });
 
@@ -464,38 +535,6 @@ recordRoutes.route("/booking/add/:restaurantId").post(async function (request, r
 });
 
 /**
- * REGISTER NEW USER
- */
-recordRoutes.route("/register").post(async (request, response) => {
-    const users = await getUsers()
-    let exists = existingEmail(users, request.body.email)
-    if (!exists) {
-        let credentials = {
-            email: request.body.email,
-            password: request.body.password
-        }
-        let newRestaurantId = uuid.v4()
-        let encryptedCredentials = encrypt(JSON.stringify(credentials))
-        let db_connect = dbo.getDb()
-        let newUser = {
-            restaurantId: newRestaurantId,
-            credentials: encryptedCredentials
-        }
-        db_connect
-            .collection("authentication")
-            .insertOne(newUser, function (err, res) {
-                if (err) throw err;
-                response.json({
-                    restaurantId: newRestaurantId
-                });
-            });
-        setupUsersCollections(newRestaurantId)
-    } else if (users.length) {
-        response.json({})
-    }
-})
-
-/**
  * DELETE EXISTING BOOKING
  * Booking form query that deletes a booking from the db
  */
@@ -522,12 +561,18 @@ recordRoutes.route("/booking/update").post(async function (request, response) {
         db_connect
             .collection("booking")
             .updateOne(myQuery, newValues, function (err, res) {
-                if (err) throw err;
-                // console.log("1 document updated");
+                if (err) {
+                    console.log("Error DELETE EXISTING BOOKING (customer action): " + err)
+                    logError(err, "Could not delete booking " + booking.id)
+                } else {
+                    logEvent("Deleted booking " + booking.id)
+                }
                 response.json(res);
             });
     } else {
-        response.json({message: 'La prenotazione inserita è già cancellata'});
+        response.json({
+            message: 'La prenotazione inserita è già cancellata'
+        });
     }
 
     // Change status in spreadsheet
@@ -590,6 +635,7 @@ recordRoutes.route("/booking/update").post(async function (request, response) {
 recordRoutes.route("/google/login").post(async (request, response) => {
     let {tokens} = await oauth2Client.getToken(request.body.code) //await oauth2Client.getToken(request.body.googleData);
     let restaurantId = request.body.restaurantId
+    logEvent("Restaurant " + restaurantId + " logged in with google")
 
     if (tokens.refresh_token) {
         let userInfo = {}
@@ -614,6 +660,10 @@ recordRoutes.route("/google/login").post(async (request, response) => {
  */
 recordRoutes.route("/profile/:restaurantId").get(async (request, response) => {
     let profile = await getProfile(request.params.restaurantId)
+    if (profile)
+        logEvent("Fetched Google profile for restaurant: " + request.params.restaurantId)
+    else
+        logEvent("No Google profile for restaurant: " + request.params.restaurantId)
     response.send(profile)
 })
 
@@ -630,14 +680,18 @@ recordRoutes.route("/google/logout/:restaurantId").delete(async (request, respon
     let myQuery = {
         restaurantId: restaurantId
     };
+    // Delete user's google data in db (tokens, profile, spreadsheetId)
     db_connect
         .collection("google_data") //
         .deleteOne(myQuery, function (err, result) {
-            if (err) throw err;
+            if (err) {
+                console.log("Error LOGOUT GOOGLE: " + err)
+                logError(err, "Could not log out from google for restaurant: " + restaurantId)
+            } else {
+                logEvent("Logged out from google for restaurant " + restaurantId)
+            }
             response.json(result)
         });
-
-    // Revoke access to apps
 })
 
 /**
@@ -668,7 +722,12 @@ function storeTokens(tokens, restaurantId) {
     db_connect
         .collection("google_data")
         .updateOne(myQuery, newValues, {upsert: true}, function (err, result) {
-            if (err) throw err;
+            if (err) {
+                console.log("Error STORE TOKENS: " + err)
+                logError(err, "Could not store google tokens for restaurant: " + restaurantId)
+            } else {
+                logEvent("Stored google tokens for restaurant " + restaurantId)
+            }
             console.log("1 document updated " + result);
         });
 }
@@ -682,10 +741,16 @@ async function getTokens(restaurantId) {
     let myQuery = {
         restaurantId: restaurantId
     };
-    return db_connect
+    let tokens = db_connect
         .collection("google_data")
         .findOne(myQuery)
         .then((result) => JSON.parse(decrypt(result.tokens)))
+    if (tokens)
+        logEvent("Got Google tokens for restaurant: " + restaurantId)
+    else
+        logEvent("No google tokens for restaurant: " + restaurantId)
+
+    return tokens
 }
 
 /**
@@ -696,6 +761,7 @@ async function getTokens(restaurantId) {
 function storeProfile(profile, restaurantId) {
     let db_connect = dbo.getDb("sdp_db");
     let myQuery = {restaurantId: restaurantId};
+
     // ENCRYPTION
     let encrypted = encrypt(JSON.stringify(profile))
     let newValues = {
@@ -706,8 +772,13 @@ function storeProfile(profile, restaurantId) {
     db_connect
         .collection("google_data")
         .updateOne(myQuery, newValues, {upsert: true}, function (err, result) {
-            if (err) throw err;
-            console.log("1 document updated " + result);
+            if (err) {
+                console.log("Error STORE PROFILE: " + err)
+                logError(err, "Failed to store google profile for restaurant: " + restaurantId)
+            } else {
+                logEvent("Stored user's Google profile for restaurant: " + restaurantId)
+            }
+            // console.log("1 document updated " + result);
         });
 }
 
@@ -726,8 +797,10 @@ async function getProfile(restaurantId) {
         .findOne(myQuery)
         .then((result) => result)
     if (googleData && googleData.profile) {
+        logEvent("Got user's Google profile for restaurant: " + restaurantId)
         return JSON.parse(decrypt(googleData.profile))
     } else {
+        logEvent("No user's Google profile for restaurant: " + restaurantId)
         return {}
     }
 
@@ -752,12 +825,14 @@ async function revokeAccessToApp(restaurantId) {
     const postReq = https.request(postOptions, function (res) {
         res.setEncoding('utf8');
         res.on('data', d => {
-            console.log('Response: ' + d);
+            // console.log('Response: ' + d);
+            logEvent("Revoked app's access to Google APIs for restaurant: " + restaurantId)
         });
     });
 
     postReq.on('error', error => {
-        console.log(error)
+        console.log("Error REVOKING GOOGLE ACCESS TO APP: " + error)
+        logError(error, "Error revoking app's access to Google APIs for restaurant: " + restaurantId)
     });
 
     // Post the request with data
@@ -825,12 +900,14 @@ async function addBookingToCalendar(restaurantId, booking) {
         resource: bookingEvent,
     }, function (err, bookingEvent) {
         if (err) {
+            logError(err, 'Failed event creation on Google calendar for restaurant: ' + restaurantId + " for the booking: " + booking.id)
             console.log('There was an error contacting the Calendar service: ' + err);
-            throw err
+            console.log('The booking you were trying to add is: ' + bookingEvent);
+        } else {
+            logEvent('Event created on Google calendar for restaurant: ' + restaurantId + " for the booking: " + booking.id)
         }
-
     });
-    console.log('Event created ' + bookingEvent.id);
+    // console.log('Event created ' + bookingEvent.id);
 }
 
 /**
@@ -847,8 +924,17 @@ async function removeBookingFromCalendar(restaurantId, bookingId) {
         auth: oauth2Client,
         calendarId: 'primary',
         eventId: bookingId,
+    }, function (err, data) {
+        if (err) {
+            logError(err, 'Failed to remove event from Google calendar for restaurant: ' + restaurantId + " for the booking: " + bookingId)
+            console.log('There was an error contacting the Calendar service: ' + err);
+            console.log('The id of the booking you were trying to delete is: ' + bookingId);
+        } else {
+            logEvent('Event removed from Google calendar for restaurant: ' + restaurantId + " for the booking: " + bookingId)
+        }
+        console.log(data)
     });
-    console.log(res.data)
+
 }
 
 /**
@@ -912,9 +998,11 @@ async function addBookingToSpreadsheet(restaurantId, booking) {
     const sheets = google.sheets('v4');
     try {
         const response = (await sheets.spreadsheets.values.append(request)).data;
+        logEvent("Added booking " + booking.id + " to spreadsheet of restaurant: " + restaurantId)
         console.log(JSON.stringify(response, null, 2));
     } catch (err) {
-        console.error(err);
+        logError("Failed to add booking " + booking.id + " to spreadsheet of restaurant: " + restaurantId)
+        console.log("Error adding booking to spreadsheet: " + err);
     }
 }
 
@@ -951,23 +1039,28 @@ async function updateBookingInSpreadsheet(restaurantId, bookingId, newStatus) {
     })
 
     // Clear the spreadsheet
-    await sheets.spreadsheets.values.clear({
-        spreadsheetId: spreadsheetId,
-        range: 'Foglio1',
-        auth: oauth2Client
-    })
+    try {
+        await sheets.spreadsheets.values.clear({
+            spreadsheetId: spreadsheetId,
+            range: 'Foglio1',
+            auth: oauth2Client
+        })
 
-    // write all the rows again
-    const res = await sheets.spreadsheets.values.append({
-        spreadsheetId: spreadsheetId,
-        range: "Foglio1!A1:L1",
-        auth: oauth2Client,
-        valueInputOption: "USER_ENTERED",
-        resource: {
-            range: 'Foglio1!A1:L1',
-            values: response.values
-        }
-    });
+        // write all the rows again
+        const res = await sheets.spreadsheets.values.append({
+            spreadsheetId: spreadsheetId,
+            range: "Foglio1!A1:L1",
+            auth: oauth2Client,
+            valueInputOption: "USER_ENTERED",
+            resource: {
+                range: 'Foglio1!A1:L1',
+                values: response.values
+            }
+        });
+    } catch (err) {
+        logError(err, "Error updating row in spreadsheet")
+    }
+
 }
 
 /**
@@ -1200,10 +1293,11 @@ async function initSpreadsheet(title, restaurantId) {
             fields: 'spreadsheetId',
         });
         console.log(`Spreadsheet ID: ${spreadsheet.data.spreadsheetId}`);
+        logEvent("Initialized spreadsheet for restaurant: " + restaurantId)
         return await spreadsheet.data.spreadsheetId;
     } catch (err) {
+        logError(err, "Failed to initilize spreadsheet for restaurant: " + restaurantId)
         console.log("Error init spreadsheet: " + err)
-        throw err;
     }
 }
 
@@ -1227,7 +1321,12 @@ function storeSpreadsheetId(spreadsheetId, restaurantId) {
     db_connect
         .collection("google_data")
         .updateOne(myQuery, newValues, {upsert: true}, function (err, result) {
-            if (err) throw err;
+            if (err) {
+                console.log("Error storing the spreadsheetId in the db: " + err)
+                logError(err, "Failed to store spreadsheet id for restaurant: " + restaurantId)
+            } else {
+                logEvent("Stored spreadsheet id for restaurant: " + restaurantId)
+            }
             console.log("1 document updated " + result);
         });
 }
@@ -1247,8 +1346,10 @@ async function getSpreadsheetId(restaurantId) {
         .findOne(myQuery)
         .then((result) => result)
     if (googleData && googleData.spreadsheetId) {
+        logEvent("Got spreadsheetId for restaurant: " + restaurantId)
         return JSON.parse(decrypt(googleData.spreadsheetId))
     } else {
+        logEvent("No spreadsheetId for restaurant: " + restaurantId)
         return {}
     }
 }
@@ -1305,6 +1406,7 @@ function setupUsersCollections(restaurantId) {
     newActivitiesDocument(restaurantId)
     // booking
     newBookingsDocument(restaurantId)
+    logEvent("Initialized collections for restaurant: " + restaurantId)
 }
 
 /**
@@ -1325,7 +1427,9 @@ function newCustomizeDocument(restaurantId) {
     db_connect
         .collection("customize")
         .insertOne(document, function (err, res) {
-            if (err) throw err;
+            if (err) {
+                console.log("Error creating new customization document in the db: " + err)
+            }
         });
 }
 
@@ -1345,7 +1449,9 @@ function newActivitiesDocument(restaurantId) {
     db_connect
         .collection("activities")
         .insertOne(document, function (err, res) {
-            if (err) throw err;
+            if (err) {
+                console.log("Error creating new activities document in the db: " + err)
+            }
         });
 }
 
@@ -1362,7 +1468,9 @@ function newBookingsDocument(restaurantId) {
     db_connect
         .collection("booking")
         .insertOne(document, function (err, res) {
-            if (err) throw err;
+            if (err) {
+                console.log("Error creating new bookings document in the db: " + err)
+            }
         });
 }
 
@@ -1445,15 +1553,80 @@ function sendEmailToUser(receiverEmail, htmlToSend, emailSubject) {
     };
 
     transporter.sendMail(mailData, function (err, info) {
-        if (err)
-            console.log(err)
-        else
+        if (err) {
+            console.log("Error SENDING MAIL TO USER: " + err)
+            logError(err, "Failed to send mail to user: " + receiverEmail)
+        } else {
+            logEvent("Sent email to user: " + receiverEmail)
             console.log(info);
+        }
+    });
+}
 
-        var body = info.response.toString();
-        body.should.contain('<h1>This is a test</h1>');
-        body.should.contain('Name');
-        done();
+/**
+ * Logs error in the log file
+ * @param error error object
+ * @param info additional info as string
+ */
+function logError(error, info) {
+    let currentDate = new Date();
+    let dateAsString = currentDate.getDate() + "/"
+        + (currentDate.getMonth() + 1) + "/"
+        + currentDate.getFullYear() + " @ "
+        + currentDate.getHours() + ":"
+        + currentDate.getMinutes() + ":"
+        + currentDate.getSeconds();
+
+    let logRow =
+        "TIMESTAMP: " + dateAsString + "\n" +
+        "ERROR: " + error.name + "\n" +
+        "MESSAGE: " + error.message + "\n" +
+        "INFO: " + info +
+        "\n\n"
+
+    fs.open("log.txt", 'a', (err, fd) => {
+        if (err) console.log(err);
+        try {
+            fs.appendFile("log.txt", logRow, 'utf-8', (err) => {
+                if (err) {
+                    console.log(err)
+                }
+            })
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}
+
+/**
+ * Logs successful events in the log file
+ * @param event
+ */
+function logEvent(event) {
+    let currentDate = new Date();
+    let dateAsString = currentDate.getDate() + "/"
+        + (currentDate.getMonth() + 1) + "/"
+        + currentDate.getFullYear() + " @ "
+        + currentDate.getHours() + ":"
+        + currentDate.getMinutes() + ":"
+        + currentDate.getSeconds();
+
+    let logRow =
+        "TIMESTAMP: " + dateAsString + "\n" +
+        "EVENT: " + event +
+        "\n\n"
+
+    fs.open("log.txt", 'a', (err, fd) => {
+        if (err) console.log(err);
+        try {
+            fs.appendFile("log.txt", logRow, 'utf-8', (err) => {
+                if (err) {
+                    console.log(err)
+                }
+            })
+        } catch (err) {
+            console.log(err);
+        }
     });
 }
 
