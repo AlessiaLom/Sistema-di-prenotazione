@@ -1417,10 +1417,10 @@ function newCustomizeDocument(restaurantId) {
     let document = {
         restaurantId: restaurantId,
         additionalInfo: "",
-        primaryColor: "",
-        secondaryColor: "",
+        primaryColor: {},
+        secondaryColor: {},
         logoPath: "",
-        socialNetworks: "",
+        socialNetworks: {},
         restaurantName: ""
     }
     let db_connect = dbo.getDb()
