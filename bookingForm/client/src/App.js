@@ -19,8 +19,10 @@ export default class App extends React.Component {
 render(){
     return (
       <>
-        <Logo />
         <Navbar restaurantId={this.state.restaurantId}/>
+        <div className='additionalInfoDiv'>
+          <p className="additionalInfo"></p>
+        </div>
         <div className="container">
           <Routes>
             <Route path ={"/" + this.state.restaurantId} element={<Booking restaurantId={this.state.restaurantId} />} />

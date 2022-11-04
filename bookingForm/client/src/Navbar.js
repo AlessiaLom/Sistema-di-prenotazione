@@ -1,10 +1,11 @@
 import { Link, useMatch, useResolvedPath } from "react-router-dom"
+import Logo from "./Logo";
 
 export default function Navbar(props) {
   return (
     <nav className="nav">
+      <Logo/>
       <a href="/" target={'_blank'} className="site-title"></a>
-      <p className="additionalInfo"></p>
       <ul>
         <CustomLink to={props.restaurantId + "/booking"}>Prenota</CustomLink>
         <CustomLink to={props.restaurantId + "/cancelation"}>Cancella</CustomLink>

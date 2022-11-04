@@ -7,24 +7,26 @@ import { activitiesList } from './BookingForm';
 const THEME = {
   
   Table:
+  /*
     `grid-template-columns: 3fr 1fr 1fr 2fr 5fr;
+    `*/
+    `grid-template-columns: 3fr 1fr 5fr;
     `
   ,
   HeaderRow: `
-    font-size: 14px;
-
-    background-color: black;
+    font-size: 10px;
+    color:white;
+    padding: 15px;
+    border-width: thin;
+    border-style: none;
+    background-color: #333;
   `,
   Row: `
-    font-size: 14px;
-
-    &:nth-of-type(odd) {
-      background-color: white;
-    }
-
-    &:nth-of-type(even) {
-      background-color: white;
-    }
+    font-size: 8px;
+    border-width: thin;
+    border-style: none;
+    padding: 15px;
+    background-color: #333;
   `,
 };
 
@@ -71,7 +73,7 @@ const CustomTable = () => {
   function onTreeChange(action, state) {
     
   }
-
+/*
   return <Table data={data} tree={tree} theme={theme} layout={{ horizontalScroll: true }}>
     {(tableList) => (
       <>
@@ -93,6 +95,29 @@ const CustomTable = () => {
             <Cell>{item.start}</Cell>
             <Cell>{item.end}</Cell>
             <Cell>{item.spots}</Cell>
+            <Cell>{item.days}</Cell>
+          </Row>
+        ))}
+        </Body>
+      </>
+      )}</Table>;*/
+      return <Table data={data} tree={tree} theme={theme} layout={{ horizontalScroll: true }}>
+    {(tableList) => (
+      <>
+        <Header>
+          <HeaderRow>
+            <HeaderCell>Attività</HeaderCell>
+            <HeaderCell>Fascia Oraria</HeaderCell>
+            <HeaderCell>Giorni</HeaderCell>
+          </HeaderRow>
+        </Header>
+        <Body>
+          {tableList.map((item) => (
+            <Row key={item.name} item={item}>
+            <CellTree item={item} pinLeft>
+              {item.name}
+            </CellTree>
+            <Cell>{item.start} / {item.end}</Cell>
             <Cell>{item.days}</Cell>
           </Row>
         ))}

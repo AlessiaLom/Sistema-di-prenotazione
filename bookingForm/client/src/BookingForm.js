@@ -66,7 +66,7 @@ const CustomButton = styled(ButtonUnstyled)(
   font-weight: bold;
   font-size: 0.875rem;
   color: ${secondaryColor};
-  background-color: white;
+  background-color: linear-gradient(90deg, var(--primary-color) 44.2%, var(--secondary-color) 138.2%);
   border-color: ${secondaryColor};
   padding: 12px 24px;
   border-radius: 12px;
@@ -95,6 +95,8 @@ export default class BookingForm extends Component {
       statusProp: '',
       selectedDate: null,
       selectedTime: null,
+      selectedActivity: null,
+      activityValue: [],
       timeValue: [],
       bookingGuests: null,
       bookingActivity: null,
@@ -526,6 +528,16 @@ export default class BookingForm extends Component {
     });
   }
 
+  handleActivityChange = (activity) => {
+    this.setState({ selectedActivity: activity, activityValue: activity }, () => {
+      activity == null ? this.setState(prevState => ({
+        errors: {
+           ...prevState.errors,
+           activityFull : 'Questo campo è obbligatorio'}})) : 
+           this.setState(prevState => ({errors: { ...prevState.errors, activityFull : ''}}));
+    });
+  }
+
   handleDateChange = (date) => {
     this.setState({ displayedOptions: [], timeValue: []});
     this.handleTimeChange(null);
@@ -696,6 +708,23 @@ export default class BookingForm extends Component {
     }
   } 
 
+  accordion = () =>{
+    var acc = document.getElementsByClassName("accordion");
+    var i;
+
+    for (i = 0; i < acc.length; i++) {
+      acc[i].addEventListener("click", function() {
+      this.classList.toggle("active");
+      var panel = this.nextElementSibling;
+      if (panel.style.maxHeight) {
+        panel.style.maxHeight = null;
+      } else {
+        panel.style.maxHeight = panel.scrollHeight + "px";
+      } 
+     });
+    }
+  }
+
   render(){
     const errors = this.state.errors;
     const options = this.state.displayedOptions;
@@ -704,35 +733,66 @@ export default class BookingForm extends Component {
     return (
       <div className="wrapper">
         <div className="form-wrapper">
+        <HeaderForm />
+          <button className="accordion" onClick={this.accordion}>SERVIZI OFFERTI DAL RISTORANTE</button>
+            <div className="panel">
+              <CustomTable/>
+            </div>
             <form onSubmit={this.handleSubmit} noValidate>
-            <HeaderForm />
+            
+            {/*
             <div className="tableContainer">
-              <label className="resturantTableLabel">Servizi offerti dal ristorante:</label>
+              <label className="resturantTableLabel">SERVIZI OFFERTI DAL RISTORANTE:</label>
               <CustomTable />
             </div>
+            */}
             <div className="bookingControls">
             <div className="bookingDate">
-                <label className="booking">Data di prenotazione* {errors.bookingDate.length > 0 && <span className='error'>{errors.bookingDate}</span>}
-                    <DatePicker className="booking" placeholderText="Select..." selected={this.state.selectedDate} 
+                <label className="booking"><p>DATA DI PRENOTAZIONE* </p>{errors.bookingDate.length > 0 && <span className='error'>{errors.bookingDate}</span>}
+                    <DatePicker className="bookingSelector" placeholderText="Select..." selected={this.state.selectedDate} 
                     onChange={this.handleDateChange} 
                     dateFormat="dd-MM-yyyy" 
                     minDate={new Date()} noValidate/></label>
               </div>
               <div className="bookingActivity">
-                <label className="booking">Attività* {errors.activityFull.length > 0 && <span className='error' id="seatsFullError">{errors.activityFull}</span>}</label>
-                <Stack spacing={2} direction="row">
+                <label className="booking"><p>ATTIVITA'*</p> {errors.activityFull.length > 0 && <span className='error' id="seatsFullError">{errors.activityFull}</span>}
+                
+                <select id="activitySelect" className="bookingSelector">
+                    <option value="empty" disabled selected hidden>Select...</option>
+                   {activities.map((activity) => {
+                      return (<option value={activity.name} onClick={event => this.handleClick(event, activity.name)}>{activity.name}</option>)
+                  })}
+                </select>
+                {/*
+                <Select id="timeSelectors" value={this.state.activityValue} className="bookingSelector" options={activities} theme={(theme) => ({
+                  ...theme,
+                  borderRadius: 0,
+                  colors: {
+                    primary25: secondaryColor,
+                    primary: primaryColor,
+                  },})}
+                  onChange={this.handleActivityChange}
+                  isOptionDisabled={(option) => option.disabled}
+                  isClearable={true}
+                  noValidate
+                />*/}
+               
+                  </label>
+                {/* 
+                 <Stack spacing={2} direction="row">
                   {activities.map((activity) => {
                     return (<CustomButton key={activity.name} onClick={event => this.handleClick(event, activity.name)}>{activity.name}</CustomButton>)
                   })}
                 </Stack>
+                */}
               </div>
               <div className="bookingTime">
-              <label className="booking">Ora di prenotazione* {errors.bookingTime.length > 0 && <span className='error'>{errors.bookingTime}</span>}
-                <Select id="timeSelectors" value={this.state.timeValue} className="booking" options={options} theme={(theme) => ({
+              <label className="booking"><p>ORA DI PRENOTAZIONE*</p> {errors.bookingTime.length > 0 && <span className='error'>{errors.bookingTime}</span>}
+                <Select id="timeSelectors" value={this.state.timeValue} className="bookingSelector" options={options} theme={(theme) => ({
                   ...theme,
                   borderRadius: 0,
                   colors: {
-                    ...theme.colors,
+                   // ...theme.colors,
                     primary25: secondaryColor,
                     primary: primaryColor,
                   },})}
@@ -742,7 +802,7 @@ export default class BookingForm extends Component {
                   noValidate/></label>                                      
               </div>
               <div className="bookingGuests">
-                <label className="booking">Numero di coperti* {errors.bookingGuests.length > 0 && <span className='error'>{errors.bookingGuests}</span>}<input type="number" className="booking" onWheel={(e) => e.target.blur()} id="bookingGuestSelection" disabled={true} name="bookingGuests" placeholder="Inserisci i coperti" onChange={this.handleChange} noValidate min={1}/></label>
+                <label className="booking"><p>NUMERO DI COPERTI*</p> {errors.bookingGuests.length > 0 && <span className='error'>{errors.bookingGuests}</span>}<input type="number" className="bookingSelector" onWheel={(e) => e.target.blur()} id="bookingGuestSelection" disabled={true} name="bookingGuests" placeholder="Inserisci i coperti" onChange={this.handleChange} noValidate min={1}/></label>
               </div>
               <div className="resturantTable">
                 <label className={`bookingStatus-${this.state.statusProp}`}>{this.state.statusLabel}</label>
@@ -750,25 +810,27 @@ export default class BookingForm extends Component {
             </div>
             <div className="personControls">
               <div className="guestName">
-                <label className="person">Nome*  {errors.guestName.length > 0 && 
-                    <span className='error person'>{errors.guestName}</span>}<input type="text" className="person" placeholder="Inserisci il nome" name="guestName" onChange={this.handleChange} noValidate /></label>
+                <label className="person"><p>NOME*</p> {errors.guestName.length > 0 && 
+                    <span className='error person'>{errors.guestName}</span>}<input type="text" className="personInput" placeholder="Inserisci il nome" name="guestName" onChange={this.handleChange} noValidate /></label>
                 </div>
                 <div className="guestSurname">
-                <label className="person">Cognome* {errors.guestSurname.length > 0 && 
-                    <span className='error person'>{errors.guestSurname}</span>}<input type="text" className="person" name="guestSurname" placeholder="Inserisci il cognome"  onChange={this.handleChange} noValidate /></label>
+                <label className="person"><p>COGNOME*</p> {errors.guestSurname.length > 0 && 
+                    <span className='error person'>{errors.guestSurname}</span>}<input type="text" className="personInput" name="guestSurname" placeholder="Inserisci il cognome"  onChange={this.handleChange} noValidate /></label>
                 </div>
                 <div className="guestEmail">
-                <label className="person">Email* {errors.guestEmail.length > 0 && 
-                    <span className='error person'>{errors.guestEmail}</span>}<input type="text" className="person" name="guestEmail" placeholder="Inserisci la mail" onChange={this.handleChange} noValidate/></label>
+                <label className="person"><p>EMAIL*</p> {errors.guestEmail.length > 0 && 
+                    <span className='error person'>{errors.guestEmail}</span>}<input type="text" className="personInput" name="guestEmail" placeholder="Inserisci la mail" onChange={this.handleChange} noValidate/></label>
                 </div>
                 <div className="guestPhone">
-                <label className="person">Numero di cellulare* {errors.guestPhone.length > 0 && 
-                    <span className='error person'>{errors.guestPhone}</span>}<input type="tel" className="person" name="guestPhone" placeholder="Inserisci il cellulare" onChange={this.handleChange} noValidate /></label>
+                <label className="person"><p>NUMERO DI CELLULARE*</p> {errors.guestPhone.length > 0 && 
+                    <span className='error person'>{errors.guestPhone}</span>}<input type="tel" className="personInput" name="guestPhone" placeholder="Inserisci il cellulare" onChange={this.handleChange} noValidate /></label>
                 </div>
                 <div className="guestAdditionalInfo">
-                <label className="person">Informazioni aggiuntive {errors.guestAdditionalInfo.length > 0 && 
+                <label className="person"><p>INFORMAZIONI AGGIUNTIVE</p> {errors.guestAdditionalInfo.length > 0 && 
                     <span className='error person'>{errors.guestAdditionalInfo}</span>}<textarea name="guestAdditionalInfo" placeholder="Scrivi qui..." onChange={this.handleChange} noValidate /></label>
                 </div>
+              </div>
+              <div className="checkBoxControll">
                 <div className="guestPrivacy">
                 {errors.guestPrivacy.length > 0 && 
                     <span className='privacyError person'>{errors.guestPrivacy}</span>}
@@ -801,4 +863,5 @@ export default class BookingForm extends Component {
       </div>
     );
   }
+  
 }

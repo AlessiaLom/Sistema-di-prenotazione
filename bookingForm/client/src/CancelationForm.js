@@ -285,24 +285,24 @@ notifyError = (msg) => {
             <form onSubmit={this.handleSubmit} noValidate>
             <CancelationHeader />
             <div className="prenotationID">
-            <label className="person">Codice di prenotazione* {errors.prenotationID.length > 0 && 
-                    <span className='error person'>{errors.prenotationID}</span>}<input type="text" className="person" placeholder="Inserisci il codice" name="prenotationID" onChange={this.handleChange} noValidate /></label>
+            <label className="person"><p>CODICE DI PRENOTAZIONE*</p> {errors.prenotationID.length > 0 && 
+                    <span className='error person'>{errors.prenotationID}</span>}<input type="text" className="personInput" placeholder="Inserisci il codice" name="prenotationID" onChange={this.handleChange} noValidate /></label>
             </div>
             <div className="prenotationName">
-            <label className="person">Nome* {errors.prenotationName.length > 0 && 
-                    <span className='error person'>{errors.prenotationName}</span>}<input type="text" className="person" placeholder="Inserisci il nome" name="prenotationName" onChange={this.handleChange} noValidate /></label>
+            <label className="person"><p>NOME*</p> {errors.prenotationName.length > 0 && 
+                    <span className='error person'>{errors.prenotationName}</span>}<input type="text" className="personInput" placeholder="Inserisci il nome" name="prenotationName" onChange={this.handleChange} noValidate /></label>
             </div>
             <div className="prenotationSurname">
-            <label className="person">Cognome* {errors.prenotationSurname.length > 0 && 
-                    <span className='error person'>{errors.prenotationSurname}</span>}<input type="text" className="person" placeholder="Inserisci il cognome" name="prenotationSurname" onChange={this.handleChange} noValidate /></label>
+            <label className="person"><p>COGNOME*</p> {errors.prenotationSurname.length > 0 && 
+                    <span className='error person'>{errors.prenotationSurname}</span>}<input type="text" className="personInput" placeholder="Inserisci il cognome" name="prenotationSurname" onChange={this.handleChange} noValidate /></label>
             </div>
             <div className="prenotationEmail">
-            <label className="person">Email* {errors.prenotationEmail.length > 0 && 
-                    <span className='error person'>{errors.prenotationEmail}</span>}<input type="text" className="person" placeholder="Inserisci la mail" name="prenotationEmail" onChange={this.handleChange} noValidate /></label>
+            <label className="person"><p>EMAIL*</p> {errors.prenotationEmail.length > 0 && 
+                    <span className='error person'>{errors.prenotationEmail}</span>}<input type="text" className="personInput" placeholder="Inserisci la mail" name="prenotationEmail" onChange={this.handleChange} noValidate /></label>
             </div>
             <div className="prenotationPhone">
-            <label className="person">Numero di telefono* {errors.prenotationPhone.length > 0 && 
-                    <span className='error person'>{errors.prenotationPhone}</span>}<input type="text" className="person" placeholder="Inserisci il numero di telefono" name="prenotationPhone" onChange={this.handleChange} noValidate /></label>
+            <label className="person"><p>NUMERO DI TELEFONO*</p> {errors.prenotationPhone.length > 0 && 
+                    <span className='error person'>{errors.prenotationPhone}</span>}<input type="text" className="personInput" placeholder="Inserisci il numero di telefono" name="prenotationPhone" onChange={this.handleChange} noValidate /></label>
             </div>
             <div className="submit">
               <button className="button">Invia</button>

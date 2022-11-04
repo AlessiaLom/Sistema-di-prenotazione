@@ -1,6 +1,6 @@
 :root{
-  --primary-color : black;
-  --secondary-color: white;
+  --primary-color : #a062f2;
+  --secondary-color: rgb(61, 161, 255);
 }
 
 * {
@@ -14,22 +14,20 @@ html { height: 100%; }
 body {
     min-height:100%; 
     position:relative; 
-    padding-bottom: 50px;
 }
 
 #seatsFullError{
-  font-size: large;
-  text-align: center;
-  padding: 0.5rem 0;
+  font-size: 0.825em;
+  text-align: left;
 }
 
 footer { 
-    position: absolute; 
+    position: relative; 
     left: 0 ; right: 0; bottom: 0; 
 }
 
 body {
-  background: linear-gradient(90deg, var(--primary-color) 44.2%, var(--secondary-color) 138.2%);
+  background: rgb(61, 61, 61);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
   "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
   sans-serif;
@@ -41,7 +39,7 @@ body {
 }
 
 .tableContainer{
-  margin: 0 5%;
+  margin: 0 2%;
 }
 
 .ButtonUnstyled-root.active{
@@ -56,11 +54,23 @@ body {
 }
 
 .bookingControls{
-  margin: 0 5%;
+  margin: 2%;
+  margin-bottom: 5%;
+  width: 46%;
+  float: left;
 }
 
 .personControls{
-  margin: 0 5%;
+  margin: 2%;
+  width: 46%;
+  margin-bottom: 10%;
+  float: right;
+}
+
+.checkBoxControl{
+  width: 100% !important;
+  margin-left: 2%;
+  float: left;
 }
 
 form{
@@ -80,16 +90,35 @@ form{
   margin-bottom: 2%;
 }
 
+.guestPrivacy, .guestMarketing{
+  font-size: 12px;
+  margin-top: 2%;
+}
+
+h1{
+  display: inline;
+}
+
 .h1 {
   color: white;
-  font-size: 25px;
-  text-align: center;
+  font-size: 30px;
+  text-align: left;
+  font-weight: lighter;
+  margin-left: 2%;
+}
+
+.h1color{
+  color:var(--primary-color);
+  font-size: 30px;
+  text-align: left;
+  font-weight: lighter;
 }
 
 .fieldInfo{
-  color: var(--secondary-color);
-  text-align: center;
-  margin-bottom: 5%;
+  color: #777;
+  text-align: left;
+  margin-left: 2%;
+  margin-bottom: 1%;
 }
 
 textarea, input:not(#guestPrivacy):not(#guestMarketing), .button{
@@ -134,15 +163,27 @@ textarea, input:not(#guestPrivacy):not(#guestMarketing), .button{
 
 table{
   width: minmax(50vw, 100%);
-  color: black;
   margin-bottom: 3%;
-  border-style: dashed;
-  border-color: white;
-  border-radius: 5px;
+  background-color: #333;
 }
-
 th, td{
+  font-size: 8px;
   border-style: solid;
+  border-width: 1px;
+  border-color: #777;
+  text-align: left;
+  padding: 15px !important;
+  color: white;
+}
+td{
+  font-weight: lighter;
+  background: rgb(61, 61, 61) !important;
+  padding: 15px;
+}
+th{
+  padding: 15px;
+  background: #333 !important;
+  font-weight: bold;
 }
 
 a:visited{
@@ -164,21 +205,37 @@ span.error.person{
 .guestName, .guestSurname, .guestEmail, .guestPhone, .guestAdditionalInfo, .guestPrivacy, .guestMarketing{
   margin-left: 0;
 }
+.additionalInfoDiv{
+  width: 100%;
+  border-top: #777;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-bottom: #777;
+  border-bottom-style: solid;
+  border-bottom-width: 1px
+}
+
+.additionalInfo{
+  margin-left: 3%;
+  color: #777;
+  font-style: normal;
+  padding: 1% 0;
+}
 
 .button {
-  border-color: var(--secondary-color);
   position: relative;
-  background: var(--secondary-color);
+  border-width: 0px;
+  border-radius: 0px;
+  background: linear-gradient(90deg, var(--primary-color) 44.2%, var(--secondary-color) 138.2%);
   color: white;
   text-transform: uppercase;
   font-weight: 600;
-  margin-top: 20px;
+  margin-top: 5%;
   padding: 20px;
   font-size: 16px;
   letter-spacing: 2px;
   display: block;
   appearance: none;
-  border-radius: 4px;
   width: 50%;
   margin-left: 25%;
   font-weight: 400;
@@ -203,13 +260,13 @@ button:disabled, button[disabled]{
 
 .error {
   color:red;
-  font-size: 0.625em;
+  font-size: 0.825em;
   display: block;
 }
 
 .privacyError{
   color:red;
-  font-size: 0.625em;
+  font-size: 0.825em;
   display: block;
 }
 
@@ -230,7 +287,8 @@ td > div {
 }
 
 table th, table td{
-  font-size: 18px;
+  font-size: 14px;
+  padding: 15px !important;
 }
 
 .button:active {
@@ -256,9 +314,14 @@ table th, table td{
 }
 
 .resturantTableLabel{
+  font-size: 14px;
   font-weight: bold;
-  font-style: italic;
-  color: var(--secondary-color);
+  color: white;
+  margin-bottom: 1%;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-color: var(--primary-color);
+  text-decoration-thickness: 3px;
 }
 
 .bookingStatus-confirmed{
@@ -287,15 +350,16 @@ table th, table td{
   background-color: #333;
   color: white;
   display: flex;
-  justify-content: space-between;
-  align-items: stretch;
-  gap: 2rem;
-  padding: 0 1rem;
-  border-radius: 5px;
+  align-items:center;
+  padding-left: 2%;
+  border-radius: 0px;
+  height: fit-content;
 }
 
 .site-title {
   font-size: 2rem;
+  text-align: left;
+  width: 100%;
 }
 
 .site-title:hover, #facebook-link:hover, #messenger-link:hover, #instagram-link:hover, #whatsapp-link:hover {
@@ -304,28 +368,42 @@ table th, table td{
 }
 
 .nav ul {
-  padding: 0;
   margin: 0;
   list-style: none;
   display: flex;
-  gap: 1rem;
+  float: right;
+  height: fit-content;
+  position: relative;
+  right: 0px;
 }
 
 .nav a {
-  color: inherit;
+  background-color: transparent;
+  color: white;
+  text-align: center;
   text-decoration: none;
   height: 100%;
   display: flex;
   align-items: center;
-  padding: .25rem;
+  margin: 0;
+  padding: 15px;
 }
-
+.nav li{
+  background-color:transparent;
+  height: max-content;
+  margin: 0;
+  padding: 15px;
+}
 .nav li.active {
-  background-color: #555;
+  background-color: rgb(23, 23, 23);
+  height: max-content;
+  margin: 0;
+  padding: 15px;
 }
 
 .nav li:hover {
-  background-color: #777;
+  background-color: #555;
+  padding: 15px;
 }
 
 img{
@@ -338,11 +416,11 @@ img{
 }
 
 footer{
-  height: 50px;
+  height: 100px;
   background-color: #333;
   color: white;
   text-align: center;
-  padding: 1% 0;
+  padding: 4% 0;
   margin: 3% 0 0 0;
   border-radius: 5px;
 }
@@ -378,8 +456,89 @@ textarea{
 }
 
 .prenotationID, .prenotationName, .prenotationSurname, .prenotationEmail, .prenotationPhone{
-  margin-left: 25%;
-  margin-right: 25%;
+  margin-left: 2%;
+  width: 50%;
+}
+.logo-main{
+  margin-left:1%;
+  text-align: left;
+}
+.booking, .person{
+  font-size: 14px;
+}
+
+.booking p, .person p{
+  font-weight: bold;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-decoration-color: var(--primary-color);
+  margin: 2% 0;
+}
+
+.bookingSelector, .personInput, .person textarea{
+  background-color: #333;
+  width: 100%;
+  color: #777;
+  border: none !important;
+  margin: 0% !important;
+}
+
+.bookingSelector option{
+  color: #777;
+}
+#activitySelect{
+  padding: 10px 15px;
+}
+.guestMarketing a, .guestPrivacy a{
+  color: rgb(0, 145, 255);
+}
+
+.accordion {
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 96%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 14px;
+  transition: 0.4s;
+  margin: 0 2%;
+  font-weight: bold;
+}
+
+.accordion.active, .accordion:hover {
+  background-color: #444;
+}
+
+.accordion:after {
+  content: '\002B';
+  color: #777;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.accordion.active:after {
+  content: "\2212";
+}
+
+.panel {
+  padding: 0 2%;
+  margin: 0 2%;
+  background-color: #333;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+
+table{
+  padding: 2% !important;
+}
+
+.DatePiker{
+  margin: 0;
 }
 
 @media screen and (max-width: 380px) {
@@ -391,22 +550,66 @@ textarea{
     margin: 0;
   }  
 
+  h1{
+    display: block;
+  }
+
   .site-title{
     padding: 1%;
-    font-size: medium;
+    font-size: 30px;
+    width: 70%;
     height: auto !important;
   }
 
   .additionalInfo{
     font-size: small;
+    display: block;
+    width: 100%;
   }
 
-  .nav{
-    gap: 1rem;
+  nav{
+    width: 100%;
+  }
+
+  nav ul{
+    width: 100%;
+    padding: 0%;
+    margin: 0%;
+    display: inline;
+    align-content: center;
+  }
+
+  nav ul li{
+    width: 50%;
+    align-content: center;
+    margin-right: 0%;
+  }
+
+  nav ul a{
+    width: fit-content;
+    align-content: center;
+    margin-right: 0%;
+  }
+
+  nav li.active{
+    align-content: center;
+    margin: 0%;
+    text-align: center;
+  }
+
+  nav li:hover{
+    align-content: center;
+    margin: 0%;
+    text-align: center;
   }
 
   img{
-    display: none;
+    float: left;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #555;
   }
 
   .bookingControls{
@@ -421,7 +624,11 @@ textarea{
   }
 
   .bookingDate, .bookingTime, .bookingGuests, .bookingActivity, .resturantTable{
-    margin-left: 0;
+    margin: 0 2%;
+  }
+
+  .resturantTableLabel{
+    margin: 5% 0%;
   }
 
   .guestName, .guestSurname, .guestEmail, .guestPhone, .guestAdditionalInfo, .guestPrivacy, .guestMarketing{
@@ -451,7 +658,28 @@ textarea{
   }
 
   .prenotationID, .prenotationName, .prenotationSurname, .prenotationEmail, .prenotationPhone{
-    margin: 0;
+    margin: 5% 0%;
+    width: 100%;
+  }
+
+  footer{
+    position: relative;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    padding: 2%;
+  }
+  .mediaLinks{
+   margin-top: 25px;
+  }
+
+  table{
+    display: none !important;
+  }
+
+  body{
+    width: 100% !important;
   }
 }
 
@@ -513,6 +741,14 @@ textarea{
 
   .prenotationID, .prenotationName, .prenotationSurname, .prenotationEmail, .prenotationPhone{
     margin: 0;
+    width: 100%;
+  }
+
+  table{
+    margin-top: 5%;
+    display: flex !important;
+    flex-direction: column !important ;
+    
   }
 }
 
@@ -526,7 +762,7 @@ textarea{
     margin: 0;
   }
 
-  .bookingControls, .personControls{
+  .personControls, .bookingControls{
     margin-left: 0;
     width: 100%;
   }
@@ -548,8 +784,8 @@ textarea{
   }
 
   form{
-    margin-left: 15%;
-    width: 75%;
+    margin-left: 0%;
+    width: 100%;
   }
 
   .css-b62m3t-container{
@@ -559,5 +795,6 @@ textarea{
 
   .prenotationID, .prenotationName, .prenotationSurname, .prenotationEmail, .prenotationPhone{
     margin: 0;
+    width: 100%;
   }
 }
