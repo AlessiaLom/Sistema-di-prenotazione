@@ -530,6 +530,7 @@ textarea{
   background-color: #333;
   max-height: 0;
   overflow: hidden;
+  height: fit-content;
   transition: max-height 0.2s ease-out;
 }
 
@@ -674,10 +675,6 @@ table{
    margin-top: 25px;
   }
 
-  table{
-    display: none !important;
-  }
-
   body{
     width: 100% !important;
   }
@@ -744,12 +741,6 @@ table{
     width: 100%;
   }
 
-  table{
-    margin-top: 5%;
-    display: flex !important;
-    flex-direction: column !important ;
-    
-  }
 }
 
 
