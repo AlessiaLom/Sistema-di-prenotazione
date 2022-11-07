@@ -12,6 +12,7 @@ import ButtonUnstyled, { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled'
 import { styled } from '@mui/system';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { OptionUnstyled, optionUnstyledClasses } from "@mui/base";
 
 const today = new Date();
 
@@ -62,14 +63,16 @@ class Activity{
 
 const CustomButton = styled(ButtonUnstyled)(
   ({ theme }) => `
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: bold;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
   font-size: 0.875rem;
-  color: ${secondaryColor};
-  background-color: linear-gradient(90deg, var(--primary-color) 44.2%, var(--secondary-color) 138.2%);
-  border-color: ${secondaryColor};
+  color: white;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 1px;
+  background:  ${primaryColor} ;
   padding: 12px 24px;
-  border-radius: 12px;
   cursor: pointer;
 
   &:hover {
@@ -77,7 +80,8 @@ const CustomButton = styled(ButtonUnstyled)(
   }
 
   &.${buttonUnstyledClasses.active} {
-    background-color: ${primaryColor};
+    background: ${secondaryColor};
+    border-color: white;
   }
 
   &.${buttonUnstyledClasses.focusVisible} {
@@ -528,16 +532,6 @@ export default class BookingForm extends Component {
     });
   }
 
-  handleActivityChange = (activity) => {
-    this.setState({ selectedActivity: activity, activityValue: activity }, () => {
-      activity == null ? this.setState(prevState => ({
-        errors: {
-           ...prevState.errors,
-           activityFull : 'Questo campo è obbligatorio'}})) : 
-           this.setState(prevState => ({errors: { ...prevState.errors, activityFull : ''}}));
-    });
-  }
-
   handleDateChange = (date) => {
     this.setState({ displayedOptions: [], timeValue: []});
     this.handleTimeChange(null);
@@ -748,12 +742,45 @@ export default class BookingForm extends Component {
             */}
             <div className="bookingControls">
             <div className="bookingDate">
-                <label className="booking"><p>DATA DI PRENOTAZIONE* </p>{errors.bookingDate.length > 0 && <span className='error'>{errors.bookingDate}</span>}
+                <label className="booking"><p>DATA DI PRENOTAZIONE*</p> {errors.bookingDate.length > 0 && <span className='error'>{errors.bookingDate}</span>}
                     <DatePicker className="bookingSelector" placeholderText="Select..." selected={this.state.selectedDate} 
                     onChange={this.handleDateChange} 
                     dateFormat="dd-MM-yyyy" 
                     minDate={new Date()} noValidate/></label>
               </div>
+              <div className="bookingActivity">
+                <label className="booking"><p>ATTIVITÀ*</p> {errors.activityFull.length > 0 && <span className='error' id="seatsFullError">{errors.activityFull}</span>}</label>
+               {/*
+                <select id="activitySelect" className="bookingSelector">
+                  <option value="empty" disabled selected hidden>Select...</option>
+                  {activities.map((activity) => {
+                    return (<option value={activity.name} onClick={event => this.handleClick(event, activity.name)}>{activity.name}</option>)
+                  })}
+                </select>
+                */}
+                <Stack spacing={2} direction="row">
+                  {activities.map((activity) => {
+                    return (<CustomButton key={activity.name} onClick={event => this.handleClick(event, activity.name)}>{activity.name}</CustomButton>)
+                  })}
+                </Stack>
+                
+              </div>
+              <div className="bookingTime">
+              <label className="booking"><p>ORA DI PRENOTAZIONE*</p> {errors.bookingTime.length > 0 && <span className='error'>{errors.bookingTime}</span>}
+                <Select id="timeSelectors" value={this.state.timeValue} className="bookingSelector" options={options} theme={(theme) => ({
+                  ...theme,
+                  borderRadius: 0,
+                  colors: {
+                    //...theme.colors,
+                    primary25: secondaryColor,
+                    primary: primaryColor,
+                  },})}
+                  onChange={this.handleTimeChange}
+                  isOptionDisabled={(option) => option.disabled}
+                  isClearable={true}
+                  noValidate/></label>                                      
+              </div>
+              {/*
               <div className="bookingActivity">
                 <label className="booking"><p>ATTIVITA'*</p> {errors.activityFull.length > 0 && <span className='error' id="seatsFullError">{errors.activityFull}</span>}
                 
@@ -775,32 +802,12 @@ export default class BookingForm extends Component {
                   isOptionDisabled={(option) => option.disabled}
                   isClearable={true}
                   noValidate
-                />*/}
-               
+                />
+
                   </label>
-                {/* 
-                 <Stack spacing={2} direction="row">
-                  {activities.map((activity) => {
-                    return (<CustomButton key={activity.name} onClick={event => this.handleClick(event, activity.name)}>{activity.name}</CustomButton>)
-                  })}
-                </Stack>
-                */}
+                
               </div>
-              <div className="bookingTime">
-              <label className="booking"><p>ORA DI PRENOTAZIONE*</p> {errors.bookingTime.length > 0 && <span className='error'>{errors.bookingTime}</span>}
-                <Select id="timeSelectors" value={this.state.timeValue} className="bookingSelector" options={options} theme={(theme) => ({
-                  ...theme,
-                  borderRadius: 0,
-                  colors: {
-                   // ...theme.colors,
-                    primary25: secondaryColor,
-                    primary: primaryColor,
-                  },})}
-                  onChange={this.handleTimeChange}
-                  isOptionDisabled={(option) => option.disabled}
-                  isClearable={true}
-                  noValidate/></label>                                      
-              </div>
+              */}
               <div className="bookingGuests">
                 <label className="booking"><p>NUMERO DI COPERTI*</p> {errors.bookingGuests.length > 0 && <span className='error'>{errors.bookingGuests}</span>}<input type="number" className="bookingSelector" onWheel={(e) => e.target.blur()} id="bookingGuestSelection" disabled={true} name="bookingGuests" placeholder="Inserisci i coperti" onChange={this.handleChange} noValidate min={1}/></label>
               </div>

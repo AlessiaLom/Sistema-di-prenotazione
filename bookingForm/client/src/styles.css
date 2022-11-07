@@ -17,8 +17,9 @@ body {
 }
 
 #seatsFullError{
-  font-size: 0.825em;
+  font-size: 0.625em;
   text-align: left;
+  padding: 10px 0;
 }
 
 footer { 
@@ -48,7 +49,7 @@ body {
 }
 
 .css-e53awj-MuiStack-root{
-  justify-content: center;
+  justify-content: left;
   flex-wrap: wrap;
   gap: 12px;
 }
@@ -114,11 +115,30 @@ h1{
   font-weight: lighter;
 }
 
+.cancelationHeader{
+  margin: 10px auto !important;
+  text-align: center;
+}
+
+.h1canc{
+  color: white;
+  font-size: 30px;
+  text-align: center;
+  font-weight: lighter;
+}
+
 .fieldInfo{
   color: #777;
   text-align: left;
   margin-left: 2%;
-  margin-bottom: 1%;
+  margin-bottom: 3%;
+}
+
+.fieldInfoCanc{
+  text-align: center;
+  color: #777;
+  margin-left: 0%;
+  margin-bottom: 3%;
 }
 
 textarea, input:not(#guestPrivacy):not(#guestMarketing), .button{
@@ -311,6 +331,7 @@ table th, table td{
 
 .resturantTable{
   margin-bottom: 1%;
+  margin-top: 1%;
 }
 
 .resturantTableLabel{
@@ -325,20 +346,20 @@ table th, table td{
 }
 
 .bookingStatus-confirmed{
+  font-size: 0.825rem;
   color: greenyellow;
-  font-weight: bold;
-  margin-bottom: 5%;
+  margin-top: 5% !important;
 }
 
 .bookingStatus-canceled{
+  font-size: 0.825rem;
   color: #cf153a;
-  font-weight: bold;
   margin-bottom: 5%;
 }
 
 .bookingStatus-pending{
+  font-size: 0.825rem;
   color: yellow;
-  font-weight: bold;
   margin-bottom: 5%;
 }
 
@@ -456,8 +477,8 @@ textarea{
 }
 
 .prenotationID, .prenotationName, .prenotationSurname, .prenotationEmail, .prenotationPhone{
-  margin-left: 2%;
   width: 50%;
+  margin: 0 auto;
 }
 .logo-main{
   margin-left:1%;
@@ -536,10 +557,6 @@ textarea{
 
 table{
   padding: 2% !important;
-}
-
-.DatePiker{
-  margin: 0;
 }
 
 @media screen and (max-width: 380px) {
@@ -625,7 +642,7 @@ table{
   }
 
   .bookingDate, .bookingTime, .bookingGuests, .bookingActivity, .resturantTable{
-    margin: 0 2%;
+    margin: 5% 2%;
   }
 
   .resturantTableLabel{
@@ -633,7 +650,7 @@ table{
   }
 
   .guestName, .guestSurname, .guestEmail, .guestPhone, .guestAdditionalInfo, .guestPrivacy, .guestMarketing{
-    margin-right: 0;
+    margin: 5% 2%;
   }
   form{
     margin: 0;
@@ -664,7 +681,7 @@ table{
   }
 
   footer{
-    position: relative;
+    position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
@@ -678,6 +695,8 @@ table{
   body{
     width: 100% !important;
   }
+
+  
 }
 
 @media screen and (min-width: 361px) and (max-width: 600px) {
@@ -707,11 +726,11 @@ table{
   }
 
   .bookingDate, .bookingTime, .bookingGuests, .bookingActivity, .resturantTable{
-    margin-left: 0;
+    margin: 5% 2%;
   }
 
   .guestName, .guestSurname, .guestEmail, .guestPhone, .guestAdditionalInfo, .guestPrivacy, .guestMarketing{
-    margin-right: 0;
+    margin: 5% 2%;
   }
   form{
     margin: 0;
@@ -740,6 +759,14 @@ table{
     margin: 0;
     width: 100%;
   }
+  footer{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    padding: 2%;
+  }
 
 }
 
@@ -756,9 +783,6 @@ table{
   .personControls, .bookingControls{
     margin-left: 0;
     width: 100%;
-  }
-
-  .guestName, .guestSurname, .guestEmail, .guestPhone, .guestAdditionalInfo, .guestPrivacy, .guestMarketing{
     margin-right: 0;
   }
 
@@ -787,5 +811,13 @@ table{
   .prenotationID, .prenotationName, .prenotationSurname, .prenotationEmail, .prenotationPhone{
     margin: 0;
     width: 100%;
+  }
+  footer{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    padding: 2%;
   }
 }
